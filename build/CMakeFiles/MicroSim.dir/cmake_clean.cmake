@@ -1,0 +1,13 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/MicroSim.dir/src/main.cpp.obj"
+  "CMakeFiles/MicroSim.dir/src/main.cpp.obj.d"
+  "MicroSim.exe"
+  "MicroSim.exe.manifest"
+  "MicroSim.pdb"
+  "libMicroSim.dll.a"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/MicroSim.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
