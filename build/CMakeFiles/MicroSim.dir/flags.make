@@ -4,7 +4,7 @@
 # compile CXX with C:/Program Files/CodeBlocks/MinGW/bin/c++.exe
 CXX_DEFINES = 
 
-CXX_INCLUDES = 
+CXX_INCLUDES = @CMakeFiles\MicroSim.dir\includes_CXX.rsp
 
 CXX_FLAGS = -std=c++20
 
