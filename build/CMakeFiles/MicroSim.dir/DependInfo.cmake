@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "C:/Users/mwarn/Documents/MicroSim/src/Bus/Bus.cpp" "CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/Memory/RAM.cpp" "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/main.cpp" "CMakeFiles/MicroSim.dir/src/main.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/main.cpp.obj.d"
   )

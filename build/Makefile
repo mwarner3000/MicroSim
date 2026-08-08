@@ -128,6 +128,30 @@ MicroSim/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/build
 .PHONY : MicroSim/fast
 
+src/Bus/Bus.obj: src/Bus/Bus.cpp.obj
+.PHONY : src/Bus/Bus.obj
+
+# target to build an object file
+src/Bus/Bus.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj
+.PHONY : src/Bus/Bus.cpp.obj
+
+src/Bus/Bus.i: src/Bus/Bus.cpp.i
+.PHONY : src/Bus/Bus.i
+
+# target to preprocess a source file
+src/Bus/Bus.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.i
+.PHONY : src/Bus/Bus.cpp.i
+
+src/Bus/Bus.s: src/Bus/Bus.cpp.s
+.PHONY : src/Bus/Bus.s
+
+# target to generate assembly for a file
+src/Bus/Bus.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.s
+.PHONY : src/Bus/Bus.cpp.s
+
 src/Memory/RAM.obj: src/Memory/RAM.cpp.obj
 .PHONY : src/Memory/RAM.obj
 
@@ -185,6 +209,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... MicroSim
+	@echo ... src/Bus/Bus.obj
+	@echo ... src/Bus/Bus.i
+	@echo ... src/Bus/Bus.s
 	@echo ... src/Memory/RAM.obj
 	@echo ... src/Memory/RAM.i
 	@echo ... src/Memory/RAM.s

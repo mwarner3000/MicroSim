@@ -1,11 +1,23 @@
 CMakeFiles/MicroSim.dir/src/main.cpp.obj: \
  C:\Users\mwarn\Documents\MicroSim\src\main.cpp \
- C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/iostream \
- C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/requires_hosted.h \
+ C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/cstdint \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/x86_64-w64-mingw32/bits/c++config.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/x86_64-w64-mingw32/bits/os_defines.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/x86_64-w64-mingw32/bits/cpu_defines.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/pstl/pstl_config.h \
+ C:/Program\ Files/CodeBlocks/MinGW/lib/gcc/x86_64-w64-mingw32/14.2.0/include/stdint.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/stdint.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/crtdefs.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/corecrt.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw_mac.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/vadefs.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/Program\ Files/CodeBlocks/MinGW/lib/gcc/x86_64-w64-mingw32/14.2.0/include/stddef.h \
+ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/stddef.h \
+ C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/iostream \
+ C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/requires_hosted.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/ostream \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/ios \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/iosfwd \
@@ -14,12 +26,6 @@ CMakeFiles/MicroSim.dir/src/main.cpp.obj: \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/postypes.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/cwchar \
  C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wchar.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/corecrt.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw_mac.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw_secapi.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/vadefs.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
  C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
  C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/corecrt_wstdlib.h \
  C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/_mingw_off_t.h \
@@ -32,9 +38,6 @@ CMakeFiles/MicroSim.dir/src/main.cpp.obj: \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/exception_ptr.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/exception_defines.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/cxxabi_init_exception.h \
- C:/Program\ Files/CodeBlocks/MinGW/lib/gcc/x86_64-w64-mingw32/14.2.0/include/stddef.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/stddef.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/crtdefs.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/typeinfo \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/hash_bytes.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/new \
@@ -151,13 +154,11 @@ CMakeFiles/MicroSim.dir/src/main.cpp.obj: \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/ostream.tcc \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/istream \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/istream.tcc \
- C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h \
- C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/cstdint \
- C:/Program\ Files/CodeBlocks/MinGW/lib/gcc/x86_64-w64-mingw32/14.2.0/include/stdint.h \
- C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/stdint.h \
+ C:/Users/mwarn/Documents/MicroSim/include/Bus/Bus.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/vector \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/stl_uninitialized.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/stl_vector.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/stl_bvector.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/vector.tcc \
- C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h
+ C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h \
+ C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h

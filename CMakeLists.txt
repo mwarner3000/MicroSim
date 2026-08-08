@@ -14,6 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(
     MicroSim
     src/main.cpp
+    src/Bus/Bus.cpp
     src/Memory/RAM.cpp
 )
 
