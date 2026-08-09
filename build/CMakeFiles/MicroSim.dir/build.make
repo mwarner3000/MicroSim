@@ -146,11 +146,26 @@ CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.s"
 	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Devices\Pin.cpp -o CMakeFiles\MicroSim.dir\src\Devices\Pin.cpp.s
 
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj: CMakeFiles/MicroSim.dir/flags.make
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj: CMakeFiles/MicroSim.dir/includes_CXX.rsp
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Devices/Timer.cpp
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj: CMakeFiles/MicroSim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj -MF CMakeFiles\MicroSim.dir\src\Devices\Timer.cpp.obj.d -o CMakeFiles\MicroSim.dir\src\Devices\Timer.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\Devices\Timer.cpp
+
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.i"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mwarn\Documents\MicroSim\src\Devices\Timer.cpp > CMakeFiles\MicroSim.dir\src\Devices\Timer.cpp.i
+
+CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.s"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Devices\Timer.cpp -o CMakeFiles\MicroSim.dir\src\Devices\Timer.cpp.s
+
 CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj: CMakeFiles/MicroSim.dir/flags.make
 CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj: CMakeFiles/MicroSim.dir/includes_CXX.rsp
 CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Simulator/Simulator.cpp
 CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj: CMakeFiles/MicroSim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj"
 	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj -MF CMakeFiles\MicroSim.dir\src\Simulator\Simulator.cpp.obj.d -o CMakeFiles\MicroSim.dir\src\Simulator\Simulator.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\Simulator\Simulator.cpp
 
 CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.i: cmake_force
@@ -161,6 +176,51 @@ CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.s"
 	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Simulator\Simulator.cpp -o CMakeFiles\MicroSim.dir\src\Simulator\Simulator.cpp.s
 
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj: CMakeFiles/MicroSim.dir/flags.make
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj: CMakeFiles/MicroSim.dir/includes_CXX.rsp
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Simulator/Clock.cpp
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj: CMakeFiles/MicroSim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj -MF CMakeFiles\MicroSim.dir\src\Simulator\Clock.cpp.obj.d -o CMakeFiles\MicroSim.dir\src\Simulator\Clock.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\Simulator\Clock.cpp
+
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.i"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mwarn\Documents\MicroSim\src\Simulator\Clock.cpp > CMakeFiles\MicroSim.dir\src\Simulator\Clock.cpp.i
+
+CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.s"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Simulator\Clock.cpp -o CMakeFiles\MicroSim.dir\src\Simulator\Clock.cpp.s
+
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj: CMakeFiles/MicroSim.dir/flags.make
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj: CMakeFiles/MicroSim.dir/includes_CXX.rsp
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Simulator/TestClockable.cpp
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj: CMakeFiles/MicroSim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj -MF CMakeFiles\MicroSim.dir\src\Simulator\TestClockable.cpp.obj.d -o CMakeFiles\MicroSim.dir\src\Simulator\TestClockable.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\Simulator\TestClockable.cpp
+
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.i"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mwarn\Documents\MicroSim\src\Simulator\TestClockable.cpp > CMakeFiles\MicroSim.dir\src\Simulator\TestClockable.cpp.i
+
+CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.s"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Simulator\TestClockable.cpp -o CMakeFiles\MicroSim.dir\src\Simulator\TestClockable.cpp.s
+
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj: CMakeFiles/MicroSim.dir/flags.make
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj: CMakeFiles/MicroSim.dir/includes_CXX.rsp
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/CPU/SimpleCPU.cpp
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj: CMakeFiles/MicroSim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj -MF CMakeFiles\MicroSim.dir\src\CPU\SimpleCPU.cpp.obj.d -o CMakeFiles\MicroSim.dir\src\CPU\SimpleCPU.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\CPU\SimpleCPU.cpp
+
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.i"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mwarn\Documents\MicroSim\src\CPU\SimpleCPU.cpp > CMakeFiles\MicroSim.dir\src\CPU\SimpleCPU.cpp.i
+
+CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.s"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\CPU\SimpleCPU.cpp -o CMakeFiles\MicroSim.dir\src\CPU\SimpleCPU.cpp.s
+
 # Object files for target MicroSim
 MicroSim_OBJECTS = \
 "CMakeFiles/MicroSim.dir/src/main.cpp.obj" \
@@ -168,7 +228,11 @@ MicroSim_OBJECTS = \
 "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj" \
 "CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj" \
 "CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj" \
-"CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj"
+"CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj" \
+"CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj" \
+"CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj" \
+"CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj" \
+"CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj"
 
 # External object files for target MicroSim
 MicroSim_EXTERNAL_OBJECTS =
@@ -178,12 +242,16 @@ MicroSim.exe: CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj
 MicroSim.exe: CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj
 MicroSim.exe: CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj
 MicroSim.exe: CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj
+MicroSim.exe: CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj
 MicroSim.exe: CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj
+MicroSim.exe: CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj
+MicroSim.exe: CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj
+MicroSim.exe: CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj
 MicroSim.exe: CMakeFiles/MicroSim.dir/build.make
 MicroSim.exe: CMakeFiles/MicroSim.dir/linkLibs.rsp
 MicroSim.exe: CMakeFiles/MicroSim.dir/objects1.rsp
 MicroSim.exe: CMakeFiles/MicroSim.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable MicroSim.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable MicroSim.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\MicroSim.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -152,6 +152,30 @@ src/Bus/Bus.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.s
 .PHONY : src/Bus/Bus.cpp.s
 
+src/CPU/SimpleCPU.obj: src/CPU/SimpleCPU.cpp.obj
+.PHONY : src/CPU/SimpleCPU.obj
+
+# target to build an object file
+src/CPU/SimpleCPU.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj
+.PHONY : src/CPU/SimpleCPU.cpp.obj
+
+src/CPU/SimpleCPU.i: src/CPU/SimpleCPU.cpp.i
+.PHONY : src/CPU/SimpleCPU.i
+
+# target to preprocess a source file
+src/CPU/SimpleCPU.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.i
+.PHONY : src/CPU/SimpleCPU.cpp.i
+
+src/CPU/SimpleCPU.s: src/CPU/SimpleCPU.cpp.s
+.PHONY : src/CPU/SimpleCPU.s
+
+# target to generate assembly for a file
+src/CPU/SimpleCPU.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.s
+.PHONY : src/CPU/SimpleCPU.cpp.s
+
 src/Devices/GPIO.obj: src/Devices/GPIO.cpp.obj
 .PHONY : src/Devices/GPIO.obj
 
@@ -200,6 +224,30 @@ src/Devices/Pin.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.s
 .PHONY : src/Devices/Pin.cpp.s
 
+src/Devices/Timer.obj: src/Devices/Timer.cpp.obj
+.PHONY : src/Devices/Timer.obj
+
+# target to build an object file
+src/Devices/Timer.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj
+.PHONY : src/Devices/Timer.cpp.obj
+
+src/Devices/Timer.i: src/Devices/Timer.cpp.i
+.PHONY : src/Devices/Timer.i
+
+# target to preprocess a source file
+src/Devices/Timer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.i
+.PHONY : src/Devices/Timer.cpp.i
+
+src/Devices/Timer.s: src/Devices/Timer.cpp.s
+.PHONY : src/Devices/Timer.s
+
+# target to generate assembly for a file
+src/Devices/Timer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.s
+.PHONY : src/Devices/Timer.cpp.s
+
 src/Memory/RAM.obj: src/Memory/RAM.cpp.obj
 .PHONY : src/Memory/RAM.obj
 
@@ -224,6 +272,30 @@ src/Memory/RAM.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.s
 .PHONY : src/Memory/RAM.cpp.s
 
+src/Simulator/Clock.obj: src/Simulator/Clock.cpp.obj
+.PHONY : src/Simulator/Clock.obj
+
+# target to build an object file
+src/Simulator/Clock.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj
+.PHONY : src/Simulator/Clock.cpp.obj
+
+src/Simulator/Clock.i: src/Simulator/Clock.cpp.i
+.PHONY : src/Simulator/Clock.i
+
+# target to preprocess a source file
+src/Simulator/Clock.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.i
+.PHONY : src/Simulator/Clock.cpp.i
+
+src/Simulator/Clock.s: src/Simulator/Clock.cpp.s
+.PHONY : src/Simulator/Clock.s
+
+# target to generate assembly for a file
+src/Simulator/Clock.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.s
+.PHONY : src/Simulator/Clock.cpp.s
+
 src/Simulator/Simulator.obj: src/Simulator/Simulator.cpp.obj
 .PHONY : src/Simulator/Simulator.obj
 
@@ -247,6 +319,30 @@ src/Simulator/Simulator.s: src/Simulator/Simulator.cpp.s
 src/Simulator/Simulator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.s
 .PHONY : src/Simulator/Simulator.cpp.s
+
+src/Simulator/TestClockable.obj: src/Simulator/TestClockable.cpp.obj
+.PHONY : src/Simulator/TestClockable.obj
+
+# target to build an object file
+src/Simulator/TestClockable.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj
+.PHONY : src/Simulator/TestClockable.cpp.obj
+
+src/Simulator/TestClockable.i: src/Simulator/TestClockable.cpp.i
+.PHONY : src/Simulator/TestClockable.i
+
+# target to preprocess a source file
+src/Simulator/TestClockable.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.i
+.PHONY : src/Simulator/TestClockable.cpp.i
+
+src/Simulator/TestClockable.s: src/Simulator/TestClockable.cpp.s
+.PHONY : src/Simulator/TestClockable.s
+
+# target to generate assembly for a file
+src/Simulator/TestClockable.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.s
+.PHONY : src/Simulator/TestClockable.cpp.s
 
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
@@ -284,18 +380,30 @@ help:
 	@echo ... src/Bus/Bus.obj
 	@echo ... src/Bus/Bus.i
 	@echo ... src/Bus/Bus.s
+	@echo ... src/CPU/SimpleCPU.obj
+	@echo ... src/CPU/SimpleCPU.i
+	@echo ... src/CPU/SimpleCPU.s
 	@echo ... src/Devices/GPIO.obj
 	@echo ... src/Devices/GPIO.i
 	@echo ... src/Devices/GPIO.s
 	@echo ... src/Devices/Pin.obj
 	@echo ... src/Devices/Pin.i
 	@echo ... src/Devices/Pin.s
+	@echo ... src/Devices/Timer.obj
+	@echo ... src/Devices/Timer.i
+	@echo ... src/Devices/Timer.s
 	@echo ... src/Memory/RAM.obj
 	@echo ... src/Memory/RAM.i
 	@echo ... src/Memory/RAM.s
+	@echo ... src/Simulator/Clock.obj
+	@echo ... src/Simulator/Clock.i
+	@echo ... src/Simulator/Clock.s
 	@echo ... src/Simulator/Simulator.obj
 	@echo ... src/Simulator/Simulator.i
 	@echo ... src/Simulator/Simulator.s
+	@echo ... src/Simulator/TestClockable.obj
+	@echo ... src/Simulator/TestClockable.i
+	@echo ... src/Simulator/TestClockable.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

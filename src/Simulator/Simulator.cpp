@@ -2,7 +2,9 @@
 
 Simulator::Simulator()
     : ram(1024),
-      gpio()
+      gpio(),
+      timer(),
+      cpu(bus)
 {
     bus.attach(
         ram,
@@ -15,6 +17,15 @@ Simulator::Simulator()
         0x00001000,
         0x00001003
     );
+
+    bus.attach(
+        timer,
+        0x00002000,
+        0x00002003
+    );
+
+	clockables.push_back(&timer);
+	clockables.push_back(&cpu);
 }
 
 Bus& Simulator::getBus()
@@ -30,4 +41,29 @@ RAM& Simulator::getRAM()
 GPIO& Simulator::getGPIO()
 {
     return gpio;
+}
+
+Clock& Simulator::getClock()
+{
+    return clock;
+}
+
+void Simulator::tick()
+{
+    clock.tick();
+
+    for (IClockable* device : clockables)
+    {
+        device->tick(clock.getCycle());
+    }
+}
+
+void Simulator::addClockable(IClockable& device)
+{
+    clockables.push_back(&device);
+}
+
+Timer& Simulator::getTimer()
+{
+    return timer;
 }

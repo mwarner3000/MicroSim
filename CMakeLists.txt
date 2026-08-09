@@ -16,9 +16,13 @@ add_executable(
     src/main.cpp
     src/Bus/Bus.cpp
     src/Memory/RAM.cpp
-	src/Devices/GPIO.cpp
-	src/Devices/Pin.cpp
-	src/Simulator/Simulator.cpp
+    src/Devices/GPIO.cpp
+    src/Devices/Pin.cpp
+    src/Devices/Timer.cpp
+    src/Simulator/Simulator.cpp
+    src/Simulator/Clock.cpp
+    src/Simulator/TestClockable.cpp
+	src/CPU/SimpleCPU.cpp
 )
 
 target_include_directories(

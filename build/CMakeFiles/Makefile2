@@ -84,12 +84,12 @@ clean: CMakeFiles/MicroSim.dir/clean
 CMakeFiles/MicroSim.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target MicroSim"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target MicroSim"
 .PHONY : CMakeFiles/MicroSim.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/MicroSim.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/MicroSim.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 0
 .PHONY : CMakeFiles/MicroSim.dir/rule
@@ -101,7 +101,7 @@ MicroSim: CMakeFiles/MicroSim.dir/rule
 # codegen rule for target.
 CMakeFiles/MicroSim.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=1,2,3,4,5,6,7 "Finished codegen for target MicroSim"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Finished codegen for target MicroSim"
 .PHONY : CMakeFiles/MicroSim.dir/codegen
 
 # clean rule for target.
