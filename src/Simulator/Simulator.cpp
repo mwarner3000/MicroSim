@@ -67,3 +67,8 @@ Timer& Simulator::getTimer()
 {
     return timer;
 }
+
+SimpleCPU& Simulator::getCPU()
+{
+    return cpu;
+}

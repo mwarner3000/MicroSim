@@ -31,4 +31,5 @@ private:
 	Timer timer;
 	SimpleCPU cpu;
 	Clock clock;
+	std::vector<IClockable*> clockables;
 };
