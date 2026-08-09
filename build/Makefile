@@ -224,6 +224,30 @@ src/Memory/RAM.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.s
 .PHONY : src/Memory/RAM.cpp.s
 
+src/Simulator/Simulator.obj: src/Simulator/Simulator.cpp.obj
+.PHONY : src/Simulator/Simulator.obj
+
+# target to build an object file
+src/Simulator/Simulator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj
+.PHONY : src/Simulator/Simulator.cpp.obj
+
+src/Simulator/Simulator.i: src/Simulator/Simulator.cpp.i
+.PHONY : src/Simulator/Simulator.i
+
+# target to preprocess a source file
+src/Simulator/Simulator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.i
+.PHONY : src/Simulator/Simulator.cpp.i
+
+src/Simulator/Simulator.s: src/Simulator/Simulator.cpp.s
+.PHONY : src/Simulator/Simulator.s
+
+# target to generate assembly for a file
+src/Simulator/Simulator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.s
+.PHONY : src/Simulator/Simulator.cpp.s
+
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
 
@@ -269,6 +293,9 @@ help:
 	@echo ... src/Memory/RAM.obj
 	@echo ... src/Memory/RAM.i
 	@echo ... src/Memory/RAM.s
+	@echo ... src/Simulator/Simulator.obj
+	@echo ... src/Simulator/Simulator.i
+	@echo ... src/Simulator/Simulator.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

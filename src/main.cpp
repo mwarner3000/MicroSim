@@ -1,51 +1,35 @@
 #include <cstdint>
 #include <iostream>
 
-#include "Bus/Bus.h"
-#include "Devices/GPIO.h"
-#include "Memory/RAM.h"
+#include "Simulator/Simulator.h"
 
 int main()
 {
-    RAM ram(1024);
-    GPIO gpio;
+    Simulator simulator;
 
-    Bus bus;
+    Bus& bus = simulator.getBus();
+    GPIO& gpio = simulator.getGPIO();
 
-    bus.attach(
-        ram,
-        0x00000000,
-        0x000003FF
-    );
+    bus.write(0x0000000A, 123);
 
-    bus.attach(
-        gpio,
-        0x00001000,
-        0x00001003
-    );
+    std::cout
+        << "RAM: "
+        << bus.read(0x0000000A)
+        << std::endl;
 
-    // CPU configures GPIO pins 4-7 as outputs.
     bus.write(0x00001000, 0xF0);
-
-    // CPU drives pins 5 and 7 HIGH.
     bus.write(0x00001001, 0xA0);
 
     std::cout
-        << "GPIO output register: 0x"
+        << "GPIO output: 0x"
         << std::hex
         << bus.read(0x00001001)
         << std::endl;
 
-    std::cout
-        << "Pin 5 output: "
-        << gpio.getPin(5).getOutput()
-        << std::endl;
-
-    // Simulated external device drives pin 0 HIGH.
     gpio.getPin(0).setInput(true);
 
     std::cout
-        << "GPIO input register: 0x"
+        << "GPIO input: 0x"
         << std::hex
         << bus.read(0x00001002)
         << std::endl;

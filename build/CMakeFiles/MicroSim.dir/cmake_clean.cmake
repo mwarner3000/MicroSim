@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj.d"
   "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj"
   "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj.d"
+  "CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj"
+  "CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj.d"
   "CMakeFiles/MicroSim.dir/src/main.cpp.obj"
   "CMakeFiles/MicroSim.dir/src/main.cpp.obj.d"
   "MicroSim.exe"

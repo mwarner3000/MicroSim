@@ -126,6 +126,7 @@ CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj: C:/Users/mwarn/Documents/MicroSim/s
   C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h
 
 CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Devices/GPIO.cpp \
+  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/array \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/backward/binders.h \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bit \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/alloc_traits.h \
@@ -242,7 +243,8 @@ CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj: C:/Users/mwarn/Documents/Micro
   C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/vadefs.h \
   C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wchar.h \
   C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h \
-  C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h
+  C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h \
+  C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h
 
 CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Devices/Pin.cpp \
   C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h
@@ -372,6 +374,7 @@ CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj: C:/Users/mwarn/Documents/MicroSi
   C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h
 
 CMakeFiles/MicroSim.dir/src/main.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/main.cpp \
+  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/array \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/backward/binders.h \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bit \
   C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/alloc_traits.h \
@@ -534,6 +537,7 @@ CMakeFiles/MicroSim.dir/src/main.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/
   C:/Users/mwarn/Documents/MicroSim/include/Bus/Bus.h \
   C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h \
   C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h \
+  C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h \
   C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h
 
 
@@ -795,11 +799,13 @@ C:/Users/mwarn/Documents/MicroSim/include/Bus/Bus.h:
 
 C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h:
 
+C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/array:
+
 C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h:
 
-C:/Users/mwarn/Documents/MicroSim/src/Devices/Pin.cpp:
-
 C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h:
+
+C:/Users/mwarn/Documents/MicroSim/src/Devices/Pin.cpp:
 
 C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h:
 

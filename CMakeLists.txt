@@ -18,6 +18,7 @@ add_executable(
     src/Memory/RAM.cpp
 	src/Devices/GPIO.cpp
 	src/Devices/Pin.cpp
+	src/Simulator/Simulator.cpp
 )
 
 target_include_directories(
