@@ -16,6 +16,8 @@ add_executable(
     src/main.cpp
     src/Bus/Bus.cpp
     src/Memory/RAM.cpp
+	src/Devices/GPIO.cpp
+	src/Devices/Pin.cpp
 )
 
 target_include_directories(

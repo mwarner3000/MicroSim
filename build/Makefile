@@ -152,6 +152,54 @@ src/Bus/Bus.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.s
 .PHONY : src/Bus/Bus.cpp.s
 
+src/Devices/GPIO.obj: src/Devices/GPIO.cpp.obj
+.PHONY : src/Devices/GPIO.obj
+
+# target to build an object file
+src/Devices/GPIO.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj
+.PHONY : src/Devices/GPIO.cpp.obj
+
+src/Devices/GPIO.i: src/Devices/GPIO.cpp.i
+.PHONY : src/Devices/GPIO.i
+
+# target to preprocess a source file
+src/Devices/GPIO.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.i
+.PHONY : src/Devices/GPIO.cpp.i
+
+src/Devices/GPIO.s: src/Devices/GPIO.cpp.s
+.PHONY : src/Devices/GPIO.s
+
+# target to generate assembly for a file
+src/Devices/GPIO.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.s
+.PHONY : src/Devices/GPIO.cpp.s
+
+src/Devices/Pin.obj: src/Devices/Pin.cpp.obj
+.PHONY : src/Devices/Pin.obj
+
+# target to build an object file
+src/Devices/Pin.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj
+.PHONY : src/Devices/Pin.cpp.obj
+
+src/Devices/Pin.i: src/Devices/Pin.cpp.i
+.PHONY : src/Devices/Pin.i
+
+# target to preprocess a source file
+src/Devices/Pin.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.i
+.PHONY : src/Devices/Pin.cpp.i
+
+src/Devices/Pin.s: src/Devices/Pin.cpp.s
+.PHONY : src/Devices/Pin.s
+
+# target to generate assembly for a file
+src/Devices/Pin.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.s
+.PHONY : src/Devices/Pin.cpp.s
+
 src/Memory/RAM.obj: src/Memory/RAM.cpp.obj
 .PHONY : src/Memory/RAM.obj
 
@@ -212,6 +260,12 @@ help:
 	@echo ... src/Bus/Bus.obj
 	@echo ... src/Bus/Bus.i
 	@echo ... src/Bus/Bus.s
+	@echo ... src/Devices/GPIO.obj
+	@echo ... src/Devices/GPIO.i
+	@echo ... src/Devices/GPIO.s
+	@echo ... src/Devices/Pin.obj
+	@echo ... src/Devices/Pin.i
+	@echo ... src/Devices/Pin.s
 	@echo ... src/Memory/RAM.obj
 	@echo ... src/Memory/RAM.i
 	@echo ... src/Memory/RAM.s
