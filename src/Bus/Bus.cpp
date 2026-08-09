@@ -13,6 +13,20 @@ void Bus::attach(IBusDevice& device,
         );
     }
 
+    for (const Mapping& mapping : mappings)
+    {
+        bool overlaps =
+            startAddress <= mapping.endAddress &&
+            endAddress >= mapping.startAddress;
+
+        if (overlaps)
+        {
+            throw std::invalid_argument(
+                "Bus mapping overlaps an existing device"
+            );
+        }
+    }
+
     mappings.push_back(
         {
             &device,

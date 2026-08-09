@@ -1,4 +1,3 @@
-#include <cstdint>
 #include <iostream>
 
 #include "Bus/Bus.h"
@@ -6,23 +5,26 @@
 
 int main()
 {
-    RAM ram(1024);
+    RAM ram1(1024);
+    RAM ram2(256);
 
     Bus bus;
 
     bus.attach(
-        ram,
+        ram1,
         0x00000000,
         0x000003FF
     );
 
-    bus.write(10, 123);
+    bus.attach(
+        ram2,
+        0x00000400,
+        0x000004FF
+    );
+	
+	bus.write(0x0400, 456);
 
-    std::uint32_t value = bus.read(10);
-
-    std::cout << "Bus test value: "
-              << value
-              << std::endl;
+std::cout << bus.read(0x0400) << std::endl;
 
     return 0;
 }
