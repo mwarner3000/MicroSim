@@ -50,5 +50,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/MicroSimCore.dir/DependInfo.cmake"
   "CMakeFiles/MicroSim.dir/DependInfo.cmake"
+  "CMakeFiles/RAMTests.dir/DependInfo.cmake"
+  "CMakeFiles/BusTests.dir/DependInfo.cmake"
   )

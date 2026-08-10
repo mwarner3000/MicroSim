@@ -8,15 +8,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/mwarn/Documents/MicroSim/src/Bus/Bus.cpp" "CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Bus/Bus.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/CPU/SimpleCPU.cpp" "CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/CPU/SimpleCPU.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Devices/GPIO.cpp" "CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Devices/GPIO.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Devices/Pin.cpp" "CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Devices/Pin.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Devices/Timer.cpp" "CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Devices/Timer.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Memory/RAM.cpp" "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Memory/RAM.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Simulator/Clock.cpp" "CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Simulator/Clock.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Simulator/Simulator.cpp" "CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Simulator/Simulator.cpp.obj.d"
-  "C:/Users/mwarn/Documents/MicroSim/src/Simulator/TestClockable.cpp" "CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/Simulator/TestClockable.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/main.cpp" "CMakeFiles/MicroSim.dir/src/main.cpp.obj" "gcc" "CMakeFiles/MicroSim.dir/src/main.cpp.obj.d"
   )
 
