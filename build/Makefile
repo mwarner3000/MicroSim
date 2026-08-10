@@ -203,6 +203,19 @@ TimerTests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/build
 .PHONY : TimerTests/fast
 
+#=============================================================================
+# Target rules for targets named CPUTests
+
+# Build rule for target.
+CPUTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CPUTests
+.PHONY : CPUTests
+
+# fast build rule for target.
+CPUTests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/build
+.PHONY : CPUTests/fast
+
 src/Bus/Bus.obj: src/Bus/Bus.cpp.obj
 .PHONY : src/Bus/Bus.obj
 
@@ -443,6 +456,30 @@ tests/BusTests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BusTests.dir\build.make CMakeFiles/BusTests.dir/tests/BusTests.cpp.s
 .PHONY : tests/BusTests.cpp.s
 
+tests/CPUTests.obj: tests/CPUTests.cpp.obj
+.PHONY : tests/CPUTests.obj
+
+# target to build an object file
+tests/CPUTests.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/tests/CPUTests.cpp.obj
+.PHONY : tests/CPUTests.cpp.obj
+
+tests/CPUTests.i: tests/CPUTests.cpp.i
+.PHONY : tests/CPUTests.i
+
+# target to preprocess a source file
+tests/CPUTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/tests/CPUTests.cpp.i
+.PHONY : tests/CPUTests.cpp.i
+
+tests/CPUTests.s: tests/CPUTests.cpp.s
+.PHONY : tests/CPUTests.s
+
+# target to generate assembly for a file
+tests/CPUTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/tests/CPUTests.cpp.s
+.PHONY : tests/CPUTests.cpp.s
+
 tests/GPIOTests.obj: tests/GPIOTests.cpp.obj
 .PHONY : tests/GPIOTests.obj
 
@@ -525,6 +562,7 @@ help:
 	@echo ... rebuild_cache
 	@echo ... test
 	@echo ... BusTests
+	@echo ... CPUTests
 	@echo ... GPIOTests
 	@echo ... MicroSim
 	@echo ... MicroSimCore
@@ -560,6 +598,9 @@ help:
 	@echo ... tests/BusTests.obj
 	@echo ... tests/BusTests.i
 	@echo ... tests/BusTests.s
+	@echo ... tests/CPUTests.obj
+	@echo ... tests/CPUTests.i
+	@echo ... tests/CPUTests.s
 	@echo ... tests/GPIOTests.obj
 	@echo ... tests/GPIOTests.i
 	@echo ... tests/GPIOTests.s

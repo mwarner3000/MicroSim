@@ -111,3 +111,19 @@ add_test(
     NAME TimerTests
     COMMAND TimerTests
 )
+
+add_executable(
+    CPUTests
+    tests/CPUTests.cpp
+)
+
+target_link_libraries(
+    CPUTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME CPUTests
+    COMMAND CPUTests
+)

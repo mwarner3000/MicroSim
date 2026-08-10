@@ -68,6 +68,7 @@ all: CMakeFiles/RAMTests.dir/all
 all: CMakeFiles/BusTests.dir/all
 all: CMakeFiles/GPIOTests.dir/all
 all: CMakeFiles/TimerTests.dir/all
+all: CMakeFiles/CPUTests.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -77,6 +78,7 @@ codegen: CMakeFiles/RAMTests.dir/codegen
 codegen: CMakeFiles/BusTests.dir/codegen
 codegen: CMakeFiles/GPIOTests.dir/codegen
 codegen: CMakeFiles/TimerTests.dir/codegen
+codegen: CMakeFiles/CPUTests.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -90,6 +92,7 @@ clean: CMakeFiles/RAMTests.dir/clean
 clean: CMakeFiles/BusTests.dir/clean
 clean: CMakeFiles/GPIOTests.dir/clean
 clean: CMakeFiles/TimerTests.dir/clean
+clean: CMakeFiles/CPUTests.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -99,7 +102,7 @@ clean: CMakeFiles/TimerTests.dir/clean
 CMakeFiles/MicroSimCore.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=7,8,9,10,11,12,13,14,15 "Built target MicroSimCore"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=9,10,11,12,13,14,15,16,17 "Built target MicroSimCore"
 .PHONY : CMakeFiles/MicroSimCore.dir/all
 
 # Build rule for subdir invocation for target.
@@ -116,7 +119,7 @@ MicroSimCore: CMakeFiles/MicroSimCore.dir/rule
 # codegen rule for target.
 CMakeFiles/MicroSimCore.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=7,8,9,10,11,12,13,14,15 "Finished codegen for target MicroSimCore"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=9,10,11,12,13,14,15,16,17 "Finished codegen for target MicroSimCore"
 .PHONY : CMakeFiles/MicroSimCore.dir/codegen
 
 # clean rule for target.
@@ -131,7 +134,7 @@ CMakeFiles/MicroSimCore.dir/clean:
 CMakeFiles/MicroSim.dir/all: CMakeFiles/MicroSimCore.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=5,6 "Built target MicroSim"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=7,8 "Built target MicroSim"
 .PHONY : CMakeFiles/MicroSim.dir/all
 
 # Build rule for subdir invocation for target.
@@ -148,7 +151,7 @@ MicroSim: CMakeFiles/MicroSim.dir/rule
 # codegen rule for target.
 CMakeFiles/MicroSim.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSim.dir\build.make CMakeFiles/MicroSim.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=5,6 "Finished codegen for target MicroSim"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=7,8 "Finished codegen for target MicroSim"
 .PHONY : CMakeFiles/MicroSim.dir/codegen
 
 # clean rule for target.
@@ -163,7 +166,7 @@ CMakeFiles/MicroSim.dir/clean:
 CMakeFiles/RAMTests.dir/all: CMakeFiles/MicroSimCore.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RAMTests.dir\build.make CMakeFiles/RAMTests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RAMTests.dir\build.make CMakeFiles/RAMTests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=16,17 "Built target RAMTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Built target RAMTests"
 .PHONY : CMakeFiles/RAMTests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -180,7 +183,7 @@ RAMTests: CMakeFiles/RAMTests.dir/rule
 # codegen rule for target.
 CMakeFiles/RAMTests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RAMTests.dir\build.make CMakeFiles/RAMTests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=16,17 "Finished codegen for target RAMTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Finished codegen for target RAMTests"
 .PHONY : CMakeFiles/RAMTests.dir/codegen
 
 # clean rule for target.
@@ -227,7 +230,7 @@ CMakeFiles/BusTests.dir/clean:
 CMakeFiles/GPIOTests.dir/all: CMakeFiles/MicroSimCore.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=3,4 "Built target GPIOTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=5,6 "Built target GPIOTests"
 .PHONY : CMakeFiles/GPIOTests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -244,7 +247,7 @@ GPIOTests: CMakeFiles/GPIOTests.dir/rule
 # codegen rule for target.
 CMakeFiles/GPIOTests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=3,4 "Finished codegen for target GPIOTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=5,6 "Finished codegen for target GPIOTests"
 .PHONY : CMakeFiles/GPIOTests.dir/codegen
 
 # clean rule for target.
@@ -259,7 +262,7 @@ CMakeFiles/GPIOTests.dir/clean:
 CMakeFiles/TimerTests.dir/all: CMakeFiles/MicroSimCore.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Built target TimerTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=20,21 "Built target TimerTests"
 .PHONY : CMakeFiles/TimerTests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -276,13 +279,45 @@ TimerTests: CMakeFiles/TimerTests.dir/rule
 # codegen rule for target.
 CMakeFiles/TimerTests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Finished codegen for target TimerTests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=20,21 "Finished codegen for target TimerTests"
 .PHONY : CMakeFiles/TimerTests.dir/codegen
 
 # clean rule for target.
 CMakeFiles/TimerTests.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/clean
 .PHONY : CMakeFiles/TimerTests.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/CPUTests.dir
+
+# All Build rule for target.
+CMakeFiles/CPUTests.dir/all: CMakeFiles/MicroSimCore.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=3,4 "Built target CPUTests"
+.PHONY : CMakeFiles/CPUTests.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/CPUTests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 11
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/CPUTests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 0
+.PHONY : CMakeFiles/CPUTests.dir/rule
+
+# Convenience name for target.
+CPUTests: CMakeFiles/CPUTests.dir/rule
+.PHONY : CPUTests
+
+# codegen rule for target.
+CMakeFiles/CPUTests.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=3,4 "Finished codegen for target CPUTests"
+.PHONY : CMakeFiles/CPUTests.dir/codegen
+
+# clean rule for target.
+CMakeFiles/CPUTests.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/clean
+.PHONY : CMakeFiles/CPUTests.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
