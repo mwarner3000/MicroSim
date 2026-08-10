@@ -10,6 +10,12 @@
 #include "Devices/Timer.h"
 #include "CPU/SimpleCPU.h"
 
+enum class RunResult
+{
+    Halted,
+    CycleLimitReached
+};
+
 class Simulator
 {
 public:
@@ -18,11 +24,14 @@ public:
     Bus& getBus();
     RAM& getRAM();
     GPIO& getGPIO();
+    Timer& getTimer();
+    SimpleCPU& getCPU();
     Clock& getClock();
-	void tick();
-	void addClockable(IClockable& device);
-	Timer& getTimer();
-	SimpleCPU& getCPU();
+
+    void tick();
+	RunResult run(std::uint64_t maxCycles);
+
+    void addClockable(IClockable& device);
 
 private:
     Bus bus;

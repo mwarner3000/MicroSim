@@ -72,3 +72,20 @@ SimpleCPU& Simulator::getCPU()
 {
     return cpu;
 }
+
+RunResult Simulator::run(std::uint64_t maxCycles)
+{
+    std::uint64_t startCycle = clock.getCycle();
+
+    while (!cpu.isHalted())
+    {
+        if (clock.getCycle() - startCycle >= maxCycles)
+        {
+            return RunResult::CycleLimitReached;
+        }
+
+        tick();
+    }
+
+    return RunResult::Halted;
+}
