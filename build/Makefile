@@ -190,6 +190,19 @@ GPIOTests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/build
 .PHONY : GPIOTests/fast
 
+#=============================================================================
+# Target rules for targets named TimerTests
+
+# Build rule for target.
+TimerTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 TimerTests
+.PHONY : TimerTests
+
+# fast build rule for target.
+TimerTests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/build
+.PHONY : TimerTests/fast
+
 src/Bus/Bus.obj: src/Bus/Bus.cpp.obj
 .PHONY : src/Bus/Bus.obj
 
@@ -478,6 +491,30 @@ tests/RAMTests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RAMTests.dir\build.make CMakeFiles/RAMTests.dir/tests/RAMTests.cpp.s
 .PHONY : tests/RAMTests.cpp.s
 
+tests/TimerTests.obj: tests/TimerTests.cpp.obj
+.PHONY : tests/TimerTests.obj
+
+# target to build an object file
+tests/TimerTests.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/tests/TimerTests.cpp.obj
+.PHONY : tests/TimerTests.cpp.obj
+
+tests/TimerTests.i: tests/TimerTests.cpp.i
+.PHONY : tests/TimerTests.i
+
+# target to preprocess a source file
+tests/TimerTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/tests/TimerTests.cpp.i
+.PHONY : tests/TimerTests.cpp.i
+
+tests/TimerTests.s: tests/TimerTests.cpp.s
+.PHONY : tests/TimerTests.s
+
+# target to generate assembly for a file
+tests/TimerTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/tests/TimerTests.cpp.s
+.PHONY : tests/TimerTests.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -492,6 +529,7 @@ help:
 	@echo ... MicroSim
 	@echo ... MicroSimCore
 	@echo ... RAMTests
+	@echo ... TimerTests
 	@echo ... src/Bus/Bus.obj
 	@echo ... src/Bus/Bus.i
 	@echo ... src/Bus/Bus.s
@@ -528,6 +566,9 @@ help:
 	@echo ... tests/RAMTests.obj
 	@echo ... tests/RAMTests.i
 	@echo ... tests/RAMTests.s
+	@echo ... tests/TimerTests.obj
+	@echo ... tests/TimerTests.i
+	@echo ... tests/TimerTests.s
 .PHONY : help
 
 

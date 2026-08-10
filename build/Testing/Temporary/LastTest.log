@@ -1,10 +1,10 @@
-Start testing: Aug 10 19:33 Eastern Daylight Time
+Start testing: Aug 10 19:36 Eastern Daylight Time
 ----------------------------------------------------------
-1/3 Testing: RAMTests
-1/3 Test: RAMTests
+1/4 Testing: RAMTests
+1/4 Test: RAMTests
 Command: "C:/Users/mwarn/Documents/MicroSim/build/RAMTests.exe"
 Directory: C:/Users/mwarn/Documents/MicroSim/build
-"RAMTests" start time: Aug 10 19:33 Eastern Daylight Time
+"RAMTests" start time: Aug 10 19:36 Eastern Daylight Time
 Output:
 ----------------------------------------------------------
 RAM tests passed.
@@ -12,15 +12,15 @@ RAM tests passed.
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"RAMTests" end time: Aug 10 19:33 Eastern Daylight Time
+"RAMTests" end time: Aug 10 19:36 Eastern Daylight Time
 "RAMTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/3 Testing: BusTests
-2/3 Test: BusTests
+2/4 Testing: BusTests
+2/4 Test: BusTests
 Command: "C:/Users/mwarn/Documents/MicroSim/build/BusTests.exe"
 Directory: C:/Users/mwarn/Documents/MicroSim/build
-"BusTests" start time: Aug 10 19:33 Eastern Daylight Time
+"BusTests" start time: Aug 10 19:36 Eastern Daylight Time
 Output:
 ----------------------------------------------------------
 Bus tests passed.
@@ -28,24 +28,40 @@ Bus tests passed.
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"BusTests" end time: Aug 10 19:33 Eastern Daylight Time
+"BusTests" end time: Aug 10 19:36 Eastern Daylight Time
 "BusTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-3/3 Testing: GPIOTests
-3/3 Test: GPIOTests
+3/4 Testing: GPIOTests
+3/4 Test: GPIOTests
 Command: "C:/Users/mwarn/Documents/MicroSim/build/GPIOTests.exe"
 Directory: C:/Users/mwarn/Documents/MicroSim/build
-"GPIOTests" start time: Aug 10 19:33 Eastern Daylight Time
+"GPIOTests" start time: Aug 10 19:36 Eastern Daylight Time
 Output:
 ----------------------------------------------------------
 GPIO tests passed.
 <end of output>
-Test time =   0.03 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"GPIOTests" end time: Aug 10 19:33 Eastern Daylight Time
+"GPIOTests" end time: Aug 10 19:36 Eastern Daylight Time
 "GPIOTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Aug 10 19:33 Eastern Daylight Time
+4/4 Testing: TimerTests
+4/4 Test: TimerTests
+Command: "C:/Users/mwarn/Documents/MicroSim/build/TimerTests.exe"
+Directory: C:/Users/mwarn/Documents/MicroSim/build
+"TimerTests" start time: Aug 10 19:36 Eastern Daylight Time
+Output:
+----------------------------------------------------------
+Timer tests passed.
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"TimerTests" end time: Aug 10 19:36 Eastern Daylight Time
+"TimerTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Aug 10 19:36 Eastern Daylight Time

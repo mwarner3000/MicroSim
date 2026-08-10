@@ -67,6 +67,7 @@ all: CMakeFiles/MicroSim.dir/all
 all: CMakeFiles/RAMTests.dir/all
 all: CMakeFiles/BusTests.dir/all
 all: CMakeFiles/GPIOTests.dir/all
+all: CMakeFiles/TimerTests.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -75,6 +76,7 @@ codegen: CMakeFiles/MicroSim.dir/codegen
 codegen: CMakeFiles/RAMTests.dir/codegen
 codegen: CMakeFiles/BusTests.dir/codegen
 codegen: CMakeFiles/GPIOTests.dir/codegen
+codegen: CMakeFiles/TimerTests.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -87,6 +89,7 @@ clean: CMakeFiles/MicroSim.dir/clean
 clean: CMakeFiles/RAMTests.dir/clean
 clean: CMakeFiles/BusTests.dir/clean
 clean: CMakeFiles/GPIOTests.dir/clean
+clean: CMakeFiles/TimerTests.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -248,6 +251,38 @@ CMakeFiles/GPIOTests.dir/codegen:
 CMakeFiles/GPIOTests.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/clean
 .PHONY : CMakeFiles/GPIOTests.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/TimerTests.dir
+
+# All Build rule for target.
+CMakeFiles/TimerTests.dir/all: CMakeFiles/MicroSimCore.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Built target TimerTests"
+.PHONY : CMakeFiles/TimerTests.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/TimerTests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 11
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/TimerTests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles 0
+.PHONY : CMakeFiles/TimerTests.dir/rule
+
+# Convenience name for target.
+TimerTests: CMakeFiles/TimerTests.dir/rule
+.PHONY : TimerTests
+
+# codegen rule for target.
+CMakeFiles/TimerTests.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=18,19 "Finished codegen for target TimerTests"
+.PHONY : CMakeFiles/TimerTests.dir/codegen
+
+# clean rule for target.
+CMakeFiles/TimerTests.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TimerTests.dir\build.make CMakeFiles/TimerTests.dir/clean
+.PHONY : CMakeFiles/TimerTests.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

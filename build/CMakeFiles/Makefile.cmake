@@ -55,4 +55,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/RAMTests.dir/DependInfo.cmake"
   "CMakeFiles/BusTests.dir/DependInfo.cmake"
   "CMakeFiles/GPIOTests.dir/DependInfo.cmake"
+  "CMakeFiles/TimerTests.dir/DependInfo.cmake"
   )
