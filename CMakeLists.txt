@@ -95,3 +95,19 @@ add_test(
     NAME GPIOTests
     COMMAND GPIOTests
 )
+
+add_executable(
+    TimerTests
+    tests/TimerTests.cpp
+)
+
+target_link_libraries(
+    TimerTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME TimerTests
+    COMMAND TimerTests
+)
