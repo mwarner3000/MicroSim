@@ -177,6 +177,19 @@ BusTests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BusTests.dir\build.make CMakeFiles/BusTests.dir/build
 .PHONY : BusTests/fast
 
+#=============================================================================
+# Target rules for targets named GPIOTests
+
+# Build rule for target.
+GPIOTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 GPIOTests
+.PHONY : GPIOTests
+
+# fast build rule for target.
+GPIOTests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/build
+.PHONY : GPIOTests/fast
+
 src/Bus/Bus.obj: src/Bus/Bus.cpp.obj
 .PHONY : src/Bus/Bus.obj
 
@@ -417,6 +430,30 @@ tests/BusTests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\BusTests.dir\build.make CMakeFiles/BusTests.dir/tests/BusTests.cpp.s
 .PHONY : tests/BusTests.cpp.s
 
+tests/GPIOTests.obj: tests/GPIOTests.cpp.obj
+.PHONY : tests/GPIOTests.obj
+
+# target to build an object file
+tests/GPIOTests.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/tests/GPIOTests.cpp.obj
+.PHONY : tests/GPIOTests.cpp.obj
+
+tests/GPIOTests.i: tests/GPIOTests.cpp.i
+.PHONY : tests/GPIOTests.i
+
+# target to preprocess a source file
+tests/GPIOTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/tests/GPIOTests.cpp.i
+.PHONY : tests/GPIOTests.cpp.i
+
+tests/GPIOTests.s: tests/GPIOTests.cpp.s
+.PHONY : tests/GPIOTests.s
+
+# target to generate assembly for a file
+tests/GPIOTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\GPIOTests.dir\build.make CMakeFiles/GPIOTests.dir/tests/GPIOTests.cpp.s
+.PHONY : tests/GPIOTests.cpp.s
+
 tests/RAMTests.obj: tests/RAMTests.cpp.obj
 .PHONY : tests/RAMTests.obj
 
@@ -451,6 +488,7 @@ help:
 	@echo ... rebuild_cache
 	@echo ... test
 	@echo ... BusTests
+	@echo ... GPIOTests
 	@echo ... MicroSim
 	@echo ... MicroSimCore
 	@echo ... RAMTests
@@ -484,6 +522,9 @@ help:
 	@echo ... tests/BusTests.obj
 	@echo ... tests/BusTests.i
 	@echo ... tests/BusTests.s
+	@echo ... tests/GPIOTests.obj
+	@echo ... tests/GPIOTests.i
+	@echo ... tests/GPIOTests.s
 	@echo ... tests/RAMTests.obj
 	@echo ... tests/RAMTests.i
 	@echo ... tests/RAMTests.s

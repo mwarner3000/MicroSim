@@ -1,35 +1,51 @@
-Start testing: Aug 10 19:28 Eastern Daylight Time
+Start testing: Aug 10 19:33 Eastern Daylight Time
 ----------------------------------------------------------
-1/2 Testing: RAMTests
-1/2 Test: RAMTests
+1/3 Testing: RAMTests
+1/3 Test: RAMTests
 Command: "C:/Users/mwarn/Documents/MicroSim/build/RAMTests.exe"
 Directory: C:/Users/mwarn/Documents/MicroSim/build
-"RAMTests" start time: Aug 10 19:28 Eastern Daylight Time
+"RAMTests" start time: Aug 10 19:33 Eastern Daylight Time
 Output:
 ----------------------------------------------------------
 RAM tests passed.
 <end of output>
-Test time =   0.04 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"RAMTests" end time: Aug 10 19:28 Eastern Daylight Time
+"RAMTests" end time: Aug 10 19:33 Eastern Daylight Time
 "RAMTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/2 Testing: BusTests
-2/2 Test: BusTests
+2/3 Testing: BusTests
+2/3 Test: BusTests
 Command: "C:/Users/mwarn/Documents/MicroSim/build/BusTests.exe"
 Directory: C:/Users/mwarn/Documents/MicroSim/build
-"BusTests" start time: Aug 10 19:28 Eastern Daylight Time
+"BusTests" start time: Aug 10 19:33 Eastern Daylight Time
 Output:
 ----------------------------------------------------------
 Bus tests passed.
 <end of output>
-Test time =   0.05 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"BusTests" end time: Aug 10 19:28 Eastern Daylight Time
+"BusTests" end time: Aug 10 19:33 Eastern Daylight Time
 "BusTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Aug 10 19:28 Eastern Daylight Time
+3/3 Testing: GPIOTests
+3/3 Test: GPIOTests
+Command: "C:/Users/mwarn/Documents/MicroSim/build/GPIOTests.exe"
+Directory: C:/Users/mwarn/Documents/MicroSim/build
+"GPIOTests" start time: Aug 10 19:33 Eastern Daylight Time
+Output:
+----------------------------------------------------------
+GPIO tests passed.
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"GPIOTests" end time: Aug 10 19:33 Eastern Daylight Time
+"GPIOTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Aug 10 19:33 Eastern Daylight Time

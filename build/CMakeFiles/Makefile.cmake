@@ -54,4 +54,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/MicroSim.dir/DependInfo.cmake"
   "CMakeFiles/RAMTests.dir/DependInfo.cmake"
   "CMakeFiles/BusTests.dir/DependInfo.cmake"
+  "CMakeFiles/GPIOTests.dir/DependInfo.cmake"
   )

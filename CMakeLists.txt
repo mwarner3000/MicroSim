@@ -79,3 +79,19 @@ add_test(
     NAME BusTests
     COMMAND BusTests
 )
+
+add_executable(
+    GPIOTests
+    tests/GPIOTests.cpp
+)
+
+target_link_libraries(
+    GPIOTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME GPIOTests
+    COMMAND GPIOTests
+)
