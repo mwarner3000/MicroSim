@@ -131,6 +131,20 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] += registers[rs];
 			break;
 			
+		case 0x15:
+			// SUB Rd, Rs
+
+			if (rd >= registers.size() ||
+				rs >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid register"
+				);
+			}
+
+			registers[rd] -= registers[rs];
+			break;
+			
 		case 0x20:
 			// CMP Rd, Rs
 
@@ -167,6 +181,21 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 				programCounter = operand;
 			}
 			break;
+			
+		case 0x24:
+			// CMPI Rd, immediate
+
+			if (rd >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid register"
+				);
+			}
+
+			zeroFlag =
+				registers[rd] == operand;
+
+			break;	
 
         case 0xFF:
             // HALT

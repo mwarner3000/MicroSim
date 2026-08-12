@@ -480,7 +480,76 @@ int main()
 
 		assert(cpu.getRegister(3) == 222);
 	}
-	
+		
+	//subtraction test
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R1, 20
+		bus.write(0, 0x10100014);
+
+		// MOV R2, 5
+		bus.write(1, 0x10200005);
+
+		// SUB R1, R2
+		bus.write(2, 0x15120000);
+
+		// HALT
+		bus.write(3, 0xFF000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(100);
+
+		assert(result == RunResult::Halted);
+		assert(cpu.getRegister(1) == 15);
+	}
+
+	//CMPI test
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R1, 10
+		bus.write(0, 0x1010000A);
+
+		// CMPI R1, 10
+		bus.write(1, 0x2410000A);
+
+		// HALT
+		bus.write(2, 0xFF000000);
+
+		cpu.reset();
+
+		simulator.run(100);
+
+		assert(cpu.getZeroFlag());
+	}
+
+	//unequal case test
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		bus.write(0, 0x1010000A); // MOV R1, 10
+		bus.write(1, 0x24100005); // CMPI R1, 5
+		bus.write(2, 0xFF000000); // HALT
+
+		cpu.reset();
+
+		simulator.run(100);
+
+		assert(!cpu.getZeroFlag());
+	}
+		
 	//loop test
 	{
 		Simulator simulator;
@@ -488,19 +557,36 @@ int main()
 		Bus& bus = simulator.getBus();
 		SimpleCPU& cpu = simulator.getCPU();
 
-		// JMP 0
-		bus.write(0, 0x21000000);
+		// 0: MOV R1, 5
+		bus.write(0, 0x10100005);
+
+		// 1: MOV R2, 1
+		bus.write(1, 0x10200001);
+
+		// 2: SUB R1, R2
+		bus.write(2, 0x15120000);
+
+		// 3: CMPI R1, 0
+		bus.write(3, 0x24100000);
+
+		// 4: JNZ 2
+		bus.write(4, 0x23000002);
+
+		// 5: HALT
+		bus.write(5, 0xFF000000);
 
 		cpu.reset();
 
 		RunResult result =
-			simulator.run(10);
+			simulator.run(100);
 
-		assert(result == RunResult::CycleLimitReached);
-		assert(cpu.getProgramCounter() == 0);
+		assert(result == RunResult::Halted);
+		assert(cpu.getRegister(1) == 0);
+		assert(cpu.getZeroFlag());
 	}
 	
     std::cout << "CPU tests passed.\n";
 
     return 0;
 }
+
