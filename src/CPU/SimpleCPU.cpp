@@ -5,7 +5,7 @@
 SimpleCPU::SimpleCPU(Bus& bus)
     : bus(bus),
       programCounter(0),
-      register0(0),
+      registers{},
       halted(false)
 {
 }
@@ -13,7 +13,9 @@ SimpleCPU::SimpleCPU(Bus& bus)
 void SimpleCPU::reset()
 {
     programCounter = 0;
-    register0 = 0;
+
+    registers.fill(0);
+
     halted = false;
 }
 
@@ -25,35 +27,109 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
     }
 
     std::uint32_t instruction = bus.read(programCounter);
+	std::uint32_t legacyOperand = instruction & 0x00FFFFFF;
 
     std::uint8_t opcode =
-        static_cast<std::uint8_t>((instruction >> 24) & 0xFF);
+		static_cast<std::uint8_t>((instruction >> 24) & 0xFF);
 
-    std::uint32_t operand =
-        instruction & 0x00FFFFFF;
+	std::uint8_t rd =
+		static_cast<std::uint8_t>((instruction >> 20) & 0x0F);
+
+	std::uint8_t rs =
+		static_cast<std::uint8_t>((instruction >> 16) & 0x0F);
+
+	std::uint16_t operand =
+		static_cast<std::uint16_t>(instruction & 0xFFFF);
 
     ++programCounter;
 
     switch (opcode)
     {
         case 0x00:
-            // NOP
-            break;
+			// NOP
+			break;
 
-        case 0x01:
-            // LOAD R0, [address]
-            register0 = bus.read(operand);
-            break;
+		case 0x01:
+			// Legacy LOAD R0, [address]
+			registers[0] = bus.read(legacyOperand);
+			break;
 
-        case 0x02:
-            // STORE R0, [address]
-            bus.write(operand, register0);
-            break;
+		case 0x02:
+			// Legacy STORE R0, [address]
+			bus.write(legacyOperand, registers[0]);
+			break;
 
-        case 0x03:
-            // ADD R0, immediate
-            register0 += operand;
-            break;
+		case 0x03:
+			// Legacy ADD R0, immediate
+			registers[0] += legacyOperand;
+			break;
+			
+		case 0x10:
+			// MOV Rd, immediate
+
+			if (rd >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid destination register"
+				);
+			}
+
+			registers[rd] = operand;
+			break;
+
+		case 0x11:
+			// LOAD Rd, [address]
+
+			if (rd >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid destination register"
+				);
+			}
+
+			registers[rd] = bus.read(operand);
+			break;
+
+		case 0x12:
+			// STORE Rd, [address]
+
+			if (rd >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid source register"
+				);
+			}
+
+			bus.write(operand, registers[rd]);
+			break;
+
+		case 0x13:
+			// MOV Rd, Rs
+
+			if (rd >= registers.size() ||
+				rs >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid register"
+				);
+			}
+
+			registers[rd] = registers[rs];
+			break;
+
+		case 0x14:
+			// ADD Rd, Rs
+
+			if (rd >= registers.size() ||
+				rs >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid register"
+				);
+			}
+
+			registers[rd] += registers[rs];
+			break;
 
         case 0xFF:
             // HALT
@@ -74,10 +150,22 @@ std::uint32_t SimpleCPU::getProgramCounter() const
 
 std::uint32_t SimpleCPU::getRegister0() const
 {
-    return register0;
+    return registers[0];
 }
 
 bool SimpleCPU::isHalted() const
 {
     return halted;
+}
+
+std::uint32_t SimpleCPU::getRegister(std::size_t index) const
+{
+    if (index >= registers.size())
+    {
+        throw std::out_of_range(
+            "Invalid CPU register index"
+        );
+    }
+
+    return registers[index];
 }

@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
+#include <cstddef>
 
 #include "CPU/SimpleCPU.h"
 #include "Bus/Bus.h"
@@ -153,6 +154,48 @@ int main()
 
         assert(exceptionThrown);
     }
+	
+	//reset test for all eight registers
+	{
+		Bus bus;
+		RAM ram(256);
+
+		bus.attach(ram, 0x0000, 0x00FF);
+
+		SimpleCPU cpu(bus);
+
+		cpu.reset();
+
+		for (std::size_t i = 0;
+			 i < SimpleCPU::RegisterCount;
+			 ++i)
+		{
+			assert(cpu.getRegister(i) == 0);
+		}
+	}
+	
+	//test for invalid registers
+	{
+		Bus bus;
+		RAM ram(256);
+
+		bus.attach(ram, 0x0000, 0x00FF);
+
+		SimpleCPU cpu(bus);
+
+		bool exceptionThrown = false;
+
+		try
+		{
+			cpu.getRegister(8);
+		}
+		catch (const std::out_of_range&)
+		{
+			exceptionThrown = true;
+		}
+
+		assert(exceptionThrown);
+	}
 
     // Full program:
     //
@@ -232,6 +275,101 @@ int main()
         assert(simulator.getClock().getCycle() == 10);
         assert(!cpu.isHalted());
     }
+	
+	//register aware program test
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R1, 10
+		bus.write(0, 0x1010000A);
+
+		// MOV R2, 20
+		bus.write(1, 0x10200014);
+
+		// ADD R1, R2
+		bus.write(2, 0x14120000);
+
+		// MOV R3, R1
+		bus.write(3, 0x13310000);
+
+		// HALT
+		bus.write(4, 0xFF000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(100);
+
+		assert(result == RunResult::Halted);
+
+		assert(cpu.getRegister(1) == 30);
+		assert(cpu.getRegister(2) == 20);
+		assert(cpu.getRegister(3) == 30);
+
+		assert(simulator.getClock().getCycle() == 5);
+	}
+	
+	//register aware memory operations
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R4, 123
+		bus.write(0, 0x1040007B);
+
+		// STORE R4, [100]
+		bus.write(1, 0x12400064);
+
+		// LOAD R5, [100]
+		bus.write(2, 0x11500064);
+
+		// HALT
+		bus.write(3, 0xFF000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(100);
+
+		assert(result == RunResult::Halted);
+
+		assert(bus.read(100) == 123);
+		assert(cpu.getRegister(4) == 123);
+		assert(cpu.getRegister(5) == 123);
+	}
+	
+	//invalid register encoding
+	{
+		Bus bus;
+		RAM ram(256);
+
+		bus.attach(ram, 0x0000, 0x00FF);
+
+		// MOV R8, 123 -- invalid
+		ram.write(0, 0x1080007B);
+
+		SimpleCPU cpu(bus);
+
+		cpu.reset();
+
+		bool exceptionThrown = false;
+
+		try
+		{
+			cpu.tick(1);
+		}
+		catch (const std::runtime_error&)
+		{
+			exceptionThrown = true;
+		}
+
+		assert(exceptionThrown);
+	}
 
     std::cout << "CPU tests passed.\n";
 
