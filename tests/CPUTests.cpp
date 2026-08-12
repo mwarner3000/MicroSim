@@ -370,7 +370,136 @@ int main()
 
 		assert(exceptionThrown);
 	}
+	
+	//CMP test
+	{
+		Simulator simulator;
 
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R1, 10
+		bus.write(0, 0x1010000A);
+
+		// MOV R2, 10
+		bus.write(1, 0x1020000A);
+
+		// CMP R1, R2
+		bus.write(2, 0x20120000);
+
+		// HALT
+		bus.write(3, 0xFF000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(100);
+
+		assert(result == RunResult::Halted);
+		assert(cpu.getZeroFlag());
+	}
+	
+	//test unequal values
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		bus.write(0, 0x1010000A); // MOV R1, 10
+		bus.write(1, 0x10200014); // MOV R2, 20
+		bus.write(2, 0x20120000); // CMP R1, R2
+		bus.write(3, 0xFF000000); // HALT
+
+		cpu.reset();
+
+		simulator.run(100);
+
+		assert(!cpu.getZeroFlag());
+	}
+	
+	//test conditional branching
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// MOV R1, 5
+		bus.write(0, 0x10100005);
+
+		// MOV R2, 5
+		bus.write(1, 0x10200005);
+
+		// CMP R1, R2
+		bus.write(2, 0x20120000);
+
+		// JZ 5
+		bus.write(3, 0x22000005);
+
+		// MOV R3, 111
+		// Should be skipped.
+		bus.write(4, 0x1030006F);
+
+		// MOV R3, 222
+		bus.write(5, 0x103000DE);
+
+		// HALT
+		bus.write(6, 0xFF000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(100);
+
+		assert(result == RunResult::Halted);
+		assert(cpu.getRegister(3) == 222);
+	}
+	
+	//test JNZ
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		bus.write(0, 0x10100005); // MOV R1, 5
+		bus.write(1, 0x10200006); // MOV R2, 6
+		bus.write(2, 0x20120000); // CMP R1, R2
+
+		bus.write(3, 0x23000005); // JNZ 5
+
+		bus.write(4, 0x1030006F); // MOV R3, 111
+		bus.write(5, 0x103000DE); // MOV R3, 222
+
+		bus.write(6, 0xFF000000);
+
+		cpu.reset();
+
+		simulator.run(100);
+
+		assert(cpu.getRegister(3) == 222);
+	}
+	
+	//loop test
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		// JMP 0
+		bus.write(0, 0x21000000);
+
+		cpu.reset();
+
+		RunResult result =
+			simulator.run(10);
+
+		assert(result == RunResult::CycleLimitReached);
+		assert(cpu.getProgramCounter() == 0);
+	}
+	
     std::cout << "CPU tests passed.\n";
 
     return 0;

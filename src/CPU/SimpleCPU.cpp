@@ -6,17 +6,17 @@ SimpleCPU::SimpleCPU(Bus& bus)
     : bus(bus),
       programCounter(0),
       registers{},
-      halted(false)
+      halted(false),
+      zeroFlag(false)
 {
 }
 
 void SimpleCPU::reset()
 {
     programCounter = 0;
-
     registers.fill(0);
-
     halted = false;
+    zeroFlag = false;
 }
 
 void SimpleCPU::tick(std::uint64_t /*cycle*/)
@@ -130,6 +130,43 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 
 			registers[rd] += registers[rs];
 			break;
+			
+		case 0x20:
+			// CMP Rd, Rs
+
+			if (rd >= registers.size() ||
+				rs >= registers.size())
+			{
+				throw std::runtime_error(
+					"Invalid register"
+				);
+			}
+
+			zeroFlag =
+				registers[rd] == registers[rs];
+
+			break;
+
+		case 0x21:
+			// JMP address
+			programCounter = operand;
+			break;
+
+		case 0x22:
+			// JZ address
+			if (zeroFlag)
+			{
+				programCounter = operand;
+			}
+			break;
+
+		case 0x23:
+			// JNZ address
+			if (!zeroFlag)
+			{
+				programCounter = operand;
+			}
+			break;
 
         case 0xFF:
             // HALT
@@ -168,4 +205,9 @@ std::uint32_t SimpleCPU::getRegister(std::size_t index) const
     }
 
     return registers[index];
+}
+
+bool SimpleCPU::getZeroFlag() const
+{
+    return zeroFlag;
 }

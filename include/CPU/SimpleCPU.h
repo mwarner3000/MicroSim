@@ -25,6 +25,7 @@ public:
     std::uint32_t getRegister0() const;
 
     bool isHalted() const;
+	bool getZeroFlag() const;
 
 private:
     Bus& bus;
@@ -34,4 +35,5 @@ private:
     std::array<std::uint32_t, RegisterCount> registers;
 
     bool halted;
+	bool zeroFlag;
 };
