@@ -8,6 +8,7 @@
 #include "Memory/RAM.h"
 #include "Devices/GPIO.h"
 #include "Simulator/Simulator.h"
+#include "CPU/SimpleCPU/SimpleISA.h"
 
 int main()
 {
@@ -463,7 +464,15 @@ int main()
 		Bus& bus = simulator.getBus();
 		SimpleCPU& cpu = simulator.getCPU();
 
-		bus.write(0, 0x10100005); // MOV R1, 5
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				1,
+				0,
+				5
+			)
+		); // MOV R1, 5
 		bus.write(1, 0x10200006); // MOV R2, 6
 		bus.write(2, 0x20120000); // CMP R1, R2
 

@@ -1,4 +1,5 @@
 #include "CPU/SimpleCPU.h"
+#include "CPU/SimpleCPU/SimpleISA.h"
 
 #include <stdexcept>
 
@@ -26,45 +27,39 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
         return;
     }
 
-    std::uint32_t instruction = bus.read(programCounter);
-	std::uint32_t legacyOperand = instruction & 0x00FFFFFF;
+    std::uint32_t rawInstruction =
+        bus.read(programCounter);
 
-    std::uint8_t opcode =
-		static_cast<std::uint8_t>((instruction >> 24) & 0xFF);
+    SimpleISA::Instruction instruction =
+        SimpleISA::decode(rawInstruction);
 
-	std::uint8_t rd =
-		static_cast<std::uint8_t>((instruction >> 20) & 0x0F);
+    std::uint32_t legacyOperand =
+        rawInstruction & 0x00FFFFFF;
 
-	std::uint8_t rs =
-		static_cast<std::uint8_t>((instruction >> 16) & 0x0F);
-
-	std::uint16_t operand =
-		static_cast<std::uint16_t>(instruction & 0xFFFF);
+    const std::uint8_t rd = instruction.rd;
+    const std::uint8_t rs = instruction.rs;
+    const std::uint16_t operand = instruction.operand;
 
     ++programCounter;
 
-    switch (opcode)
-    {
-        case 0x00:
-			// NOP
+    switch (instruction.opcode)
+	{
+        case SimpleISA::Opcode::NOP:
 			break;
 
-		case 0x01:
-			// Legacy LOAD R0, [address]
+		case SimpleISA::Opcode::LegacyLOAD:
 			registers[0] = bus.read(legacyOperand);
 			break;
 
-		case 0x02:
-			// Legacy STORE R0, [address]
+		case SimpleISA::Opcode::LegacySTORE:
 			bus.write(legacyOperand, registers[0]);
 			break;
 
-		case 0x03:
-			// Legacy ADD R0, immediate
+		case SimpleISA::Opcode::LegacyADD:
 			registers[0] += legacyOperand;
 			break;
 			
-		case 0x10:
+		case SimpleISA::Opcode::MOVI:
 			// MOV Rd, immediate
 
 			if (rd >= registers.size())
@@ -77,7 +72,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] = operand;
 			break;
 
-		case 0x11:
+		case SimpleISA::Opcode::LOAD:
 			// LOAD Rd, [address]
 
 			if (rd >= registers.size())
@@ -90,7 +85,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] = bus.read(operand);
 			break;
 
-		case 0x12:
+		case SimpleISA::Opcode::STORE:
 			// STORE Rd, [address]
 
 			if (rd >= registers.size())
@@ -103,7 +98,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			bus.write(operand, registers[rd]);
 			break;
 
-		case 0x13:
+		case SimpleISA::Opcode::MOV:	
 			// MOV Rd, Rs
 
 			if (rd >= registers.size() ||
@@ -117,7 +112,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] = registers[rs];
 			break;
 
-		case 0x14:
+		case SimpleISA::Opcode::ADD:
 			// ADD Rd, Rs
 
 			if (rd >= registers.size() ||
@@ -131,7 +126,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] += registers[rs];
 			break;
 			
-		case 0x15:
+		case SimpleISA::Opcode::SUB:
 			// SUB Rd, Rs
 
 			if (rd >= registers.size() ||
@@ -145,7 +140,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			registers[rd] -= registers[rs];
 			break;
 			
-		case 0x20:
+		case SimpleISA::Opcode::CMP:
 			// CMP Rd, Rs
 
 			if (rd >= registers.size() ||
@@ -161,12 +156,12 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 
 			break;
 
-		case 0x21:
+		case SimpleISA::Opcode::JMP:
 			// JMP address
 			programCounter = operand;
 			break;
 
-		case 0x22:
+		case SimpleISA::Opcode::JZ:
 			// JZ address
 			if (zeroFlag)
 			{
@@ -174,7 +169,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			}
 			break;
 
-		case 0x23:
+		case SimpleISA::Opcode::JNZ:
 			// JNZ address
 			if (!zeroFlag)
 			{
@@ -182,7 +177,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 			}
 			break;
 			
-		case 0x24:
+		case SimpleISA::Opcode::CMPI:
 			// CMPI Rd, immediate
 
 			if (rd >= registers.size())
@@ -197,7 +192,7 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 
 			break;	
 
-        case 0xFF:
+        case SimpleISA::Opcode::HALT:
             // HALT
             halted = true;
             break;
