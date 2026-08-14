@@ -78,6 +78,7 @@ CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.obj: \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/max_size_type.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/numbers \
  C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h \
+ C:/Users/mwarn/Documents/MicroSim/include/CPU/SimpleCPU/SimpleISA.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/stdexcept \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/exception \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/bits/exception_ptr.h \
