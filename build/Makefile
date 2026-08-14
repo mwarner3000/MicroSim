@@ -216,6 +216,19 @@ CPUTests/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\CPUTests.dir\build.make CMakeFiles/CPUTests.dir/build
 .PHONY : CPUTests/fast
 
+#=============================================================================
+# Target rules for targets named SimulationTests
+
+# Build rule for target.
+SimulationTests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 SimulationTests
+.PHONY : SimulationTests
+
+# fast build rule for target.
+SimulationTests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\SimulationTests.dir\build.make CMakeFiles/SimulationTests.dir/build
+.PHONY : SimulationTests/fast
+
 src/Bus/Bus.obj: src/Bus/Bus.cpp.obj
 .PHONY : src/Bus/Bus.obj
 
@@ -359,6 +372,30 @@ src/Memory/RAM.s: src/Memory/RAM.cpp.s
 src/Memory/RAM.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/src/Memory/RAM.cpp.s
 .PHONY : src/Memory/RAM.cpp.s
+
+src/Simulation/Simulation.obj: src/Simulation/Simulation.cpp.obj
+.PHONY : src/Simulation/Simulation.obj
+
+# target to build an object file
+src/Simulation/Simulation.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj
+.PHONY : src/Simulation/Simulation.cpp.obj
+
+src/Simulation/Simulation.i: src/Simulation/Simulation.cpp.i
+.PHONY : src/Simulation/Simulation.i
+
+# target to preprocess a source file
+src/Simulation/Simulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.i
+.PHONY : src/Simulation/Simulation.cpp.i
+
+src/Simulation/Simulation.s: src/Simulation/Simulation.cpp.s
+.PHONY : src/Simulation/Simulation.s
+
+# target to generate assembly for a file
+src/Simulation/Simulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\MicroSimCore.dir\build.make CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.s
+.PHONY : src/Simulation/Simulation.cpp.s
 
 src/Simulator/Clock.obj: src/Simulator/Clock.cpp.obj
 .PHONY : src/Simulator/Clock.obj
@@ -528,6 +565,30 @@ tests/RAMTests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RAMTests.dir\build.make CMakeFiles/RAMTests.dir/tests/RAMTests.cpp.s
 .PHONY : tests/RAMTests.cpp.s
 
+tests/SimulationTests.obj: tests/SimulationTests.cpp.obj
+.PHONY : tests/SimulationTests.obj
+
+# target to build an object file
+tests/SimulationTests.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\SimulationTests.dir\build.make CMakeFiles/SimulationTests.dir/tests/SimulationTests.cpp.obj
+.PHONY : tests/SimulationTests.cpp.obj
+
+tests/SimulationTests.i: tests/SimulationTests.cpp.i
+.PHONY : tests/SimulationTests.i
+
+# target to preprocess a source file
+tests/SimulationTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\SimulationTests.dir\build.make CMakeFiles/SimulationTests.dir/tests/SimulationTests.cpp.i
+.PHONY : tests/SimulationTests.cpp.i
+
+tests/SimulationTests.s: tests/SimulationTests.cpp.s
+.PHONY : tests/SimulationTests.s
+
+# target to generate assembly for a file
+tests/SimulationTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\SimulationTests.dir\build.make CMakeFiles/SimulationTests.dir/tests/SimulationTests.cpp.s
+.PHONY : tests/SimulationTests.cpp.s
+
 tests/TimerTests.obj: tests/TimerTests.cpp.obj
 .PHONY : tests/TimerTests.obj
 
@@ -567,6 +628,7 @@ help:
 	@echo ... MicroSim
 	@echo ... MicroSimCore
 	@echo ... RAMTests
+	@echo ... SimulationTests
 	@echo ... TimerTests
 	@echo ... src/Bus/Bus.obj
 	@echo ... src/Bus/Bus.i
@@ -586,6 +648,9 @@ help:
 	@echo ... src/Memory/RAM.obj
 	@echo ... src/Memory/RAM.i
 	@echo ... src/Memory/RAM.s
+	@echo ... src/Simulation/Simulation.obj
+	@echo ... src/Simulation/Simulation.i
+	@echo ... src/Simulation/Simulation.s
 	@echo ... src/Simulator/Clock.obj
 	@echo ... src/Simulator/Clock.i
 	@echo ... src/Simulator/Clock.s
@@ -607,6 +672,9 @@ help:
 	@echo ... tests/RAMTests.obj
 	@echo ... tests/RAMTests.i
 	@echo ... tests/RAMTests.s
+	@echo ... tests/SimulationTests.obj
+	@echo ... tests/SimulationTests.i
+	@echo ... tests/SimulationTests.s
 	@echo ... tests/TimerTests.obj
 	@echo ... tests/TimerTests.i
 	@echo ... tests/TimerTests.s

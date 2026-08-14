@@ -191,6 +191,21 @@ CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.s"
 	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\CPU\SimpleCPU.cpp -o CMakeFiles\MicroSimCore.dir\src\CPU\SimpleCPU.cpp.s
 
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj: CMakeFiles/MicroSimCore.dir/flags.make
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj: CMakeFiles/MicroSimCore.dir/includes_CXX.rsp
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj: C:/Users/mwarn/Documents/MicroSim/src/Simulation/Simulation.cpp
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj: CMakeFiles/MicroSimCore.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj -MF CMakeFiles\MicroSimCore.dir\src\Simulation\Simulation.cpp.obj.d -o CMakeFiles\MicroSimCore.dir\src\Simulation\Simulation.cpp.obj -c C:\Users\mwarn\Documents\MicroSim\src\Simulation\Simulation.cpp
+
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.i"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\mwarn\Documents\MicroSim\src\Simulation\Simulation.cpp > CMakeFiles\MicroSimCore.dir\src\Simulation\Simulation.cpp.i
+
+CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.s"
+	"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\mwarn\Documents\MicroSim\src\Simulation\Simulation.cpp -o CMakeFiles\MicroSimCore.dir\src\Simulation\Simulation.cpp.s
+
 # Object files for target MicroSimCore
 MicroSimCore_OBJECTS = \
 "CMakeFiles/MicroSimCore.dir/src/Bus/Bus.cpp.obj" \
@@ -200,7 +215,8 @@ MicroSimCore_OBJECTS = \
 "CMakeFiles/MicroSimCore.dir/src/Devices/Timer.cpp.obj" \
 "CMakeFiles/MicroSimCore.dir/src/Simulator/Simulator.cpp.obj" \
 "CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj" \
-"CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.obj"
+"CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.obj" \
+"CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj"
 
 # External object files for target MicroSimCore
 MicroSimCore_EXTERNAL_OBJECTS =
@@ -213,9 +229,10 @@ libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/src/Devices/Timer.cpp.obj
 libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/src/Simulator/Simulator.cpp.obj
 libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj
 libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/src/CPU/SimpleCPU.cpp.obj
+libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj
 libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/build.make
 libMicroSimCore.a: CMakeFiles/MicroSimCore.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library libMicroSimCore.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\mwarn\Documents\MicroSim\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library libMicroSimCore.a"
 	$(CMAKE_COMMAND) -P CMakeFiles\MicroSimCore.dir\cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\MicroSimCore.dir\link.txt --verbose=$(VERBOSE)
 

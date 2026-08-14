@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MicroSimCore.dir/src/Devices/Timer.cpp.obj.d"
   "CMakeFiles/MicroSimCore.dir/src/Memory/RAM.cpp.obj"
   "CMakeFiles/MicroSimCore.dir/src/Memory/RAM.cpp.obj.d"
+  "CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj"
+  "CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj.d"
   "CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj"
   "CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj.d"
   "CMakeFiles/MicroSimCore.dir/src/Simulator/Simulator.cpp.obj"

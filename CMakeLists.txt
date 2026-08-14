@@ -21,6 +21,7 @@ add_library(
     src/Simulator/Simulator.cpp
     src/Simulator/Clock.cpp
     src/CPU/SimpleCPU.cpp
+	src/Simulation/Simulation.cpp
 )
 
 target_include_directories(
@@ -126,4 +127,20 @@ target_link_libraries(
 add_test(
     NAME CPUTests
     COMMAND CPUTests
+)
+
+add_executable(
+    SimulationTests
+    tests/SimulationTests.cpp
+)
+
+target_link_libraries(
+    SimulationTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME SimulationTests
+    COMMAND SimulationTests
 )

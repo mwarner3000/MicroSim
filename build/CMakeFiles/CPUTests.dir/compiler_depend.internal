@@ -169,6 +169,7 @@ CMakeFiles/CPUTests.dir/tests/CPUTests.cpp.obj
  C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h
  C:/Users/mwarn/Documents/MicroSim/include/CPU/ICPU.h
  C:/Users/mwarn/Documents/MicroSim/include/CPU/SimpleCPU.h
+ C:/Users/mwarn/Documents/MicroSim/include/CPU/SimpleCPU/SimpleISA.h
  C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h
  C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h
  C:/Users/mwarn/Documents/MicroSim/include/Devices/Timer.h

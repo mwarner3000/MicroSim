@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/mwarn/Documents/MicroSim/src/Devices/Pin.cpp" "CMakeFiles/MicroSimCore.dir/src/Devices/Pin.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Devices/Pin.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/Devices/Timer.cpp" "CMakeFiles/MicroSimCore.dir/src/Devices/Timer.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Devices/Timer.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/Memory/RAM.cpp" "CMakeFiles/MicroSimCore.dir/src/Memory/RAM.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Memory/RAM.cpp.obj.d"
+  "C:/Users/mwarn/Documents/MicroSim/src/Simulation/Simulation.cpp" "CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Simulation/Simulation.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/Simulator/Clock.cpp" "CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Simulator/Clock.cpp.obj.d"
   "C:/Users/mwarn/Documents/MicroSim/src/Simulator/Simulator.cpp" "CMakeFiles/MicroSimCore.dir/src/Simulator/Simulator.cpp.obj" "gcc" "CMakeFiles/MicroSimCore.dir/src/Simulator/Simulator.cpp.obj.d"
   )
