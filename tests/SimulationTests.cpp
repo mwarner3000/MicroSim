@@ -98,8 +98,68 @@ int main()
 
         assert(exceptionThrown);
     }
+	
+	//boardconfig test
+	{
+		BoardConfig config;
 
+		config.clockHz = 32'000'000;
+		config.ramWords = 256;
+
+		Simulator simulator(config);
+
+		assert(
+			simulator.getConfig().clockHz ==
+			32'000'000
+		);
+
+		assert(
+			simulator.getConfig().ramWords ==
+			256
+		);
+	}
+	
+	//verify RAM changes
+	{
+		BoardConfig smallConfig;
+		smallConfig.ramWords = 256;
+
+		BoardConfig largeConfig;
+		largeConfig.ramWords = 2048;
+
+		Simulator smallBoard(smallConfig);
+		Simulator largeBoard(largeConfig);
+
+		// Last valid address on small board.
+		smallBoard.getBus().write(255, 123);
+
+		assert(
+			smallBoard.getBus().read(255) == 123
+		);
+
+		// Address 256 should not exist on the small board.
+		bool smallBoardRejected = false;
+
+		try
+		{
+			smallBoard.getBus().write(256, 123);
+		}
+		catch (const std::out_of_range&)
+		{
+			smallBoardRejected = true;
+		}
+
+		assert(smallBoardRejected);
+
+		// But address 256 is valid on the larger board.
+		largeBoard.getBus().write(256, 456);
+
+		assert(
+			largeBoard.getBus().read(256) == 456
+		);
+	}
     std::cout << "Simulation tests passed.\n";
 
     return 0;
 }
+

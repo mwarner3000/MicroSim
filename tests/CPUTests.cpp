@@ -256,7 +256,14 @@ int main()
 
         assert(bus.read(0x1000) == 0x80);
         assert(bus.read(0x1001) == 0x80);
-        assert(gpio.getPin(7).getOutput());
+        assert(
+    gpio.getPin(7).getDirection() ==
+    PinDirection::Output
+);
+
+assert(
+    gpio.getPin(7).getVoltage() == 5.0
+);
     }
 
     // Cycle limit should stop runaway firmware.

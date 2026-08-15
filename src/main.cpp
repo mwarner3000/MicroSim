@@ -45,10 +45,11 @@ int main()
         << bus.read(0x1001)
         << std::endl;
 
-    std::cout
-        << "Pin 7 output: "
-        << gpio.getPin(7).getOutput()
-        << std::endl;
+	std::cout
+		<< "Pin 7 voltage: "
+		<< gpio.getPin(7).getVoltage()
+		<< " V"
+		<< std::endl;
 
     std::cout
         << "Cycles: "

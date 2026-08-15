@@ -164,6 +164,7 @@ CMakeFiles/TimerTests.dir/tests/TimerTests.cpp.obj: C:/Users/mwarn/Documents/Mic
   C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/vadefs.h \
   C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wchar.h \
   C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wctype.h \
+  C:/Users/mwarn/Documents/MicroSim/include/Board/BoardConfig.h \
   C:/Users/mwarn/Documents/MicroSim/include/Bus/Bus.h \
   C:/Users/mwarn/Documents/MicroSim/include/Bus/IBusDevice.h \
   C:/Users/mwarn/Documents/MicroSim/include/CPU/ICPU.h \
@@ -504,6 +505,8 @@ C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/vadefs.h:
 C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wchar.h:
 
 C:/Program\ Files/CodeBlocks/MinGW/x86_64-w64-mingw32/include/wctype.h:
+
+C:/Users/mwarn/Documents/MicroSim/include/Board/BoardConfig.h:
 
 C:/Users/mwarn/Documents/MicroSim/include/Bus/Bus.h:
 

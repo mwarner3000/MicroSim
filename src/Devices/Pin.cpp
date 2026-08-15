@@ -1,27 +1,27 @@
 #include "Devices/Pin.h"
 
 Pin::Pin()
-    : inputState(false),
-      outputState(false)
+    : voltage(0.0),
+      direction(PinDirection::Input)
 {
 }
 
-void Pin::setInput(bool state)
+double Pin::getVoltage() const
 {
-    inputState = state;
+    return voltage;
 }
 
-bool Pin::getInput() const
+void Pin::setVoltage(double volts)
 {
-    return inputState;
+    voltage = volts;
 }
 
-void Pin::setOutput(bool state)
+PinDirection Pin::getDirection() const
 {
-    outputState = state;
+    return direction;
 }
 
-bool Pin::getOutput() const
+void Pin::setDirection(PinDirection newDirection)
 {
-    return outputState;
+    direction = newDirection;
 }

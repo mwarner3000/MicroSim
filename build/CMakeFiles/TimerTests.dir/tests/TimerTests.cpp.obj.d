@@ -166,10 +166,11 @@ CMakeFiles/TimerTests.dir/tests/TimerTests.cpp.obj: \
  C:/Users/mwarn/Documents/MicroSim/include/Devices/Timer.h \
  C:/Users/mwarn/Documents/MicroSim/include/Simulator/IClockable.h \
  C:/Users/mwarn/Documents/MicroSim/include/Simulator/Simulator.h \
- C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h \
+ C:/Users/mwarn/Documents/MicroSim/include/Board/BoardConfig.h \
+ C:/Users/mwarn/Documents/MicroSim/include/CPU/SimpleCPU.h \
  C:/Program\ Files/CodeBlocks/MinGW/include/c++/14.2.0/array \
+ C:/Users/mwarn/Documents/MicroSim/include/CPU/ICPU.h \
+ C:/Users/mwarn/Documents/MicroSim/include/Devices/GPIO.h \
  C:/Users/mwarn/Documents/MicroSim/include/Devices/Pin.h \
  C:/Users/mwarn/Documents/MicroSim/include/Memory/RAM.h \
- C:/Users/mwarn/Documents/MicroSim/include/Simulator/Clock.h \
- C:/Users/mwarn/Documents/MicroSim/include/CPU/SimpleCPU.h \
- C:/Users/mwarn/Documents/MicroSim/include/CPU/ICPU.h
+ C:/Users/mwarn/Documents/MicroSim/include/Simulator/Clock.h

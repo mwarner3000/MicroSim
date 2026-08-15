@@ -1,17 +1,23 @@
 #pragma once
 
+enum class PinDirection
+{
+    Input,
+    Output
+};
+
 class Pin
 {
 public:
     Pin();
 
-    void setInput(bool state);
-    bool getInput() const;
+    double getVoltage() const;
+    void setVoltage(double volts);
 
-    void setOutput(bool state);
-    bool getOutput() const;
+    PinDirection getDirection() const;
+    void setDirection(PinDirection direction);
 
 private:
-    bool inputState;
-    bool outputState;
+    double voltage;
+    PinDirection direction;
 };

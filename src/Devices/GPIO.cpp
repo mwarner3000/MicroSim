@@ -2,9 +2,14 @@
 
 #include <stdexcept>
 
-GPIO::GPIO()
+GPIO::GPIO(
+    double logicVoltage,
+    double digitalHighThreshold
+)
     : directionRegister(0),
-      outputRegister(0)
+      outputRegister(0),
+      logicVoltage(logicVoltage),
+      digitalHighThreshold(digitalHighThreshold)
 {
 }
 
@@ -24,7 +29,7 @@ std::uint32_t GPIO::read(std::uint32_t address)
 
             for (std::size_t i = 0; i < pins.size(); ++i)
             {
-                if (pins[i].getInput())
+                if (pins[i].getVoltage() >= digitalHighThreshold)
                 {
                     inputRegister |=
                         static_cast<std::uint8_t>(1u << i);
@@ -41,29 +46,54 @@ std::uint32_t GPIO::read(std::uint32_t address)
     }
 }
 
-void GPIO::write(std::uint32_t address,
-                 std::uint32_t value)
+void GPIO::write(
+    std::uint32_t address,
+    std::uint32_t value
+)
 {
     switch (address)
     {
         case 0:
+        {
             directionRegister =
                 static_cast<std::uint8_t>(value);
+
+            for (std::size_t i = 0; i < pins.size(); ++i)
+            {
+                bool isOutput =
+                    (directionRegister & (1u << i)) != 0;
+
+                pins[i].setDirection(
+                    isOutput
+                        ? PinDirection::Output
+                        : PinDirection::Input
+                );
+            }
+
             break;
+        }
 
         case 1:
+        {
             outputRegister =
                 static_cast<std::uint8_t>(value);
 
             for (std::size_t i = 0; i < pins.size(); ++i)
             {
-                bool state =
-                    (outputRegister & (1u << i)) != 0;
+                if (pins[i].getDirection() ==
+                    PinDirection::Output)
+                {
+                    bool high =
+                        (outputRegister & (1u << i)) != 0;
 
-                pins[i].setOutput(state);
+                    pins[i].setVoltage(
+                        high ? logicVoltage : 0.0
+                    );
+                }
             }
 
             break;
+        }
 
         case 2:
             throw std::invalid_argument(

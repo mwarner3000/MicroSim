@@ -1,15 +1,35 @@
+#include <stdexcept>
+
 #include "Simulator/Simulator.h"
 
 Simulator::Simulator()
-    : ram(1024),
-      gpio(),
+    : Simulator(BoardConfig{})
+{
+}
+
+Simulator::Simulator(const BoardConfig& config)
+    : config(config),
+      ram(config.ramWords),
+      gpio(
+			config.logicVoltage,
+			config.digitalHighThreshold
+		),
       timer(),
       cpu(bus)
 {
+	if (config.ramWords == 0)
+	{
+		throw std::invalid_argument(
+			"Board RAM size must be greater than zero"
+		);
+	}
+
     bus.attach(
         ram,
         0x00000000,
-        0x000003FF
+        static_cast<std::uint32_t>(
+            config.ramWords - 1
+        )
     );
 
     bus.attach(
@@ -24,8 +44,8 @@ Simulator::Simulator()
         0x00002003
     );
 
-	clockables.push_back(&timer);
-	clockables.push_back(&cpu);
+    clockables.push_back(&cpu);
+    clockables.push_back(&timer);
 }
 
 Bus& Simulator::getBus()
@@ -88,4 +108,9 @@ RunResult Simulator::run(std::uint64_t maxCycles)
     }
 
     return RunResult::Halted;
+}
+
+const BoardConfig& Simulator::getConfig() const
+{
+    return config;
 }

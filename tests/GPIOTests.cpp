@@ -19,22 +19,41 @@ int main()
     }
 
     // Output register should update physical pin outputs.
-    {
-        GPIO gpio;
+	{
+		GPIO gpio;
 
-        gpio.write(1, 0xA0);
+		// Pins 5, 6, and 7 are outputs.
+		gpio.write(0, 0xE0);
 
-        assert(gpio.getPin(5).getOutput());
-        assert(!gpio.getPin(6).getOutput());
-        assert(gpio.getPin(7).getOutput());
-    }
+		// Pins 5 and 7 HIGH, pin 6 LOW.
+		gpio.write(1, 0xA0);
+
+		assert(
+			gpio.getPin(5).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(
+			gpio.getPin(6).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(
+			gpio.getPin(7).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(gpio.getPin(5).getVoltage() == 5.0);
+		assert(gpio.getPin(6).getVoltage() == 0.0);
+		assert(gpio.getPin(7).getVoltage() == 5.0);
+	}
 
     // External pin input should appear in the input register.
     {
         GPIO gpio;
 
-        gpio.getPin(0).setInput(true);
-        gpio.getPin(3).setInput(true);
+        gpio.getPin(0).setVoltage(5.0);
+        gpio.getPin(3).setVoltage(5.0);
 
         std::uint32_t value = gpio.read(2);
 
@@ -128,7 +147,14 @@ int main()
 
         assert(bus.read(0x1000) == 0x80);
         assert(bus.read(0x1001) == 0x80);
-        assert(gpio.getPin(7).getOutput());
+        assert(
+    gpio.getPin(7).getDirection() ==
+    PinDirection::Output
+);
+
+assert(
+    gpio.getPin(7).getVoltage() == 5.0
+);
     }
 
     // Full path in the opposite direction:
@@ -139,7 +165,7 @@ int main()
 
         bus.attach(gpio, 0x1000, 0x1003);
 
-        gpio.getPin(2).setInput(true);
+        gpio.getPin(2).setVoltage(5.0);
 
         std::uint32_t input = bus.read(0x1002);
 
