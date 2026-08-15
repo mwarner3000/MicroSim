@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\RAMTests.dir/objects.a
-"C:\Program Files\CodeBlocks\MinGW\bin\ar.exe" qc CMakeFiles\RAMTests.dir/objects.a @CMakeFiles\RAMTests.dir\objects1.rsp
-"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" -Wl,--whole-archive CMakeFiles\RAMTests.dir/objects.a -Wl,--no-whole-archive -o RAMTests.exe -Wl,--out-implib,libRAMTests.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\RAMTests.dir\linkLibs.rsp

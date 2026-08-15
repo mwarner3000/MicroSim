@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\CPUTests.dir/objects.a
-"C:\Program Files\CodeBlocks\MinGW\bin\ar.exe" qc CMakeFiles\CPUTests.dir/objects.a @CMakeFiles\CPUTests.dir\objects1.rsp
-"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" -Wl,--whole-archive CMakeFiles\CPUTests.dir/objects.a -Wl,--no-whole-archive -o CPUTests.exe -Wl,--out-implib,libCPUTests.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\CPUTests.dir\linkLibs.rsp

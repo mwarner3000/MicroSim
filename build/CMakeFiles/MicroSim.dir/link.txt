@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\MicroSim.dir/objects.a
-"C:\Program Files\CodeBlocks\MinGW\bin\ar.exe" qc CMakeFiles\MicroSim.dir/objects.a @CMakeFiles\MicroSim.dir\objects1.rsp
-"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" -Wl,--whole-archive CMakeFiles\MicroSim.dir/objects.a -Wl,--no-whole-archive -o MicroSim.exe -Wl,--out-implib,libMicroSim.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\MicroSim.dir\linkLibs.rsp

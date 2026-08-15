@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\SimulationTests.dir/objects.a
-"C:\Program Files\CodeBlocks\MinGW\bin\ar.exe" qc CMakeFiles\SimulationTests.dir/objects.a @CMakeFiles\SimulationTests.dir\objects1.rsp
-"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" -Wl,--whole-archive CMakeFiles\SimulationTests.dir/objects.a -Wl,--no-whole-archive -o SimulationTests.exe -Wl,--out-implib,libSimulationTests.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\SimulationTests.dir\linkLibs.rsp

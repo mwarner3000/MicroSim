@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\GPIOTests.dir/objects.a
-"C:\Program Files\CodeBlocks\MinGW\bin\ar.exe" qc CMakeFiles\GPIOTests.dir/objects.a @CMakeFiles\GPIOTests.dir\objects1.rsp
-"C:\Program Files\CodeBlocks\MinGW\bin\c++.exe" -Wl,--whole-archive CMakeFiles\GPIOTests.dir/objects.a -Wl,--no-whole-archive -o GPIOTests.exe -Wl,--out-implib,libGPIOTests.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\GPIOTests.dir\linkLibs.rsp

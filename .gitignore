@@ -1,0 +1,12 @@
+# CMake build output
+/build/
+
+# Code::Blocks generated files
+*.depend
+*.layout
+
+# Compiled binaries
+*.exe
+*.o
+*.obj
+*.a
