@@ -7,16 +7,15 @@ GPIO::GPIO(
     double logicVoltage,
     double digitalHighThreshold
 )
-    : directionRegister(0),
-      outputRegister(0),
+    : selectedPin(0),
       logicVoltage(logicVoltage),
       digitalHighThreshold(digitalHighThreshold),
       pins(pinCount)
 {
-    if (pinCount == 0 || pinCount > 32)
+    if (pinCount == 0)
     {
         throw std::invalid_argument(
-            "GPIO pin count must be between 1 and 32"
+            "GPIO must contain at least one pin"
         );
     }
 }
@@ -26,25 +25,34 @@ std::uint32_t GPIO::read(std::uint32_t address)
     switch (address)
     {
         case 0:
-            return directionRegister;
+            // PIN_SELECT
+            return static_cast<std::uint32_t>(
+                selectedPin
+            );
 
         case 1:
-            return outputRegister;
+            // DIRECTION
+            return
+                pins[selectedPin].getDirection() ==
+                PinDirection::Output
+                    ? 1u
+                    : 0u;
 
         case 2:
-        {
-            std::uint8_t inputRegister = 0;
+            // OUTPUT
+            return
+                pins[selectedPin].getVoltage() >=
+                digitalHighThreshold
+                    ? 1u
+                    : 0u;
 
-            for (std::size_t i = 0; i < pins.size(); ++i)
-            {
-                if (pins[i].getVoltage() >= digitalHighThreshold)
-                {
-                    inputRegister |= 1u << i;
-                }
-            }
-
-            return inputRegister;
-        }
+        case 3:
+            // INPUT
+            return
+                pins[selectedPin].getVoltage() >=
+                digitalHighThreshold
+                    ? 1u
+                    : 0u;
 
         default:
             throw std::out_of_range(
@@ -61,57 +69,60 @@ void GPIO::write(
     switch (address)
     {
         case 0:
-		{
-			directionRegister =
-				(value);
+        {
+            // PIN_SELECT
 
-			for (std::size_t i = 0; i < pins.size(); ++i)
-			{
-				bool isOutput =
-					(directionRegister & (1u << i)) != 0;
+            if (value >= pins.size())
+            {
+                throw std::out_of_range(
+                    "GPIO selected pin is out of range"
+                );
+            }
 
-				pins[i].setDirection(
-					isOutput
-						? PinDirection::Output
-						: PinDirection::Input
-				);
+            selectedPin =
+                static_cast<std::size_t>(value);
 
-				if (isOutput)
-				{
-					bool high =
-						(outputRegister & (1u << i)) != 0;
-
-					pins[i].setVoltage(
-						high ? logicVoltage : 0.0
-					);
-				}
-			}
-
-			break;
-		}
+            break;
+        }
 
         case 1:
         {
-            outputRegister = value;
+            // DIRECTION
 
-            for (std::size_t i = 0; i < pins.size(); ++i)
-            {
-                if (pins[i].getDirection() ==
-                    PinDirection::Output)
-                {
-                    bool high =
-                        (outputRegister & (1u << i)) != 0;
+            PinDirection direction =
+                (value & 1u)
+                    ? PinDirection::Output
+                    : PinDirection::Input;
 
-                    pins[i].setVoltage(
-                        high ? logicVoltage : 0.0
-                    );
-                }
-            }
+            pins[selectedPin].setDirection(direction);
 
             break;
         }
 
         case 2:
+        {
+            // OUTPUT
+
+            if (
+                pins[selectedPin].getDirection() !=
+                PinDirection::Output
+            )
+            {
+                throw std::invalid_argument(
+                    "Cannot drive an input pin"
+                );
+            }
+
+            pins[selectedPin].setVoltage(
+                (value & 1u)
+                    ? logicVoltage
+                    : 0.0
+            );
+
+            break;
+        }
+
+        case 3:
             throw std::invalid_argument(
                 "GPIO input register is read-only"
             );

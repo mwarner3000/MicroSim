@@ -29,8 +29,7 @@ public:
     std::size_t getPinCount() const;
 
 private:
-    std::uint32_t directionRegister;
-    std::uint32_t outputRegister;
+    std::size_t selectedPin;
 
     double logicVoltage;
     double digitalHighThreshold;

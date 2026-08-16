@@ -2,69 +2,102 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Board/BoardConfig.h"
 #include "Bus/Bus.h"
 #include "Devices/GPIO.h"
-#include "Board/BoardConfig.h"
 #include "Simulator/Simulator.h"
 
 int main()
 {
-    // Basic register access.
+    // Basic pin selection.
     {
         GPIO gpio;
 
-        gpio.write(0, 0xF0);
-        gpio.write(1, 0xA0);
+        gpio.write(0, 3);
 
-        assert(gpio.read(0) == 0xF0);
-        assert(gpio.read(1) == 0xA0);
+        assert(gpio.read(0) == 3);
     }
 
-    // Output register should update physical pin outputs.
-	{
-		GPIO gpio;
-
-		// Pins 5, 6, and 7 are outputs.
-		gpio.write(0, 0xE0);
-
-		// Pins 5 and 7 HIGH, pin 6 LOW.
-		gpio.write(1, 0xA0);
-
-		assert(
-			gpio.getPin(5).getDirection() ==
-			PinDirection::Output
-		);
-
-		assert(
-			gpio.getPin(6).getDirection() ==
-			PinDirection::Output
-		);
-
-		assert(
-			gpio.getPin(7).getDirection() ==
-			PinDirection::Output
-		);
-
-		assert(gpio.getPin(5).getVoltage() == 5.0);
-		assert(gpio.getPin(6).getVoltage() == 0.0);
-		assert(gpio.getPin(7).getVoltage() == 5.0);
-	}
-
-    // External pin input should appear in the input register.
+    // Configure an output pin and drive it HIGH.
     {
         GPIO gpio;
 
-        gpio.getPin(0).setVoltage(5.0);
+        gpio.write(0, 5); // select pin 5
+        gpio.write(1, 1); // output
+        gpio.write(2, 1); // HIGH
+
+        assert(
+            gpio.getPin(5).getDirection() ==
+            PinDirection::Output
+        );
+
+        assert(
+            gpio.getPin(5).getVoltage() == 5.0
+        );
+
+        assert(gpio.read(1) == 1);
+        assert(gpio.read(2) == 1);
+    }
+
+    // Configure an output pin and drive it LOW.
+    {
+        GPIO gpio;
+
+        gpio.write(0, 6);
+        gpio.write(1, 1);
+        gpio.write(2, 0);
+
+        assert(
+            gpio.getPin(6).getDirection() ==
+            PinDirection::Output
+        );
+
+        assert(
+            gpio.getPin(6).getVoltage() == 0.0
+        );
+
+        assert(gpio.read(2) == 0);
+    }
+
+    // External voltage on an input pin should be readable.
+    {
+        GPIO gpio;
+
         gpio.getPin(3).setVoltage(5.0);
 
-        std::uint32_t value = gpio.read(2);
+        gpio.write(0, 3);
 
-        assert((value & 0x01) != 0);
-        assert((value & 0x08) != 0);
-        assert((value & 0x02) == 0);
+        assert(
+            gpio.getPin(3).getDirection() ==
+            PinDirection::Input
+        );
+
+        assert(gpio.read(3) == 1);
     }
 
-    // Input register should be read-only from the CPU side.
+    // Input below threshold should read LOW.
+    {
+        GPIO gpio;
+
+        gpio.getPin(3).setVoltage(2.0);
+
+        gpio.write(0, 3);
+
+        assert(gpio.read(3) == 0);
+    }
+
+    // Input above threshold should read HIGH.
+    {
+        GPIO gpio;
+
+        gpio.getPin(3).setVoltage(3.0);
+
+        gpio.write(0, 3);
+
+        assert(gpio.read(3) == 1);
+    }
+
+    // INPUT register is read-only.
     {
         GPIO gpio;
 
@@ -72,7 +105,27 @@ int main()
 
         try
         {
-            gpio.write(2, 0xFF);
+            gpio.write(3, 1);
+        }
+        catch (const std::invalid_argument&)
+        {
+            exceptionThrown = true;
+        }
+
+        assert(exceptionThrown);
+    }
+
+    // Cannot drive a pin configured as input.
+    {
+        GPIO gpio;
+
+        gpio.write(0, 2);
+
+        bool exceptionThrown = false;
+
+        try
+        {
+            gpio.write(2, 1);
         }
         catch (const std::invalid_argument&)
         {
@@ -118,7 +171,25 @@ int main()
         assert(exceptionThrown);
     }
 
-    // Invalid pin indexes should fail.
+    // Invalid pin selection should fail.
+    {
+        GPIO gpio;
+
+        bool exceptionThrown = false;
+
+        try
+        {
+            gpio.write(0, 8);
+        }
+        catch (const std::out_of_range&)
+        {
+            exceptionThrown = true;
+        }
+
+        assert(exceptionThrown);
+    }
+
+    // Invalid direct pin access should fail.
     {
         GPIO gpio;
 
@@ -136,7 +207,6 @@ int main()
         assert(exceptionThrown);
     }
 
-    // Full path through the bus:
     // CPU side -> Bus -> GPIO -> Pin.
     {
         Bus bus;
@@ -144,22 +214,20 @@ int main()
 
         bus.attach(gpio, 0x1000, 0x1003);
 
-        bus.write(0x1000, 0x80);
-        bus.write(0x1001, 0x80);
+        bus.write(0x1000, 7); // select pin 7
+        bus.write(0x1001, 1); // output
+        bus.write(0x1002, 1); // HIGH
 
-        assert(bus.read(0x1000) == 0x80);
-        assert(bus.read(0x1001) == 0x80);
         assert(
-			gpio.getPin(7).getDirection() ==
-			PinDirection::Output
-		);
+            gpio.getPin(7).getDirection() ==
+            PinDirection::Output
+        );
 
-		assert(
-			gpio.getPin(7).getVoltage() == 5.0
-		);
+        assert(
+            gpio.getPin(7).getVoltage() == 5.0
+        );
     }
 
-    // Full path in the opposite direction:
     // World -> Pin -> GPIO -> Bus -> CPU side.
     {
         Bus bus;
@@ -169,96 +237,81 @@ int main()
 
         gpio.getPin(2).setVoltage(5.0);
 
-        std::uint32_t input = bus.read(0x1002);
+        bus.write(0x1000, 2); // select pin 2
 
-        assert((input & 0x04) != 0);
+        assert(
+            bus.read(0x1003) == 1
+        );
     }
-	
-	// Output latch should take effect when a pin becomes an output.
-	{
-		GPIO gpio;
 
-		// Store HIGH in pin 7's output latch while it is still an input.
-		gpio.write(1, 0x80);
+    // GPIO pin count should be configurable beyond 32.
+    {
+        GPIO gpio(100);
 
-		assert(
-			gpio.getPin(7).getDirection() ==
-			PinDirection::Input
-		);
+        assert(gpio.getPinCount() == 100);
 
-		// Now configure pin 7 as an output.
-		gpio.write(0, 0x80);
+        gpio.write(0, 73);
+        gpio.write(1, 1);
+        gpio.write(2, 1);
 
-		assert(
-			gpio.getPin(7).getDirection() ==
-			PinDirection::Output
-		);
+        assert(
+            gpio.getPin(73).getDirection() ==
+            PinDirection::Output
+        );
 
-		assert(
-			gpio.getPin(7).getVoltage() == 5.0
-		);
-	}
-	
-	// GPIO pin count should be configurable.
-	{
-		GPIO gpio(16);
+        assert(
+            gpio.getPin(73).getVoltage() == 5.0
+        );
+    }
 
-		assert(gpio.getPinCount() == 16);
+    // Zero pins should be rejected.
+    {
+        bool exceptionThrown = false;
 
-		gpio.write(0, 0x8000);
-		gpio.write(1, 0x8000);
+        try
+        {
+            GPIO gpio(0);
+        }
+        catch (const std::invalid_argument&)
+        {
+            exceptionThrown = true;
+        }
 
-		assert(
-			gpio.getPin(15).getDirection() ==
-			PinDirection::Output
-		);
+        assert(exceptionThrown);
+    }
 
-		assert(
-			gpio.getPin(15).getVoltage() == 5.0
-		);
-	}
+    // BoardConfig should determine GPIO pin count.
+    {
+        BoardConfig config;
+        config.gpioPins = 100;
 
-	// Invalid GPIO pin counts should fail.
-	{
-		bool zeroFailed = false;
-		bool tooManyFailed = false;
+        Simulator simulator(config);
 
-		try
-		{
-			GPIO gpio(0);
-		}
-		catch (const std::invalid_argument&)
-		{
-			zeroFailed = true;
-		}
+        assert(
+            simulator.getGPIO().getPinCount() == 100
+        );
+    }
 
-		try
-		{
-			GPIO gpio(33);
-		}
-		catch (const std::invalid_argument&)
-		{
-			tooManyFailed = true;
-		}
+    // Custom electrical configuration.
+    {
+        GPIO gpio(8, 3.3, 1.65);
 
-		assert(zeroFailed);
-		assert(tooManyFailed);
-	}
+        gpio.write(0, 0);
+        gpio.write(1, 1);
+        gpio.write(2, 1);
 
-	//test user created board
-	{
-		BoardConfig config;
-		config.gpioPins = 16;
+        assert(
+            gpio.getPin(0).getVoltage() == 3.3
+        );
 
-		Simulator simulator(config);
+        gpio.getPin(1).setVoltage(2.0);
 
-		assert(
-			simulator.getGPIO().getPinCount() == 16
-		);
-	}
+        gpio.write(0, 1);
+
+        assert(gpio.read(3) == 1);
+    }
 
     std::cout << "GPIO tests passed.\n";
 
     return 0;
 }
-

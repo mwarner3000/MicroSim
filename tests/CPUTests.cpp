@@ -230,41 +230,95 @@ int main()
 
     // Firmware-driven GPIO.
     {
-        Simulator simulator;
+		Simulator simulator;
 
-        Bus& bus = simulator.getBus();
-        SimpleCPU& cpu = simulator.getCPU();
-        GPIO& gpio = simulator.getGPIO();
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+		GPIO& gpio = simulator.getGPIO();
 
-        // ADD R0, 0x80
-        bus.write(0, 0x03000080);
+		// R0 = 7
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				7
+			)
+		);
 
-        // STORE direction register.
-        bus.write(1, 0x02001000);
+		// GPIO PIN_SELECT = 7
+		bus.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				0x1000
+			)
+		);
 
-        // STORE output register.
-        bus.write(2, 0x02001001);
+		// R0 = 1
+		bus.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
 
-        // HALT
-        bus.write(3, 0xFF000000);
+		// GPIO DIRECTION = Output
+		bus.write(
+			3,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				0x1001
+			)
+		);
 
-        cpu.reset();
+		// GPIO OUTPUT = HIGH
+		bus.write(
+			4,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				0x1002
+			)
+		);
 
-        RunResult result = simulator.run(100);
+		// HALT
+		bus.write(
+			5,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
 
-        assert(result == RunResult::Halted);
+		cpu.reset();
 
-        assert(bus.read(0x1000) == 0x80);
-        assert(bus.read(0x1001) == 0x80);
-        assert(
-    gpio.getPin(7).getDirection() ==
-    PinDirection::Output
-);
+		RunResult result =
+			simulator.run(100);
 
-assert(
-    gpio.getPin(7).getVoltage() == 5.0
-);
-    }
+		assert(result == RunResult::Halted);
+
+		assert(bus.read(0x1000) == 7);
+		assert(bus.read(0x1001) == 1);
+		assert(bus.read(0x1002) == 1);
+
+		assert(
+			gpio.getPin(7).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(
+			gpio.getPin(7).getVoltage() == 5.0
+		);
+	}
 
     // Cycle limit should stop runaway firmware.
     {
