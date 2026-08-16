@@ -1,82 +1,53 @@
-
-And I'd replace the existing architecture file with this.
-
-### `docs/Architecture.md`
-
 # MicroSim Architecture
 
 ## 1. Purpose
 
-MicroSim is a modular embedded-controller simulation framework.
+MicroSim is a modular embedded-controller simulation framework. Its primary responsibility is to simulate the internal behavior and external hardware interface of configurable microcontrollers.
 
-Its primary responsibility is to simulate the internal behavior and external
-hardware interface of configurable microcontrollers.
+A MicroSim controller should behave as though the environment connected to it is the real world. The controller itself should not require knowledge of the simulation environment that provides its inputs, consumes its outputs, or determines how quickly simulated world time runs.
 
-A MicroSim controller should behave as though the environment connected to it is
-the real world. The controller itself should not require knowledge of the
-simulation environment that provides its inputs or consumes its outputs.
-
-This allows the same simulated controller and firmware to potentially operate in
-many different host environments.
-
----
+This allows the same simulated controller and firmware to operate in different host environments.
 
 ## 2. Design Principles
 
-MicroSim follows several architectural principles.
-
 ### Hardware and software separation
 
-The simulated CPU executes machine instructions.
-
-Assembly-language syntax, parsers, assemblers, compilers, and other software
-toolchain components should remain separate from the simulated hardware.
+The simulated CPU executes machine code. Assembly syntax, parsers, assemblers, compilers, and other toolchain components remain separate from simulated hardware.
 
 ### Environment independence
 
-The simulated controller does not contain application-specific world state.
+The controller contains no application-specific world state. It does not know whether a voltage represents vehicle speed, temperature, pressure, position, or another external quantity.
 
-It should not know whether an input represents vehicle speed, temperature,
-position, pressure, or another external quantity.
+### Simulated time is not wall-clock time
 
-The host environment is responsible for translating its world state into signals
-that the controller can receive.
+MCU timing is determined by simulated hardware cycles and board clock frequency. Host execution speed must not alter simulated MCU behavior.
 
 ### Modular peripherals
 
-Peripherals communicate through defined interfaces and should not depend directly
-on CPU implementation details.
+Peripherals communicate through defined interfaces and should not depend directly on CPU implementation details.
 
-### Bus-based communication
+### Bus-based CPU/device communication
 
-The CPU communicates with RAM and memory-mapped peripherals through the system
-bus rather than directly accessing individual device implementations.
+The CPU communicates with RAM and memory-mapped peripherals through the system bus rather than directly accessing device implementations.
 
 ### Configurable hardware
 
-Board configuration should determine characteristics such as memory capacity,
-clock frequency, available peripherals, pin count, and electrical parameters.
+Board configuration describes hardware characteristics such as memory capacity, clock frequency, pin count, electrical parameters, and memory-map locations.
 
 ### Deterministic execution
 
-Given the same initial state and external inputs, simulation behavior should be
-repeatable.
+Given the same initial state and sequence of external inputs, simulation behavior should be repeatable regardless of how quickly the host computer performs the calculation.
 
 ### Testable subsystems
 
-Major components should be testable independently before being integrated into a
-complete simulated controller.
-
----
+Major components should be independently testable before integration into a complete controller.
 
 ## 3. High-Level Architecture
-
-Conceptually, a simulated controller is organized as:
 
 ```text
                     External Environment
                            │
-                    input/output signals
+                 voltages / simulated time
                            │
                            ▼
                     ┌──────────────┐
@@ -98,57 +69,33 @@ Conceptually, a simulated controller is organized as:
                   └───────┘  └────────┘
 ```
 
-The Simulator class currently assembles these components into a functioning
-controller.
+`Simulator` currently assembles these components into a functioning controller.
 
-##4. Board Configuration
+## 4. Board Configuration
 
-BoardConfig describes characteristics of a simulated board.
+`BoardConfig` currently contains:
 
-Configuration currently contains values for:
+- `clockHz`
+- `ramWords`
+- `gpioPins`
+- `timerCount`
+- `logicVoltage`
+- `digitalHighThreshold`
+- `ramBase`
+- `gpioBase`
+- `timerBase`
 
-clock frequency
-RAM size
-GPIO pin count
-timer count
-logic voltage
-digital HIGH threshold
+Configuration describes hardware being constructed rather than requiring source changes for each board.
 
-Not every configuration field is fully implemented yet.
+For example, two generic boards may differ in clock rate, RAM, GPIO count, voltage, and address layout without representing exact commercial MCU part numbers.
 
-The architectural intention is that configuration describes the hardware being
-created rather than requiring changes to the simulator source code for each board.
+Not every configuration field is necessarily fully generalized throughout the simulator yet. In particular, `timerCount` does not currently construct an arbitrary number of timer instances.
 
-For example, future board configurations might represent:
+## 5. CPU and Instruction Set
 
-Board A
-    Clock:      16 MHz
-    RAM:        1K words
-    GPIO:       8 pins
-    Logic:      5 V
+The CPU executes machine instructions and interacts with the system bus. Assembly-language text is not interpreted by the CPU.
 
-
-Board B
-    Clock:      32 MHz
-    RAM:        4K words
-    GPIO:       20 pins
-    Logic:      3.3 V
-
-These are generic simulated controllers and are not required to reproduce a
-specific commercial MCU exactly.
-
-##5. CPU and Instruction Set
-
-The CPU is responsible for executing machine instructions and interacting with the
-system bus.
-
-Instruction encoding and decoding are defined separately from the CPU execution
-logic.
-
-The current development CPU uses SimpleISA.
-
-Conceptually:
-
+```text
 Assembler / Compiler
         │
         ▼
@@ -159,24 +106,17 @@ Assembler / Compiler
         │
         ▼
        Bus
+```
 
-The CPU does not need to understand assembly-language text.
+The current development CPU uses SimpleISA. SimpleISA is a development ISA and does not define the only language or CPU architecture MicroSim may support.
 
-This separation is intentional. A future assembler may define its own syntax while
-still producing machine instructions compatible with a particular CPU/ISA.
+A future assembler may use different syntax while producing compatible machine code. Future CPUs may use different instruction sets without requiring unrelated peripherals to be rewritten.
 
-Likewise, future CPU architectures may introduce different instruction sets
-without requiring unrelated peripherals to be rewritten.
+## 6. Bus and Memory Map
 
-##6. Bus
+The system bus routes memory-mapped reads and writes to attached devices implementing the common bus-device interface.
 
-The system bus provides memory-mapped communication between the CPU and devices.
-
-Devices implement a common bus-device interface and are attached to address
-ranges.
-
-Conceptually:
-
+```text
 CPU
  │
  ▼
@@ -185,276 +125,282 @@ Bus
  ├── GPIO
  ├── Timer
  └── future peripherals
+```
 
-The bus is responsible for routing reads and writes to the device mapped to the
-requested address.
+`BoardConfig` currently supplies base addresses for RAM, GPIO, and Timer. The simulator uses these configured locations when attaching the devices.
 
 Devices should not require direct references to the CPU.
 
-The current memory map contains fixed peripheral locations. Making the memory map
-configurable is a future architectural improvement.
+## 7. Memory
 
-##7. Memory
+RAM is a bus device. Its size is determined by board configuration when the simulator is constructed, and the CPU accesses it through the system bus.
 
-RAM is implemented as a bus device.
+The current RAM model stores 32-bit values indexed by bus address.
 
-Its size is determined by board configuration when the simulator is constructed.
+## 8. GPIO and Pins
 
-RAM is accessed through the system bus rather than directly by the CPU.
+### Physical pin model
 
-The current implementation stores 32-bit values indexed by bus address.
+`GPIO` owns a runtime-sized `std::vector<Pin>`. `BoardConfig::gpioPins` determines the number of pins created.
 
-##8. GPIO and Pins
+The physical/logical pin count is therefore not limited by the width of a CPU register. A generic GPIO device may contain 8, 100, or more pins without requiring the user to divide those pins into artificial 32-pin banks.
 
-GPIO provides the translation between CPU-visible digital registers and simulated
-pin state.
+Each `Pin` currently stores simulated voltage and runtime direction. Pins default to input.
 
-A pin currently contains:
+### Generic CPU-facing GPIO interface
 
-a voltage
-a runtime direction
+The current generic GPIO peripheral uses four memory-mapped offsets:
 
-Pin direction may be:
+| Offset | Register | Description |
+| --- | --- | --- |
+| 0 | `PIN_SELECT` | Select the pin used by subsequent GPIO operations |
+| 1 | `DIRECTION` | Read/set selected pin direction (`0` input, `1` output) |
+| 2 | `OUTPUT` | Read/drive selected output pin (`0` LOW, `1` HIGH) |
+| 3 | `INPUT` | Read selected pin (`0` LOW, `1` HIGH); CPU read-only |
 
-Input
-Output
+For example, to drive pin 73 HIGH, firmware conceptually performs:
 
-Pins default to input.
+```text
+PIN_SELECT = 73
+DIRECTION  = 1
+OUTPUT     = 1
+```
 
-Firmware changes pin direction through GPIO register operations.
+Internally this operates on `pins[73]`. There is no requirement for firmware to address a synthetic 32-pin bank merely because the CPU uses 32-bit values.
 
-Input
+This pin-selected interface is the current generic MicroSim GPIO design. A future CPU or board model may expose a different GPIO register layout when that is useful for approximating another hardware architecture, while retaining the same underlying pin concept.
 
-An external environment may provide a voltage to an input pin.
+### Input behavior
 
-GPIO compares that voltage against the board's configured digital HIGH threshold
-when producing the CPU-visible digital input register.
+The external environment may provide a voltage to an input pin. GPIO compares the selected pin voltage against `digitalHighThreshold` when producing a digital input value.
 
-Conceptually:
-
+```text
 External environment
-        │
         │ voltage
         ▼
        Pin
         │
         ▼
       GPIO
-        │ threshold comparison
+        │ threshold
         ▼
-     0 or 1
+       0/1
         │
         ▼
        CPU
-Output
+```
 
-Firmware writes the GPIO output register.
+### Output behavior
 
-For an output pin:
+For a configured output pin, the current generic GPIO maps:
 
+```text
 Digital LOW  -> 0 V
 Digital HIGH -> configured logic voltage
+```
 
-The external environment can then observe that voltage.
+The external environment may observe that voltage and determine what it means in the simulated world.
 
-Scope of pin modeling
+### Electrical scope
 
-A pin voltage represents voltage relative to the simulated board's reference.
+Pin voltage is modeled relative to the simulated board reference. MicroSim does not determine whether a voltage represents an open circuit, sensor value, relay command, motor command, or other world behavior. Detailed circuit simulation is outside the current core scope.
 
-MicroSim does not attempt to determine what that voltage means to the outside
-world.
+## 9. Timer
 
-Detailed electrical circuit simulation is outside the current scope of the core
-project.
+The timer is memory mapped and clock driven. It maintains internal state including a counter, period, enabled state, and expiration state.
 
-##9. Timer
+The timer continues to participate in MCU clock advancement independently of whether the CPU is executing useful instructions. Additional timer instances and more advanced timer behavior may be added later.
 
-The timer is a memory-mapped peripheral and also participates in clock-driven
-simulation.
+## 10. Clock and Simulated Time
 
-It maintains internal state including:
+### Fundamental cycle definition
 
-counter
-period
-enabled state
-expiration state
+One MicroSim cycle represents one hardware clock cycle of the configured MCU.
 
-The timer advances as the simulator clock advances.
+`BoardConfig::clockHz` determines the relationship between simulated elapsed time and hardware cycles:
 
-Additional timers and more advanced timer behavior may be added later.
-
-##10. Clock and Time
-
-Simulated hardware should receive time from the MicroSim execution model rather
-than from wall-clock time.
-
-This preserves deterministic execution and prevents the controller from depending
-on the speed of the host computer.
-
-Clock-driven devices implement the clockable interface and receive simulation
-ticks.
-
-A future external simulation environment should advance MicroSim according to the
-integration model rather than MicroSim reading world time directly from that
-environment.
-
-##11. Simulator
-
-Simulator represents a complete simulated controller instance.
-
-It owns and connects the controller's major hardware components, including the:
-
-bus
-RAM
-GPIO
-timer
-CPU
-simulation clock
-
-The simulator is responsible for constructing the board according to its
-configuration and coordinating execution.
-
-It should not contain environment-specific application logic.
-
-##12. Multiple Controllers
-
-A future embedded system may contain multiple independent MicroSim controller
-instances.
+```text
+cycles = simulated seconds × clockHz
+```
 
 For example:
 
-               ┌───────────┐
-               │   Bot A   │
-               │ MicroSim  │
-               └─────┬─────┘
-                     │
-                     │ CAN
-                     │
-               ┌─────┴─────┐
-               │           │
-        ┌──────▼─────┐ ┌───▼────────┐
-        │   Bot B    │ │   Bot C    │
-        │  MicroSim  │ │  MicroSim  │
-        └────────────┘ └────────────┘
+```text
+16 MHz controller + 1 ms = 16,000 cycles
+32 MHz controller + 1 ms = 32,000 cycles
+```
 
-Each controller should remain an independent embedded system with its own CPU,
-memory, peripherals, firmware, and clock state.
+### Advancing cycles
 
-Communication mechanisms such as CAN should be modeled separately from the
-external physical world.
+`Simulator::advanceCycles(N)` executes `N` simulated hardware cycles. It is not a time skip. Clock-driven hardware receives those cycles and may change state during them.
 
-This is similar to real systems in which multiple electronic control units manage
-different subsystems and communicate over a shared network.
+### Advancing time
 
-The existing multi-node Simulation infrastructure is an early step toward
-supporting multiple controller instances. Its final role and API are not yet
-settled.
+`Simulator::advanceTime(std::chrono::nanoseconds)` converts requested simulated elapsed time into hardware cycles using the configured clock frequency and then executes those cycles.
 
-##13. External Environment Boundary
+Fractional-cycle timing is accumulated between calls so repeated small time advances do not continually discard sub-cycle time.
 
-MicroSim deliberately stops at the controller boundary.
+### Wall-clock independence
 
-Consider a simulated vehicle.
+MicroSim hardware does not decide whether the host simulation runs in real time, slow motion, accelerated time, or as fast as computationally possible.
 
-The vehicle simulator might determine:
+For example, ten years of simulated world time may be calculated in far less than ten years of real wall-clock time if the host has sufficient computational performance. The simulated MCU still experiences its configured number of cycles per simulated second.
 
-Wheel speed = 40 mph
+The simulation-speed multiplier therefore belongs to the host environment, not the MCU.
 
-A sensor model outside MicroSim could translate that into:
+### Halted CPU versus MCU clock
 
-Sensor output = 2.5 V
+A halted CPU does not imply that the MCU clock ceases to exist. Clock-driven peripherals may continue advancing while the CPU performs no further instruction fetches. Future sleep or power-management features may introduce explicit clock-gating behavior separately.
 
-MicroSim receives only:
+## 11. Simulator
 
+`Simulator` represents one complete simulated controller instance. It owns and connects the board's current major components:
+
+- Bus
+- RAM
+- GPIO
+- Timer
+- SimpleCPU
+- Clock
+
+It constructs these components according to `BoardConfig`, coordinates clock-driven execution, and exposes cycle/time advancement APIs.
+
+`Simulator` should not contain environment-specific application logic.
+
+## 12. External Environment Boundary
+
+MicroSim stops at the controller boundary.
+
+Consider a simulated vehicle. A vehicle/sensor model outside MicroSim might determine:
+
+```text
+Wheel speed -> sensor model -> 2.5 V
+```
+
+MicroSim receives only the electrical input:
+
+```text
 Input pin = 2.5 V
+```
 
-Firmware then interprets that input according to the program running on the
-controller.
+Firmware interprets that signal according to the program running on the controller.
 
-The reverse applies to outputs.
+The reverse applies to outputs. If MicroSim produces an output pin voltage, the external environment decides whether it activates a relay, changes motor behavior, illuminates a lamp, or causes another world effect.
 
-MicroSim might produce:
+The external environment also controls simulated world time. It tells a MicroSim instance how much simulated time to advance; the MCU does not directly query a world clock.
 
-Output pin = 5 V
+A host integration may conceptually operate as:
 
-The external environment determines whether that voltage activates a relay,
-changes motor behavior, turns on a lamp, or performs some other action.
+```text
+set controller inputs
+        │
+        ▼
+advance MicroSim by simulated dt
+        │
+        ▼
+observe controller outputs
+        │
+        ▼
+advance external world model
+```
 
-This boundary is important because it allows MicroSim to be embedded in unrelated
-simulation environments without embedding those environments into MicroSim.
+The exact external integration API is not yet finalized.
 
-##14. Testing
+## 13. Multiple Controllers
 
-MicroSim uses subsystem tests to verify components independently.
+A future system may contain multiple independent MicroSim instances:
+
+```text
+        ┌───────────┐
+        │   Bot A   │
+        │ MicroSim  │
+        └─────┬─────┘
+              │
+              │ shared CAN
+              │
+        ┌─────┴───────────┐
+        │                 │
+ ┌──────▼─────┐    ┌──────▼─────┐
+ │   Bot B    │    │   Bot C    │
+ │ MicroSim   │    │ MicroSim   │
+ └────────────┘    └────────────┘
+```
+
+Each controller remains an independent embedded system with its own CPU, memory, peripherals, firmware, configuration, and clock state.
+
+CAN or similar controller-to-controller communication belongs to the simulated embedded system and is distinct from the external world/environment interface.
+
+The existing multi-node `Simulation` infrastructure is an early step toward this capability; its final role and API are not yet settled.
+
+## 14. Testing
 
 Current test targets include:
 
-RAMTests
-BusTests
-GPIOTests
-TimerTests
-CPUTests
-SimulationTests
+- `RAMTests`
+- `BusTests`
+- `GPIOTests`
+- `TimerTests`
+- `CPUTests`
+- `SimulationTests`
 
-Tests should continue to be added whenever new hardware behavior is introduced or
-a bug is discovered.
+Tests should be added whenever new hardware behavior is introduced or a bug is discovered.
 
-Integration tests should verify complete paths such as:
+Important integration paths include:
 
+```text
 Firmware -> CPU -> Bus -> GPIO -> Pin
+```
 
 and:
 
+```text
 External Input -> Pin -> GPIO -> Bus -> CPU
-##15. Current Limitations
+```
 
-MicroSim is early in development.
+Timing tests should also verify that configured clock rates produce the expected number of hardware cycles for the same simulated elapsed time.
 
-Known architectural limitations currently include:
+## 15. Current Limitations
 
-GPIO pin count is not yet fully dynamic.
-Timer count is not yet fully configurable.
-Clock-frequency configuration is not yet fully reflected throughout execution.
-Peripheral addresses are currently fixed.
-Large RAM configurations can conflict with fixed peripheral address ranges.
-The GPIO electrical model is intentionally simplified.
-External simulation APIs are not yet finalized.
-Multi-controller communication such as CAN is not yet implemented.
-Interrupt handling is not yet implemented.
+MicroSim is early in development. Current limitations include:
 
-These limitations should be addressed incrementally rather than by prematurely
-adding complexity to the core architecture.
+- Only one Timer object is currently constructed even though `timerCount` exists in configuration.
+- The GPIO electrical model is intentionally simplified.
+- The generic GPIO interface does not yet model alternate functions, analog conversion, pull-ups, output-driver characteristics, or pin multiplexing.
+- External simulator integration APIs are not yet finalized.
+- CAN and other multi-controller communication are not yet implemented.
+- Interrupt handling is not yet implemented.
+- DMA and multiple bus masters are not yet implemented.
+- Large single-call time conversions are not yet designed as a fast-forward mechanism; advancing time currently represents actual hardware execution.
 
-##16. Out of Scope
+These limitations should be addressed incrementally rather than by introducing assumptions that unnecessarily constrain future board models.
+
+## 16. Out of Scope
 
 The core MicroSim project is not intended to become:
 
-a vehicle physics simulator
-a robotics physics engine
-a circuit/SPICE simulator
-a mechanical simulator
-a sensor-physics simulator
-a specific commercial MCU emulator
+- a vehicle physics simulator
+- a robotics physics engine
+- a circuit/SPICE simulator
+- a mechanical simulator
+- a sensor-physics simulator
+- an exact emulator of a specific commercial MCU
 
-External systems may implement those capabilities and communicate with MicroSim
-through defined interfaces.
+External systems may implement those capabilities and communicate with MicroSim through defined interfaces.
 
-##17. Future Architecture
+## 17. Future Architecture
 
-Likely future areas of development include:
+Likely future areas include:
 
-dynamic GPIO counts
-configurable memory maps
-ADC support
-PWM
-interrupts
-additional peripherals
-multiple timer instances
-CAN communication
-additional CPUs and instruction sets
-assembler/compiler tooling
-external integration APIs
-configurable board profiles
+- formal external integration APIs
+- CAN communication
+- interrupts
+- ADC and analog-capable peripherals
+- PWM
+- additional timer instances
+- more configurable peripheral layouts
+- additional CPUs and instruction sets
+- assembler/compiler tooling
+- configurable board profiles
+- richer pin capabilities where required
 
-These are architectural directions rather than promises of currently implemented
-functionality.
+These are architectural directions rather than promises of currently implemented functionality.
