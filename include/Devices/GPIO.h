@@ -1,8 +1,8 @@
 #pragma once
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "Bus/IBusDevice.h"
 #include "Devices/Pin.h"
@@ -11,6 +11,7 @@ class GPIO : public IBusDevice
 {
 public:
     GPIO(
+        std::size_t pinCount = 8,
         double logicVoltage = 5.0,
         double digitalHighThreshold = 2.5
     );
@@ -23,13 +24,16 @@ public:
     ) override;
 
     Pin& getPin(std::size_t index);
+    const Pin& getPin(std::size_t index) const;
+
+    std::size_t getPinCount() const;
 
 private:
-    std::uint8_t directionRegister;
-    std::uint8_t outputRegister;
+    std::uint32_t directionRegister;
+    std::uint32_t outputRegister;
 
     double logicVoltage;
     double digitalHighThreshold;
 
-    std::array<Pin, 8> pins;
+    std::vector<Pin> pins;
 };

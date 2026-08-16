@@ -4,6 +4,8 @@
 
 #include "Bus/Bus.h"
 #include "Devices/GPIO.h"
+#include "Board/BoardConfig.h"
+#include "Simulator/Simulator.h"
 
 int main()
 {
@@ -148,13 +150,13 @@ int main()
         assert(bus.read(0x1000) == 0x80);
         assert(bus.read(0x1001) == 0x80);
         assert(
-    gpio.getPin(7).getDirection() ==
-    PinDirection::Output
-);
+			gpio.getPin(7).getDirection() ==
+			PinDirection::Output
+		);
 
-assert(
-    gpio.getPin(7).getVoltage() == 5.0
-);
+		assert(
+			gpio.getPin(7).getVoltage() == 5.0
+		);
     }
 
     // Full path in the opposite direction:
@@ -171,8 +173,92 @@ assert(
 
         assert((input & 0x04) != 0);
     }
+	
+	// Output latch should take effect when a pin becomes an output.
+	{
+		GPIO gpio;
+
+		// Store HIGH in pin 7's output latch while it is still an input.
+		gpio.write(1, 0x80);
+
+		assert(
+			gpio.getPin(7).getDirection() ==
+			PinDirection::Input
+		);
+
+		// Now configure pin 7 as an output.
+		gpio.write(0, 0x80);
+
+		assert(
+			gpio.getPin(7).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(
+			gpio.getPin(7).getVoltage() == 5.0
+		);
+	}
+	
+	// GPIO pin count should be configurable.
+	{
+		GPIO gpio(16);
+
+		assert(gpio.getPinCount() == 16);
+
+		gpio.write(0, 0x8000);
+		gpio.write(1, 0x8000);
+
+		assert(
+			gpio.getPin(15).getDirection() ==
+			PinDirection::Output
+		);
+
+		assert(
+			gpio.getPin(15).getVoltage() == 5.0
+		);
+	}
+
+	// Invalid GPIO pin counts should fail.
+	{
+		bool zeroFailed = false;
+		bool tooManyFailed = false;
+
+		try
+		{
+			GPIO gpio(0);
+		}
+		catch (const std::invalid_argument&)
+		{
+			zeroFailed = true;
+		}
+
+		try
+		{
+			GPIO gpio(33);
+		}
+		catch (const std::invalid_argument&)
+		{
+			tooManyFailed = true;
+		}
+
+		assert(zeroFailed);
+		assert(tooManyFailed);
+	}
+
+	//test user created board
+	{
+		BoardConfig config;
+		config.gpioPins = 16;
+
+		Simulator simulator(config);
+
+		assert(
+			simulator.getGPIO().getPinCount() == 16
+		);
+	}
 
     std::cout << "GPIO tests passed.\n";
 
     return 0;
 }
+

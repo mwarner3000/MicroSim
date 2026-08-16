@@ -11,6 +11,7 @@ Simulator::Simulator(const BoardConfig& config)
     : config(config),
       ram(config.ramWords),
       gpio(
+			config.gpioPins,
 			config.logicVoltage,
 			config.digitalHighThreshold
 		),
@@ -25,24 +26,23 @@ Simulator::Simulator(const BoardConfig& config)
 	}
 
     bus.attach(
-        ram,
-        0x00000000,
-        static_cast<std::uint32_t>(
-            config.ramWords - 1
-        )
-    );
+		ram,
+		config.ramBase,
+		config.ramBase +
+			static_cast<std::uint32_t>(config.ramWords - 1)
+	);
 
-    bus.attach(
-        gpio,
-        0x00001000,
-        0x00001003
-    );
+	bus.attach(
+		gpio,
+		config.gpioBase,
+		config.gpioBase + 3
+	);
 
-    bus.attach(
-        timer,
-        0x00002000,
-        0x00002003
-    );
+	bus.attach(
+		timer,
+		config.timerBase,
+		config.timerBase + 3
+	);
 
     clockables.push_back(&cpu);
     clockables.push_back(&timer);

@@ -158,6 +158,55 @@ int main()
 			largeBoard.getBus().read(256) == 456
 		);
 	}
+	
+	// Board should support a custom memory map.
+	{
+		BoardConfig config;
+
+		config.ramBase   = 0x00000000;
+		config.gpioBase  = 0x00010000;
+		config.timerBase = 0x00020000;
+
+		Simulator simulator(config);
+
+		Bus& bus = simulator.getBus();
+
+		// RAM
+		bus.write(config.ramBase, 123);
+		assert(bus.read(config.ramBase) == 123);
+
+		// GPIO direction register
+		bus.write(config.gpioBase, 0x01);
+		assert(bus.read(config.gpioBase) == 0x01);
+
+		// Timer period register
+		bus.write(config.timerBase + 1, 100);
+		assert(bus.read(config.timerBase + 1) == 100);
+	}
+	
+	// Overlapping memory regions should be rejected.
+	{
+		BoardConfig config;
+
+		config.ramWords = 1024;
+
+		// Deliberately put GPIO inside RAM.
+		config.gpioBase = 0x00000100;
+
+		bool exceptionThrown = false;
+
+		try
+		{
+			Simulator simulator(config);
+		}
+		catch (const std::invalid_argument&)
+		{
+			exceptionThrown = true;
+		}
+
+		assert(exceptionThrown);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;
