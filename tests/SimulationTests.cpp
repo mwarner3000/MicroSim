@@ -207,6 +207,94 @@ int main()
 		assert(exceptionThrown);
 	}
 	
+	{
+		BoardConfig config;
+		config.clockHz = 16'000'000;
+
+		Simulator simulator(config);
+
+		simulator.getBus().write(
+			config.ramBase,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+
+		simulator.advanceTime(
+			std::chrono::microseconds(500)
+		);
+
+		assert(
+			simulator.getClock().getCycle() == 8000
+		);
+
+		assert(
+			simulator.getCPU().isHalted()
+		);
+	}
+	
+	//compare two boards
+	{
+		BoardConfig slowConfig;
+		slowConfig.clockHz = 16'000'000;
+
+		BoardConfig fastConfig;
+		fastConfig.clockHz = 32'000'000;
+
+		Simulator slowBot(slowConfig);
+		Simulator fastBot(fastConfig);
+
+		slowBot.getBus().write(
+			slowConfig.ramBase,
+			SimpleISA::encode(SimpleISA::Opcode::HALT)
+		);
+
+		fastBot.getBus().write(
+			fastConfig.ramBase,
+			SimpleISA::encode(SimpleISA::Opcode::HALT)
+		);
+
+		slowBot.advanceTime(
+			std::chrono::milliseconds(1)
+		);
+
+		fastBot.advanceTime(
+			std::chrono::milliseconds(1)
+		);
+
+		assert(
+			slowBot.getClock().getCycle() == 16'000
+		);
+
+		assert(
+			fastBot.getClock().getCycle() == 32'000
+		);
+	}
+	
+	//fractional time accumulation test
+	{
+		BoardConfig config;
+		config.clockHz = 1'000'000;
+
+		Simulator simulator(config);
+
+		simulator.getBus().write(
+			config.ramBase,
+			SimpleISA::encode(SimpleISA::Opcode::HALT)
+		);
+
+		for (int i = 0; i < 1000; ++i)
+		{
+			simulator.advanceTime(
+				std::chrono::nanoseconds(1)
+			);
+		}
+
+		assert(
+			simulator.getClock().getCycle() == 1
+		);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;

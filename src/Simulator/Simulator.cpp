@@ -114,3 +114,43 @@ const BoardConfig& Simulator::getConfig() const
 {
     return config;
 }
+
+void Simulator::advanceCycles(std::uint64_t cycles)
+{
+    for (std::uint64_t i = 0; i < cycles; ++i)
+    {
+        tick();
+    }
+}
+
+void Simulator::advanceTime(
+    std::chrono::nanoseconds duration
+)
+{
+    if (config.clockHz == 0)
+    {
+        throw std::invalid_argument(
+            "Board clock frequency must be greater than zero"
+        );
+    }
+
+    constexpr std::uint64_t NanosecondsPerSecond =
+        1'000'000'000ULL;
+
+    const std::uint64_t nanoseconds =
+        static_cast<std::uint64_t>(
+            duration.count()
+        );
+
+    const std::uint64_t scaledTime =
+        nanoseconds * config.clockHz +
+        timeRemainder;
+
+    const std::uint64_t cycles =
+        scaledTime / NanosecondsPerSecond;
+
+    timeRemainder =
+        scaledTime % NanosecondsPerSecond;
+
+    advanceCycles(cycles);
+}

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <chrono>
 
 #include "Board/BoardConfig.h"
 #include "Bus/Bus.h"
@@ -37,6 +38,12 @@ public:
     RunResult run(std::uint64_t maxCycles);
 
     void addClockable(IClockable& device);
+	
+	void advanceCycles(std::uint64_t cycles);
+
+	void advanceTime(
+		std::chrono::nanoseconds duration
+	);
 
 private:
     BoardConfig config;
@@ -49,4 +56,5 @@ private:
     Clock clock;
 
     std::vector<IClockable*> clockables;
+	std::uint64_t timeRemainder = 0;
 };
