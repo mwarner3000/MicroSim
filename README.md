@@ -13,8 +13,9 @@ MicroSim is designed around several core goals:
 - Simulate configurable microcontroller hardware.
 - Keep simulated hardware separate from assembly syntax, parsers, compilers, and other software toolchains.
 - Keep the microcontroller independent from the external simulated world.
-- Allow external simulators to provide inputs, consume outputs, and advance simulated time.
-- Keep simulated MCU time independent from host wall-clock speed.
+- Allow external environments to drive and observe controller pins through a small public interface.
+- Support ordinary real-time execution without requiring the host application to calculate elapsed time itself.
+- Preserve explicit cycle/time advancement for deterministic testing and simulation hosts that manage their own time.
 - Support multiple independent simulated controllers in the same system.
 - Allow future communication between controllers through interfaces such as CAN.
 - Allow users to approximate different classes of microcontrollers by changing characteristics such as clock speed, RAM size, GPIO count, electrical parameters, and memory-map locations.
@@ -34,12 +35,15 @@ MicroSim is under active development. Implemented components currently include:
 - Configurable GPIO and timer base addresses
 - Timer peripheral
 - Simulation clock
-- Clock-frequency-based simulated time advancement
+- Clock-frequency-based time advancement
+- Real-time synchronization using a monotonic host clock
+- Public pin-voltage accessors for external environments
 - Simple CPU
 - Simple instruction set
 - Board configuration
 - Multi-node simulation infrastructure
 - Automated tests for major subsystems
+- End-to-end external pin integration testing
 
 The project should currently be considered experimental and its APIs may change during development.
 
@@ -51,27 +55,59 @@ The CPU executes machine instructions defined by its instruction set. Assembly-l
 
 The current SimpleISA instruction set exists to develop and test the simulator and does not prevent other instruction sets or software toolchains from being added in the future.
 
-## Simulated Time
+## Time and Execution
 
 One MicroSim clock cycle represents one hardware clock cycle of the configured simulated controller.
 
-`BoardConfig::clockHz` determines how many MCU cycles occur during a requested amount of simulated time. For example, advancing a 16 MHz controller by 1 ms executes 16,000 hardware cycles, while a 32 MHz controller executes 32,000 cycles during the same simulated interval.
+`BoardConfig::clockHz` determines the relationship between elapsed time and MCU cycles. For example, advancing a 16 MHz controller by 1 ms executes 16,000 hardware cycles, while a 32 MHz controller executes 32,000 cycles during the same interval.
 
 Advancing cycles does not skip hardware activity. The CPU and other clock-driven devices are advanced during those cycles.
 
-MicroSim does not use host wall-clock time to determine MCU behavior. An external simulator may run slower than real time, in real time, or thousands of times faster than real time without changing what a given amount of simulated MCU time means.
+MicroSim currently supports three execution styles:
 
-The host controls how quickly simulated world time progresses. The MCU does not know or control the simulation speed multiplier.
+- `advanceCycles(n)` explicitly executes a known number of MCU cycles.
+- `advanceTime(duration)` converts an elapsed duration into MCU cycles using the configured clock frequency.
+- Real-time mode uses `std::chrono::steady_clock` to measure real elapsed host time and feeds that duration into the same time-advancement mechanism through `startRealTime()`, `updateRealTime()`, and `stopRealTime()`.
+
+Real-time mode measures elapsed time rather than host processor cycles, so MCU timing is not based on how many CPU cycles the host machine happens to execute. The host application only needs to call `updateRealTime()` from its normal loop; it does not calculate elapsed time itself.
+
+Explicit cycle and duration advancement remain useful for deterministic tests and for external simulators that already manage their own simulation time.
+
+Firmware does not directly read the host clock. It experiences time through simulated MCU execution and peripherals such as timers.
 
 ## External Simulation Boundary
 
 A MicroSim controller does not model the physical world around it.
 
-For example, MicroSim does not need to know whether an input voltage represents wheel speed, temperature, pressure, a switch, a sensor, or some other world quantity. The external environment supplies input values to the simulated controller, firmware determines how those values are used, and the external environment decides what controller outputs affect.
+For example, MicroSim does not need to know whether an input voltage represents wheel speed, temperature, pressure, a switch, a sensor, or some other world quantity. The external environment supplies pin voltages, firmware determines how those values are used, and the external environment decides what controller outputs affect.
 
-The host advances MicroSim by simulated time rather than exposing a world clock directly to firmware. Firmware observes time through simulated MCU hardware such as timers and counters.
+The current world-facing pin interface is deliberately small:
 
-This boundary is intended to allow the same MicroSim controller and firmware to be integrated into unrelated simulation environments without rewriting world-specific values into the controller.
+```cpp
+bot.setPinVoltage(pin, voltage);
+double voltage = bot.getPinVoltage(pin);
+```
+
+For an ordinary real-time host loop, this can be combined with:
+
+```cpp
+bot.startRealTime();
+
+while (running)
+{
+    bot.setPinVoltage(inputPin, inputVoltage);
+    bot.updateRealTime();
+    double outputVoltage = bot.getPinVoltage(outputPin);
+}
+
+bot.stopRealTime();
+```
+
+An external simulator with its own time-management system can instead call `advanceTime()`, while deterministic tests can call `advanceCycles()`.
+
+The external environment does not need to know MicroSim's GPIO register map, CPU registers, instruction encoding, or internal peripheral organization merely to exchange physical pin signals with the controller.
+
+An end-to-end switched-light integration test now verifies this boundary: the external side changes a switch pin voltage and observes a light pin voltage, while firmware inside the simulated controller performs the GPIO reads, decision making, and GPIO writes.
 
 ## GPIO and Pins
 
@@ -127,7 +163,7 @@ After building:
 ctest --test-dir build --output-on-failure
 ```
 
-The current test suite covers RAM, Bus, GPIO, Timer, CPU, and Simulation behavior.
+The current test suite covers RAM, Bus, GPIO, Timer, CPU, Simulation behavior, real-time mode state, external pin access, and an end-to-end external-world GPIO path.
 
 ## Project Structure
 
@@ -145,7 +181,7 @@ MicroSim/
 
 Likely future development includes:
 
-- Formal external-simulator integration APIs
+- Refinement of the external integration API as additional hardware interfaces are added
 - More configurable peripheral construction
 - Additional timers and peripherals
 - Analog input / ADC support
