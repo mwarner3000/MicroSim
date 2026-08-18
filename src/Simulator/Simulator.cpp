@@ -11,12 +11,13 @@ Simulator::Simulator(const BoardConfig& config)
     : config(config),
       ram(config.ramWords),
       gpio(
-			config.gpioPins,
-			config.logicVoltage,
-			config.digitalHighThreshold
-		),
+          config.gpioPins,
+          config.logicVoltage,
+          config.digitalHighThreshold
+      ),
       timer(),
-      cpu(bus)
+      interruptController(),
+      cpu(bus, interruptController)
 {
 	if (config.ramWords == 0)
 	{
@@ -208,4 +209,10 @@ double Simulator::getPinVoltage(
 ) const
 {
     return gpio.getPin(pin).getVoltage();
+}
+
+InterruptController&
+Simulator::getInterruptController()
+{
+    return interruptController;
 }

@@ -13,6 +13,7 @@
 #include "Memory/RAM.h"
 #include "Simulator/Clock.h"
 #include "Simulator/IClockable.h"
+#include "Interrupts/InterruptController.h"
 
 enum class RunResult
 {
@@ -32,6 +33,7 @@ public:
     Timer& getTimer();
     SimpleCPU& getCPU();
     Clock& getClock();
+	InterruptController& getInterruptController();
 
     const BoardConfig& getConfig() const;
 
@@ -54,6 +56,7 @@ public:
 	
 	void setPinVoltage(std::size_t pin, double voltage);
 	double getPinVoltage(std::size_t pin) const;	
+	
 
 private:
     BoardConfig config;
@@ -62,14 +65,17 @@ private:
     RAM ram;
     GPIO gpio;
     Timer timer;
+
+    InterruptController interruptController;
     SimpleCPU cpu;
+
     Clock clock;
 
     std::vector<IClockable*> clockables;
-	std::uint64_t timeRemainder = 0;
-	
-	bool realTimeRunning = false;
+    std::uint64_t timeRemainder = 0;
 
-	std::chrono::steady_clock::time_point
-		lastRealTimeUpdate;
+    bool realTimeRunning = false;
+
+    std::chrono::steady_clock::time_point
+        lastRealTimeUpdate;
 };

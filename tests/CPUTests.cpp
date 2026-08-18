@@ -9,6 +9,7 @@
 #include "Devices/GPIO.h"
 #include "Simulator/Simulator.h"
 #include "CPU/SimpleCPU/SimpleISA.h"
+#include "Interrupts/InterruptController.h"
 
 int main()
 {
@@ -19,7 +20,8 @@ int main()
 
         bus.attach(ram, 0x0000, 0x00FF);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
 
@@ -37,7 +39,8 @@ int main()
 
         ram.write(0, 0x00000000);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
         cpu.tick(1);
@@ -56,7 +59,8 @@ int main()
 
         ram.write(0, 0x03000005);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
         cpu.tick(1);
@@ -75,7 +79,8 @@ int main()
         ram.write(0, 0x0100000A);
         ram.write(10, 123);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
         cpu.tick(1);
@@ -96,7 +101,8 @@ int main()
         // STORE R0, [10]
         ram.write(1, 0x0200000A);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
 
@@ -115,7 +121,8 @@ int main()
 
         ram.write(0, 0xFF000000);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
         cpu.tick(1);
@@ -138,7 +145,8 @@ int main()
 
         ram.write(0, 0xAA000000);
 
-        SimpleCPU cpu(bus);
+        InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
 
@@ -163,7 +171,8 @@ int main()
 
 		bus.attach(ram, 0x0000, 0x00FF);
 
-		SimpleCPU cpu(bus);
+		InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
 		cpu.reset();
 
@@ -182,7 +191,8 @@ int main()
 
 		bus.attach(ram, 0x0000, 0x00FF);
 
-		SimpleCPU cpu(bus);
+		InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
 		bool exceptionThrown = false;
 
@@ -415,7 +425,8 @@ int main()
 		// MOV R8, 123 -- invalid
 		ram.write(0, 0x1080007B);
 
-		SimpleCPU cpu(bus);
+		InterruptController interruptController;
+		SimpleCPU cpu(bus, interruptController);
 
 		cpu.reset();
 

@@ -6,13 +6,17 @@
 
 #include "CPU/ICPU.h"
 #include "Bus/Bus.h"
+#include "Interrupts/InterruptController.h"
 
 class SimpleCPU : public ICPU
 {
 public:
     static constexpr std::size_t RegisterCount = 8;
 
-    explicit SimpleCPU(Bus& bus);
+    SimpleCPU(
+		Bus& bus,
+		InterruptController& interruptController
+	);
 
     void reset() override;
     void tick(std::uint64_t cycle) override;
@@ -29,6 +33,7 @@ public:
 
 private:
     Bus& bus;
+	InterruptController& interruptController;
 
     std::uint32_t programCounter;
 

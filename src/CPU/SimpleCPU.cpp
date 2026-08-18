@@ -3,8 +3,12 @@
 
 #include <stdexcept>
 
-SimpleCPU::SimpleCPU(Bus& bus)
+SimpleCPU::SimpleCPU(
+    Bus& bus,
+    InterruptController& interruptController
+)
     : bus(bus),
+      interruptController(interruptController),
       programCounter(0),
       registers{},
       halted(false),

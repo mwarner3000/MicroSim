@@ -657,6 +657,19 @@ int main()
 		);
 	}
 	
+	//prove the shared controller really is the same instance the simulator owns
+	{
+		Simulator simulator;
+
+		InterruptController& controller =
+			simulator.getInterruptController();
+
+		controller.request(3);
+
+		assert(controller.hasPending());
+		assert(controller.getNextPending() == 3);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;
