@@ -23,6 +23,8 @@ namespace SimpleISA
         JZ   = 0x22,
         JNZ  = 0x23,
         CMPI = 0x24,
+		
+		RETI = 0x30,
 
         HALT = 0xFF
     };

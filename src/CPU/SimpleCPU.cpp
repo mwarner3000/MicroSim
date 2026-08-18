@@ -12,7 +12,9 @@ SimpleCPU::SimpleCPU(
       programCounter(0),
       registers{},
       halted(false),
-      zeroFlag(false)
+      zeroFlag(false),
+	  interruptReturnAddress(0),
+	  servicingInterrupt(false)
 {
 }
 
@@ -22,6 +24,8 @@ void SimpleCPU::reset()
     registers.fill(0);
     halted = false;
     zeroFlag = false;
+	interruptReturnAddress = 0;
+	servicingInterrupt = false;
 }
 
 void SimpleCPU::tick(std::uint64_t /*cycle*/)
@@ -30,6 +34,30 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
     {
         return;
     }
+	
+	if (!servicingInterrupt &&
+		interruptController.hasPending())
+	{
+		const std::size_t interruptNumber =
+			interruptController.getNextPending();
+
+		interruptReturnAddress = programCounter;
+
+		const std::uint32_t vectorAddress =
+			InterruptVectorBase +
+			static_cast<std::uint32_t>(
+				interruptNumber
+			);
+
+		programCounter =
+			bus.read(vectorAddress);
+
+		interruptController.clear(
+			interruptNumber
+		);
+
+		servicingInterrupt = true;
+	}
 
     std::uint32_t rawInstruction =
         bus.read(programCounter);
@@ -195,6 +223,18 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 				registers[rd] == operand;
 
 			break;	
+			
+		case SimpleISA::Opcode::RETI:
+			if (!servicingInterrupt)
+			{
+				throw std::runtime_error(
+					"RETI executed outside interrupt handler"
+				);
+			}
+
+			programCounter = interruptReturnAddress;
+			servicingInterrupt = false;
+			break;
 
         case SimpleISA::Opcode::HALT:
             // HALT

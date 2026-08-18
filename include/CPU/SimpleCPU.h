@@ -30,6 +30,8 @@ public:
 
     bool isHalted() const;
 	bool getZeroFlag() const;
+	
+	static constexpr std::uint32_t InterruptVectorBase = 0x0100;
 
 private:
     Bus& bus;
@@ -41,4 +43,7 @@ private:
 
     bool halted;
 	bool zeroFlag;
+	
+	std::uint32_t interruptReturnAddress;
+	bool servicingInterrupt;
 };

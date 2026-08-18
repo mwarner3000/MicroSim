@@ -666,6 +666,118 @@ int main()
 		assert(cpu.getZeroFlag());
 	}
 	
+	// CPU should service an interrupt and return to
+	// the interrupted program.
+	{
+		Bus bus;
+		RAM ram(512);
+		InterruptController interruptController;
+
+		bus.attach(ram, 0, 511);
+
+		SimpleCPU cpu(
+			bus,
+			interruptController
+		);
+
+		// Normal firmware:
+		//
+		// 0: R0 = 10
+		// 1: R1 = 20
+		// 2: HALT
+
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				10
+			)
+		);
+
+		bus.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				1,
+				0,
+				20
+			)
+		);
+
+		bus.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+
+		// IRQ 3 vector points to address 100.
+		bus.write(
+			SimpleCPU::InterruptVectorBase + 3,
+			100
+		);
+
+		// Interrupt handler:
+		//
+		// 100: R2 = 99
+		// 101: RETI
+
+		bus.write(
+			100,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				2,
+				0,
+				99
+			)
+		);
+
+		bus.write(
+			101,
+			SimpleISA::encode(
+				SimpleISA::Opcode::RETI
+			)
+		);
+
+		cpu.reset();
+
+		// Execute normal instruction at address 0.
+		cpu.tick(1);
+
+		assert(cpu.getRegister(0) == 10);
+		assert(cpu.getProgramCounter() == 1);
+
+		// Hardware requests IRQ 3 between instructions.
+		interruptController.request(3);
+
+		// CPU should enter the handler and execute
+		// its first instruction.
+		cpu.tick(2);
+
+		assert(cpu.getRegister(2) == 99);
+		assert(cpu.getProgramCounter() == 101);
+
+		// Execute RETI.
+		cpu.tick(3);
+
+		// We should return to address 1, which had
+		// not executed before the interrupt.
+		assert(cpu.getProgramCounter() == 1);
+
+		// Resume normal firmware.
+		cpu.tick(4);
+
+		assert(cpu.getRegister(1) == 20);
+		assert(cpu.getProgramCounter() == 2);
+
+		// HALT.
+		cpu.tick(5);
+
+		assert(cpu.isHalted());
+	}
+	
     std::cout << "CPU tests passed.\n";
 
     return 0;
