@@ -154,3 +154,58 @@ void Simulator::advanceTime(
 
     advanceCycles(cycles);
 }
+
+void Simulator::startRealTime()
+{
+    lastRealTimeUpdate =
+        std::chrono::steady_clock::now();
+
+    realTimeRunning = true;
+}
+
+void Simulator::updateRealTime()
+{
+    if (!realTimeRunning)
+    {
+        return;
+    }
+
+    const auto now =
+        std::chrono::steady_clock::now();
+
+    const auto elapsed =
+        std::chrono::duration_cast<
+            std::chrono::nanoseconds
+        >(
+            now - lastRealTimeUpdate
+        );
+
+    lastRealTimeUpdate = now;
+
+    advanceTime(elapsed);
+}
+
+void Simulator::stopRealTime()
+{
+    realTimeRunning = false;
+}
+
+bool Simulator::isRealTimeRunning() const
+{
+    return realTimeRunning;
+}
+
+void Simulator::setPinVoltage(
+    std::size_t pin,
+    double voltage
+)
+{
+    gpio.getPin(pin).setVoltage(voltage);
+}
+
+double Simulator::getPinVoltage(
+    std::size_t pin
+) const
+{
+    return gpio.getPin(pin).getVoltage();
+}

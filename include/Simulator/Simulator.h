@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <chrono>
+#include <cstddef>
 
 #include "Board/BoardConfig.h"
 #include "Bus/Bus.h"
@@ -44,6 +45,15 @@ public:
 	void advanceTime(
 		std::chrono::nanoseconds duration
 	);
+	
+	void startRealTime();
+	void updateRealTime();
+	void stopRealTime();
+
+	bool isRealTimeRunning() const;
+	
+	void setPinVoltage(std::size_t pin, double voltage);
+	double getPinVoltage(std::size_t pin) const;	
 
 private:
     BoardConfig config;
@@ -57,4 +67,9 @@ private:
 
     std::vector<IClockable*> clockables;
 	std::uint64_t timeRemainder = 0;
+	
+	bool realTimeRunning = false;
+
+	std::chrono::steady_clock::time_point
+		lastRealTimeUpdate;
 };

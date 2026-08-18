@@ -295,8 +295,369 @@ int main()
 		);
 	}
 	
+	// Real-time mode should start and stop cleanly.
+	{
+		Simulator simulator;
+
+		assert(!simulator.isRealTimeRunning());
+
+		simulator.startRealTime();
+
+		assert(simulator.isRealTimeRunning());
+
+		simulator.stopRealTime();
+
+		assert(!simulator.isRealTimeRunning());
+	}
+
+	// Updating while real-time mode is stopped should do nothing.
+	{
+		Simulator simulator;
+
+		std::uint64_t before =
+			simulator.getClock().getCycle();
+
+		simulator.updateRealTime();
+
+		std::uint64_t after =
+			simulator.getClock().getCycle();
+
+		assert(after == before);
+	}
+	
+	// External world should be able to drive a pin.
+	{
+		Simulator simulator;
+
+		simulator.setPinVoltage(3, 2.5);
+
+		assert(
+			simulator.getGPIO()
+				.getPin(3)
+				.getVoltage() == 2.5
+		);
+	}
+	
+	// External world should be able to observe a pin.
+	{
+		Simulator simulator;
+
+		simulator.getGPIO()
+			.getPin(5)
+			.setVoltage(5.0);
+
+		assert(
+			simulator.getPinVoltage(5) == 5.0
+		);
+	}
+	
+	// Invalid external pin access should fail.
+	{
+		Simulator simulator;
+
+		bool exceptionThrown = false;
+
+		try
+		{
+			simulator.setPinVoltage(1000, 5.0);
+		}
+		catch (const std::out_of_range&)
+		{
+			exceptionThrown = true;
+		}
+
+		assert(exceptionThrown);
+	}
+	
+	// Complete external-world integration test:
+	// switch input -> firmware -> light output.
+	{
+		BoardConfig config;
+		config.gpioPins = 2;
+
+		Simulator bot(config);
+		Bus& bus = bot.getBus();
+
+		const std::uint32_t gpioSelect =
+			config.gpioBase + 0;
+
+		const std::uint32_t gpioDirection =
+			config.gpioBase + 1;
+
+		const std::uint32_t gpioOutput =
+			config.gpioBase + 2;
+
+		const std::uint32_t gpioInput =
+			config.gpioBase + 3;
+
+		// ------------------------------------------------
+		// Firmware
+		//
+		// Pin 0 = switch input
+		// Pin 1 = light output
+		//
+		// Configure pin 1 as output.
+		// Then repeatedly:
+		//   read pin 0
+		//   if LOW  -> pin 1 LOW
+		//   if HIGH -> pin 1 HIGH
+		// ------------------------------------------------
+
+		// 0: Select pin 1.
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 1: GPIO PIN_SELECT = 1.
+		bus.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioSelect
+			)
+		);
+
+		// 2: R0 = 1 (Output).
+		bus.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 3: GPIO DIRECTION = Output.
+		bus.write(
+			3,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioDirection
+			)
+		);
+
+		// ---------------- LOOP ----------------
+
+		// 4: Select switch pin 0.
+		bus.write(
+			4,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				0
+			)
+		);
+
+		// 5: GPIO PIN_SELECT = 0.
+		bus.write(
+			5,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioSelect
+			)
+		);
+
+		// 6: Read switch into R1.
+		bus.write(
+			6,
+			SimpleISA::encode(
+				SimpleISA::Opcode::LOAD,
+				1,
+				0,
+				gpioInput
+			)
+		);
+
+		// 7: Compare switch with LOW.
+		bus.write(
+			7,
+			SimpleISA::encode(
+				SimpleISA::Opcode::CMPI,
+				1,
+				0,
+				0
+			)
+		);
+
+		// 8: If LOW, jump to OFF handler.
+		bus.write(
+			8,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JZ,
+				0,
+				0,
+				14
+			)
+		);
+
+		// ---------------- ON ----------------
+
+		// 9: Select light pin 1.
+		bus.write(
+			9,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 10: GPIO PIN_SELECT = 1.
+		bus.write(
+			10,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioSelect
+			)
+		);
+
+		// 11: R0 = HIGH.
+		bus.write(
+			11,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 12: Light output HIGH.
+		bus.write(
+			12,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioOutput
+			)
+		);
+
+		// 13: Repeat.
+		bus.write(
+			13,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JMP,
+				0,
+				0,
+				4
+			)
+		);
+
+		// ---------------- OFF ----------------
+
+		// 14: Select light pin 1.
+		bus.write(
+			14,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 15: GPIO PIN_SELECT = 1.
+		bus.write(
+			15,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioSelect
+			)
+		);
+
+		// 16: R0 = LOW.
+		bus.write(
+			16,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				0
+			)
+		);
+
+		// 17: Light output LOW.
+		bus.write(
+			17,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				gpioOutput
+			)
+		);
+
+		// 18: Repeat.
+		bus.write(
+			18,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JMP,
+				0,
+				0,
+				4
+			)
+		);
+
+		bot.getCPU().reset();
+
+		// ----------------------------------------
+		// External world: switch starts OFF.
+		// ----------------------------------------
+
+		bot.setPinVoltage(0, 0.0);
+
+		bot.advanceCycles(30);
+
+		assert(
+			bot.getPinVoltage(1) == 0.0
+		);
+
+		// ----------------------------------------
+		// External world: user closes switch.
+		// ----------------------------------------
+
+		bot.setPinVoltage(0, 5.0);
+
+		bot.advanceCycles(30);
+
+		assert(
+			bot.getPinVoltage(1) == 5.0
+		);
+
+		// ----------------------------------------
+		// External world: user opens switch again.
+		// ----------------------------------------
+
+		bot.setPinVoltage(0, 0.0);
+
+		bot.advanceCycles(30);
+
+		assert(
+			bot.getPinVoltage(1) == 0.0
+		);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;
 }
-
