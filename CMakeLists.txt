@@ -22,6 +22,7 @@ add_library(
     src/Simulator/Clock.cpp
     src/CPU/SimpleCPU.cpp
 	src/Simulation/Simulation.cpp
+	src/Interrupts/InterruptController.cpp
 )
 
 target_include_directories(
@@ -143,4 +144,20 @@ target_link_libraries(
 add_test(
     NAME SimulationTests
     COMMAND SimulationTests
+)
+
+add_executable(
+    InterruptControllerTests
+    tests/InterruptControllerTests.cpp
+)
+
+target_link_libraries(
+    InterruptControllerTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME InterruptControllerTests
+    COMMAND InterruptControllerTests
 )
