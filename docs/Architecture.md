@@ -4,7 +4,7 @@
 
 MicroSim is a modular embedded-controller simulation framework. Its primary responsibility is to simulate the internal behavior and external hardware interface of configurable microcontrollers.
 
-A MicroSim controller should behave as though the environment connected to it is the real world. The controller itself should not require knowledge of the simulation environment that provides its inputs, consumes its outputs, or determines how quickly simulated world time runs.
+A MicroSim controller should behave as though the environment connected to it is the real world. The controller itself should not require knowledge of the simulation environment that provides its inputs or consumes its outputs.
 
 This allows the same simulated controller and firmware to operate in different host environments.
 
@@ -18,9 +18,13 @@ The simulated CPU executes machine code. Assembly syntax, parsers, assemblers, c
 
 The controller contains no application-specific world state. It does not know whether a voltage represents vehicle speed, temperature, pressure, position, or another external quantity.
 
-### Simulated time is not wall-clock time
+### Real elapsed time is independent of host CPU cycles
 
-MCU timing is determined by simulated hardware cycles and board clock frequency. Host execution speed must not alter simulated MCU behavior.
+Real-time execution is based on elapsed time measured by a monotonic host clock, not on host processor cycle counts. MCU hardware timing is still determined by the configured MCU clock frequency.
+
+### Explicit timing remains available
+
+Tests and external simulators may advance a controller explicitly by hardware cycles or elapsed duration rather than using real-time mode.
 
 ### Modular peripherals
 
@@ -34,10 +38,6 @@ The CPU communicates with RAM and memory-mapped peripherals through the system b
 
 Board configuration describes hardware characteristics such as memory capacity, clock frequency, pin count, electrical parameters, and memory-map locations.
 
-### Deterministic execution
-
-Given the same initial state and sequence of external inputs, simulation behavior should be repeatable regardless of how quickly the host computer performs the calculation.
-
 ### Testable subsystems
 
 Major components should be independently testable before integration into a complete controller.
@@ -47,10 +47,15 @@ Major components should be independently testable before integration into a comp
 ```text
                     External Environment
                            │
-                 voltages / simulated time
+                   pin voltages / time
                            │
                            ▼
                     ┌──────────────┐
+                    │  Simulator   │
+                    │ public API   │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
                     │     Pins     │
                     └──────┬───────┘
                            │
@@ -69,7 +74,7 @@ Major components should be independently testable before integration into a comp
                   └───────┘  └────────┘
 ```
 
-`Simulator` currently assembles these components into a functioning controller.
+`Simulator` currently assembles these components into a functioning controller and provides the external pin/time boundary.
 
 ## 4. Board Configuration
 
@@ -170,16 +175,29 @@ Internally this operates on `pins[73]`. There is no requirement for firmware to 
 
 This pin-selected interface is the current generic MicroSim GPIO design. A future CPU or board model may expose a different GPIO register layout when that is useful for approximating another hardware architecture, while retaining the same underlying pin concept.
 
+### External pin access
+
+The external environment does not need to navigate through the GPIO peripheral directly. `Simulator` now exposes:
+
+```cpp
+void setPinVoltage(std::size_t pin, double voltage);
+double getPinVoltage(std::size_t pin) const;
+```
+
+These methods form the current physical-signal boundary between a MicroSim controller and its host environment.
+
+The host therefore does not need to know which memory-mapped registers firmware uses to interact with the same pins.
+
 ### Input behavior
 
 The external environment may provide a voltage to an input pin. GPIO compares the selected pin voltage against `digitalHighThreshold` when producing a digital input value.
 
 ```text
 External environment
-        │ voltage
+        │ setPinVoltage()
         ▼
        Pin
-        │
+        │ voltage
         ▼
       GPIO
         │ threshold
@@ -199,7 +217,7 @@ Digital LOW  -> 0 V
 Digital HIGH -> configured logic voltage
 ```
 
-The external environment may observe that voltage and determine what it means in the simulated world.
+The external environment may observe that voltage through `getPinVoltage()` and determine what it means in the simulated world.
 
 ### Electrical scope
 
@@ -211,16 +229,16 @@ The timer is memory mapped and clock driven. It maintains internal state includi
 
 The timer continues to participate in MCU clock advancement independently of whether the CPU is executing useful instructions. Additional timer instances and more advanced timer behavior may be added later.
 
-## 10. Clock and Simulated Time
+## 10. Clock and Time
 
 ### Fundamental cycle definition
 
 One MicroSim cycle represents one hardware clock cycle of the configured MCU.
 
-`BoardConfig::clockHz` determines the relationship between simulated elapsed time and hardware cycles:
+`BoardConfig::clockHz` determines the relationship between elapsed time and hardware cycles:
 
 ```text
-cycles = simulated seconds × clockHz
+cycles = elapsed seconds × clockHz
 ```
 
 For example:
@@ -234,19 +252,60 @@ For example:
 
 `Simulator::advanceCycles(N)` executes `N` simulated hardware cycles. It is not a time skip. Clock-driven hardware receives those cycles and may change state during them.
 
+This is useful for deterministic tests and low-level control.
+
 ### Advancing time
 
-`Simulator::advanceTime(std::chrono::nanoseconds)` converts requested simulated elapsed time into hardware cycles using the configured clock frequency and then executes those cycles.
+`Simulator::advanceTime(std::chrono::nanoseconds)` converts requested elapsed time into hardware cycles using the configured clock frequency and then executes those cycles.
 
 Fractional-cycle timing is accumulated between calls so repeated small time advances do not continually discard sub-cycle time.
 
-### Wall-clock independence
+This interface is useful for external simulators that already have their own time-management system.
 
-MicroSim hardware does not decide whether the host simulation runs in real time, slow motion, accelerated time, or as fast as computationally possible.
+### Real-time mode
 
-For example, ten years of simulated world time may be calculated in far less than ten years of real wall-clock time if the host has sufficient computational performance. The simulated MCU still experiences its configured number of cycles per simulated second.
+For ordinary applications that should follow real elapsed time, `Simulator` provides:
 
-The simulation-speed multiplier therefore belongs to the host environment, not the MCU.
+```cpp
+startRealTime();
+updateRealTime();
+stopRealTime();
+isRealTimeRunning();
+```
+
+`startRealTime()` establishes a timing reference using `std::chrono::steady_clock`.
+
+Each call to `updateRealTime()` measures the elapsed monotonic host time since the previous update and passes that duration to `advanceTime()`. The caller therefore does not calculate or supply a delta time.
+
+Conceptually:
+
+```text
+std::chrono::steady_clock
+          │
+          │ elapsed real time
+          ▼
+    updateRealTime()
+          │
+          ▼
+     advanceTime()
+          │
+          │ clockHz conversion
+          ▼
+    advanceCycles()
+          │
+          ▼
+ CPU + clocked peripherals
+```
+
+`steady_clock` is used because the requirement is elapsed time, not calendar time. Changes to the host's wall-clock/calendar setting should not change the elapsed-time measurement.
+
+Real-time execution is not based on host processor cycles. A faster host CPU does not inherently make the configured MCU clock faster.
+
+The current real-time interface is cooperative rather than background-threaded: the host calls `updateRealTime()` from its own loop. This avoids introducing threading and synchronization requirements into pin access and simulator state at this stage.
+
+### Firmware-visible time
+
+Firmware does not directly read the host's `steady_clock`. The host clock determines how much MCU execution occurs in real-time mode; firmware experiences that passage of time through MCU cycles and simulated peripherals such as timers.
 
 ### Halted CPU versus MCU clock
 
@@ -263,7 +322,7 @@ A halted CPU does not imply that the MCU clock ceases to exist. Clock-driven per
 - SimpleCPU
 - Clock
 
-It constructs these components according to `BoardConfig`, coordinates clock-driven execution, and exposes cycle/time advancement APIs.
+It constructs these components according to `BoardConfig`, coordinates clock-driven execution, exposes explicit cycle/time advancement, provides cooperative real-time synchronization, and exposes external pin-voltage accessors.
 
 `Simulator` should not contain environment-specific application logic.
 
@@ -279,32 +338,96 @@ Wheel speed -> sensor model -> 2.5 V
 
 MicroSim receives only the electrical input:
 
-```text
-Input pin = 2.5 V
+```cpp
+bot.setPinVoltage(sensorPin, 2.5);
 ```
 
 Firmware interprets that signal according to the program running on the controller.
 
-The reverse applies to outputs. If MicroSim produces an output pin voltage, the external environment decides whether it activates a relay, changes motor behavior, illuminates a lamp, or causes another world effect.
+The reverse applies to outputs:
 
-The external environment also controls simulated world time. It tells a MicroSim instance how much simulated time to advance; the MCU does not directly query a world clock.
+```cpp
+double outputVoltage = bot.getPinVoltage(outputPin);
+```
 
-A host integration may conceptually operate as:
+The external environment decides whether that output activates a relay, changes motor behavior, illuminates a lamp, or causes another world effect.
+
+The current host-facing boundary therefore consists primarily of pin signals plus a choice of execution/time control:
 
 ```text
+External Environment
+       │
+       ├── setPinVoltage()
+       ├── getPinVoltage()
+       │
+       └── execution control
+             ├── updateRealTime()
+             ├── advanceTime()
+             └── advanceCycles()
+```
+
+A normal real-time integration may conceptually operate as:
+
+```text
+start real-time mode
+        │
+        ▼
 set controller inputs
         │
         ▼
-advance MicroSim by simulated dt
+updateRealTime()
+        │
+        ▼
+firmware and hardware execute
         │
         ▼
 observe controller outputs
         │
         ▼
-advance external world model
+repeat
 ```
 
-The exact external integration API is not yet finalized.
+An external simulator with its own clock may use `advanceTime()` instead. Automated tests may use `advanceCycles()` for exact deterministic control.
+
+### End-to-end switched-light test
+
+`SimulationTests` now contains an end-to-end integration case representing a switched light.
+
+The external side only performs the conceptual operations:
+
+```cpp
+bot.setPinVoltage(switchPin, voltage);
+bot.advanceCycles(...);
+double lightVoltage = bot.getPinVoltage(lightPin);
+```
+
+Firmware inside the simulated controller configures GPIO, polls the switch input, makes the decision, and drives the light output.
+
+The complete path exercised is:
+
+```text
+External switch
+      │
+      ▼
+setPinVoltage()
+      │
+      ▼
+Pin -> GPIO -> Bus -> CPU
+                    │
+                    ▼
+                 Firmware
+                    │
+                    ▼
+CPU -> Bus -> GPIO -> Pin
+                       │
+                       ▼
+               getPinVoltage()
+                       │
+                       ▼
+                 External light
+```
+
+This test verifies the intended separation: the external environment does not need to know the GPIO register map, CPU register layout, or instruction encoding in order to exchange physical signals with the bot.
 
 ## 13. Multiple Controllers
 
@@ -357,7 +480,9 @@ and:
 External Input -> Pin -> GPIO -> Bus -> CPU
 ```
 
-Timing tests should also verify that configured clock rates produce the expected number of hardware cycles for the same simulated elapsed time.
+The switched-light integration test exercises both directions as one complete system.
+
+Timing tests also cover explicit time advancement and real-time mode state. Real-time tests should avoid relying on exact host sleep/scheduling intervals where deterministic tests can verify the same underlying behavior more reliably.
 
 ## 15. Current Limitations
 
@@ -366,11 +491,10 @@ MicroSim is early in development. Current limitations include:
 - Only one Timer object is currently constructed even though `timerCount` exists in configuration.
 - The GPIO electrical model is intentionally simplified.
 - The generic GPIO interface does not yet model alternate functions, analog conversion, pull-ups, output-driver characteristics, or pin multiplexing.
-- External simulator integration APIs are not yet finalized.
+- Real-time execution currently requires cooperative `updateRealTime()` calls from the host loop; there is no background execution thread.
 - CAN and other multi-controller communication are not yet implemented.
 - Interrupt handling is not yet implemented.
 - DMA and multiple bus masters are not yet implemented.
-- Large single-call time conversions are not yet designed as a fast-forward mechanism; advancing time currently represents actual hardware execution.
 
 These limitations should be addressed incrementally rather than by introducing assumptions that unnecessarily constrain future board models.
 
@@ -391,7 +515,7 @@ External systems may implement those capabilities and communicate with MicroSim 
 
 Likely future areas include:
 
-- formal external integration APIs
+- refinement of the external integration API as additional hardware interfaces are added
 - CAN communication
 - interrupts
 - ADC and analog-capable peripherals
