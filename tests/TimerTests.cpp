@@ -10,7 +10,8 @@ int main()
 {
     // Initial state.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         assert(timer.read(0) == 0);
         assert(timer.read(1) == 0);
@@ -20,7 +21,8 @@ int main()
 
     // Register reads and writes.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(0, 3);
         timer.write(1, 10);
@@ -33,7 +35,8 @@ int main()
 
     // Disabled timer should not advance.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(1, 5);
 
@@ -47,7 +50,8 @@ int main()
 
     // Enabled timer should advance.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(1, 5);
         timer.write(2, 1);
@@ -61,7 +65,8 @@ int main()
 
     // Timer should expire and reset.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(1, 3);
         timer.write(2, 1);
@@ -77,7 +82,8 @@ int main()
 
     // Writing 1 to status should clear expiration.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(1, 1);
         timer.write(2, 1);
@@ -94,7 +100,8 @@ int main()
 
     // Disabling the timer should clear expiration.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         timer.write(1, 1);
         timer.write(2, 1);
@@ -112,7 +119,8 @@ int main()
 
     // Invalid register reads should fail.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         bool exceptionThrown = false;
 
@@ -130,7 +138,8 @@ int main()
 
     // Invalid register writes should fail.
     {
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         bool exceptionThrown = false;
 
@@ -149,7 +158,8 @@ int main()
     // Bus access should reach the timer correctly.
     {
         Bus bus;
-        Timer timer;
+        InterruptController interruptController;
+		Timer timer(interruptController, 0);
 
         bus.attach(timer, 0x2000, 0x2003);
 
@@ -176,6 +186,34 @@ int main()
         assert(simulator.getClock().getCycle() == 3);
         assert(bus.read(0x2000) == 3);
     }
+	
+	// Timer should request an interrupt when it
+	// expires and interrupts are enabled.
+	{
+		InterruptController interruptController;
+
+		Timer timer(
+			interruptController,
+			2
+		);
+
+		timer.write(1, 3); // period
+		timer.write(2, 1); // timer enabled
+		timer.write(4, 1); // interrupt enabled
+
+		assert(!interruptController.hasPending());
+
+		timer.tick(1);
+		timer.tick(2);
+		timer.tick(3);
+		timer.tick(4);
+
+		assert(timer.read(3) == 1);
+
+		assert(
+			interruptController.isPending(2)
+		);
+	}
 
     std::cout << "Timer tests passed.\n";
 

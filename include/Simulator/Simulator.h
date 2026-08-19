@@ -64,10 +64,11 @@ private:
     Bus bus;
     RAM ram;
     GPIO gpio;
-    Timer timer;
 
-    InterruptController interruptController;
-    SimpleCPU cpu;
+	InterruptController interruptController;
+
+	Timer timer;
+	SimpleCPU cpu;
 
     Clock clock;
 

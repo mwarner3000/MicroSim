@@ -2,11 +2,17 @@
 
 #include <stdexcept>
 
-Timer::Timer()
-    : counter(0),
+Timer::Timer(
+    InterruptController& interruptController,
+    std::size_t interruptNumber
+)
+    : interruptController(interruptController),
+      interruptNumber(interruptNumber),
+      counter(0),
       period(0),
       enabled(false),
-      expired(false)
+      expired(false),
+      interruptEnabled(false)
 {
 }
 
@@ -25,6 +31,9 @@ std::uint32_t Timer::read(std::uint32_t address)
 
         case 3:
             return expired ? 1 : 0;
+			
+		case 4:
+			return interruptEnabled ? 1 : 0;
 
         default:
             throw std::out_of_range(
@@ -66,6 +75,11 @@ void Timer::write(std::uint32_t address,
             }
 
             break;
+			
+		case 4:
+			interruptEnabled =
+				(value & 1u) != 0;
+			break;
 
         default:
             throw std::out_of_range(
@@ -82,10 +96,18 @@ void Timer::tick(std::uint64_t /*cycle*/)
     }
 
     if (counter >= period)
-    {
-        counter = 0;
-        expired = true;
-    }
+	{
+		counter = 0;
+		expired = true;
+
+		if (interruptEnabled)
+		{
+			interruptController.request(
+				interruptNumber
+			);
+		}
+	}
+	
     else
     {
         ++counter;

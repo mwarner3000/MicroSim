@@ -1,14 +1,19 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
 #include "Bus/IBusDevice.h"
 #include "Simulator/IClockable.h"
+#include "Interrupts/InterruptController.h"
 
 class Timer : public IBusDevice, public IClockable
 {
 public:
-    Timer();
+    Timer(
+		InterruptController& interruptController,
+		std::size_t interruptNumber
+	);
 
     std::uint32_t read(std::uint32_t address) override;
 
@@ -23,4 +28,9 @@ private:
 
     bool enabled;
     bool expired;
+	
+	InterruptController& interruptController;
+	std::size_t interruptNumber;
+
+	bool interruptEnabled;
 };
