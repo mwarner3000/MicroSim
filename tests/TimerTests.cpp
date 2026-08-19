@@ -124,16 +124,16 @@ int main()
 
         bool exceptionThrown = false;
 
-        try
-        {
-            timer.read(4);
-        }
-        catch (const std::out_of_range&)
-        {
-            exceptionThrown = true;
-        }
+		try
+		{
+			timer.read(5);
+		}
+		catch (const std::out_of_range&)
+		{
+			exceptionThrown = true;
+		}
 
-        assert(exceptionThrown);
+		assert(exceptionThrown);
     }
 
     // Invalid register writes should fail.
@@ -145,7 +145,7 @@ int main()
 
         try
         {
-            timer.write(4, 0);
+            timer.write(5, 0);
         }
         catch (const std::out_of_range&)
         {

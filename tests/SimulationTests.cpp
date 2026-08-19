@@ -670,6 +670,132 @@ int main()
 		assert(controller.getNextPending() == 3);
 	}
 	
+	// End-to-end timer interrupt test:
+	// Timer -> InterruptController -> CPU -> handler -> RETI.
+	{
+		Simulator simulator;
+
+		Bus& bus = simulator.getBus();
+		SimpleCPU& cpu = simulator.getCPU();
+
+		const BoardConfig& config =
+			simulator.getConfig();
+
+		const std::uint32_t timerPeriod =
+			config.timerBase + 1;
+
+		const std::uint32_t timerEnable =
+			config.timerBase + 2;
+
+		const std::uint32_t timerInterruptEnable =
+			config.timerBase + 4;
+
+		// --------------------------------------------
+		// Normal firmware
+		//
+		// Keep incrementing R0 forever.
+		// The timer interrupt handler will set R1 = 99.
+		// --------------------------------------------
+
+		// 0: R0 = 1
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 1: R2 = 1
+		bus.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				2,
+				0,
+				1
+			)
+		);
+
+		// 2: R0 += R2
+		bus.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::ADD,
+				0,
+				2,
+				0
+			)
+		);
+
+		// 3: loop back to address 2
+		bus.write(
+			3,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JMP,
+				0,
+				0,
+				2
+			)
+		);
+
+		// --------------------------------------------
+		// IRQ 0 vector
+		// --------------------------------------------
+
+		bus.write(
+			SimpleCPU::InterruptVectorBase,
+			100
+		);
+
+		// --------------------------------------------
+		// Interrupt handler
+		// --------------------------------------------
+
+		// 100: R1 = 99
+		bus.write(
+			100,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				1,
+				0,
+				99
+			)
+		);
+
+		// 101: RETI
+		bus.write(
+			101,
+			SimpleISA::encode(
+				SimpleISA::Opcode::RETI
+			)
+		);
+
+		// Configure timer.
+		bus.write(timerPeriod, 3);
+		bus.write(timerInterruptEnable, 1);
+		bus.write(timerEnable, 1);
+
+		cpu.reset();
+
+		// Handler has not run yet.
+		assert(cpu.getRegister(1) == 0);
+
+		// Give the complete MCU enough cycles for the timer
+		// to expire and for the interrupt handler to execute.
+		simulator.advanceCycles(10);
+
+		// Timer-generated IRQ should have caused firmware
+		// at address 100 to execute.
+		assert(cpu.getRegister(1) == 99);
+
+		// RETI should have completed, so normal firmware
+		// should also have resumed.
+		assert(cpu.getRegister(0) > 1);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;
