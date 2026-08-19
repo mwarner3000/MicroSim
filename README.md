@@ -2,7 +2,7 @@
 
 MicroSim is a modular microcontroller simulation framework written in C++.
 
-The goal of MicroSim is to provide configurable simulated microcontrollers that behave as self-contained embedded controllers. A simulated controller can execute firmware, interact with peripherals, receive external input signals, and produce output signals without needing to know anything about the environment in which it is being used.
+The goal of MicroSim is to provide configurable simulated microcontrollers that behave as self-contained embedded controllers. A simulated controller can execute firmware, interact with peripherals, receive external input signals, produce output signals, and respond to hardware interrupts without needing to know anything about the environment in which it is being used.
 
 MicroSim is intended for experimentation, prototyping, robotics simulation, embedded-system development, and testing generic microcontroller configurations.
 
@@ -20,6 +20,7 @@ MicroSim is designed around several core goals:
 - Allow future communication between controllers through interfaces such as CAN.
 - Allow users to approximate different classes of microcontrollers by changing characteristics such as clock speed, RAM size, GPIO count, electrical parameters, and memory-map locations.
 - Keep peripherals modular so additional devices can be added without redesigning the core simulator.
+- Keep interrupt sources independent from CPU implementation details by routing IRQs through an interrupt controller.
 
 MicroSim is not intended to be an exact transistor-level, circuit-level, or brand-specific reproduction of a commercial microcontroller. Instead, it aims to model embedded-controller behavior and resource constraints at a useful level of abstraction.
 
@@ -34,6 +35,10 @@ MicroSim is under active development. Implemented components currently include:
 - Pin-selected GPIO register interface
 - Configurable GPIO and timer base addresses
 - Timer peripheral
+- Interrupt controller
+- Memory-based interrupt vector table
+- CPU interrupt entry and `RETI`
+- Timer-generated interrupts
 - Simulation clock
 - Clock-frequency-based time advancement
 - Real-time synchronization using a monotonic host clock
@@ -44,6 +49,7 @@ MicroSim is under active development. Implemented components currently include:
 - Multi-node simulation infrastructure
 - Automated tests for major subsystems
 - End-to-end external pin integration testing
+- End-to-end Timer -> interrupt controller -> CPU -> handler -> `RETI` testing
 
 The project should currently be considered experimental and its APIs may change during development.
 
@@ -107,7 +113,7 @@ An external simulator with its own time-management system can instead call `adva
 
 The external environment does not need to know MicroSim's GPIO register map, CPU registers, instruction encoding, or internal peripheral organization merely to exchange physical pin signals with the controller.
 
-An end-to-end switched-light integration test now verifies this boundary: the external side changes a switch pin voltage and observes a light pin voltage, while firmware inside the simulated controller performs the GPIO reads, decision making, and GPIO writes.
+An end-to-end switched-light integration test verifies this boundary: the external side changes a switch pin voltage and observes a light pin voltage, while firmware inside the simulated controller performs the GPIO reads, decision making, and GPIO writes.
 
 ## GPIO and Pins
 
@@ -126,6 +132,30 @@ This allows a generic board to expose 8, 100, or more pins without dividing the 
 
 Pins carry simulated voltage values. Digital HIGH/LOW interpretation uses the board's configured logic voltage and digital HIGH threshold. Detailed circuit behavior and the physical meaning of those voltages remain outside MicroSim's core scope.
 
+## Timer and Interrupts
+
+The Timer is memory mapped and clock driven. Its current register interface is:
+
+| Offset | Register | Behavior |
+| --- | --- | --- |
+| 0 | `COUNTER` | Current timer count |
+| 1 | `PERIOD` | Expiration period |
+| 2 | `ENABLE` | Enables/disables counting |
+| 3 | `EXPIRED` | Expiration flag; writing 1 clears it |
+| 4 | `INTERRUPT_ENABLE` | Enables/disables IRQ generation on expiration |
+
+When the Timer expires with interrupts enabled, it requests its configured IRQ from `InterruptController`. This interrupt path is separate from memory-mapped bus traffic:
+
+```text
+Timer registers <-> Bus <-> CPU
+       |
+       +-- IRQ --> InterruptController --> CPU
+```
+
+`InterruptController` records pending interrupt numbers without knowing which peripheral they represent. The CPU checks for a pending IRQ between instructions, saves the current program counter, reads the handler address from its memory-based vector table, and begins executing the handler. SimpleISA's `RETI` instruction restores the saved return address and resumes interrupted firmware.
+
+The current SimpleCPU interrupt implementation is intentionally basic. Interrupts do not nest, lower-numbered pending IRQs are selected first, only the return program counter is automatically preserved, and `HALT` currently prevents the CPU from checking for new interrupts. More advanced interrupt semantics can be added when required by a concrete board/CPU model.
+
 ## Configurable Boards
 
 `BoardConfig` currently provides configuration for:
@@ -133,7 +163,6 @@ Pins carry simulated voltage values. Digital HIGH/LOW interpretation uses the bo
 - CPU clock frequency
 - RAM size
 - GPIO pin count
-- timer count
 - logic voltage
 - digital HIGH threshold
 - RAM base address
@@ -163,7 +192,7 @@ After building:
 ctest --test-dir build --output-on-failure
 ```
 
-The current test suite covers RAM, Bus, GPIO, Timer, CPU, Simulation behavior, real-time mode state, external pin access, and an end-to-end external-world GPIO path.
+The current test targets cover RAM, Bus, GPIO, Timer, CPU, Simulation behavior, interrupt-controller behavior, real-time mode state, external pin access, the end-to-end external-world GPIO path, and the end-to-end Timer interrupt path.
 
 ## Project Structure
 
@@ -186,11 +215,12 @@ Likely future development includes:
 - Additional timers and peripherals
 - Analog input / ADC support
 - PWM and other pin functions
-- Interrupt handling
+- More advanced interrupt behavior where needed
 - CAN or similar controller-to-controller communication
 - Additional CPU architectures or instruction sets
 - External assembler/compiler tooling
 - More flexible board profiles and peripheral layouts
+- DMA and multiple bus masters where required
 
 These items describe project direction and should not be assumed to be implemented unless documented otherwise.
 
