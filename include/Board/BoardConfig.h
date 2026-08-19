@@ -10,7 +10,6 @@ struct BoardConfig
     std::size_t ramWords = 1024;
 
     std::size_t gpioPins = 8;
-    std::size_t timerCount = 1;
 
     // Electrical configuration
     double logicVoltage = 5.0;
