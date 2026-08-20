@@ -23,6 +23,7 @@ add_library(
     src/CPU/SimpleCPU.cpp
 	src/Simulation/Simulation.cpp
 	src/Interrupts/InterruptController.cpp
+	src/Communication/CANBus.cpp
 )
 
 target_include_directories(
@@ -160,4 +161,36 @@ target_link_libraries(
 add_test(
     NAME InterruptControllerTests
     COMMAND InterruptControllerTests
+)
+
+add_executable(
+    CANFrameTests
+    tests/CANFrameTests.cpp
+)
+
+target_link_libraries(
+    CANFrameTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME CANFrameTests
+    COMMAND CANFrameTests
+)
+
+add_executable(
+    CANBusTests
+    tests/CANBusTests.cpp
+)
+
+target_link_libraries(
+    CANBusTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME CANBusTests
+    COMMAND CANBusTests
 )
