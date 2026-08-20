@@ -4,9 +4,7 @@
 
 MicroSim is a modular embedded-controller simulation framework. Its primary responsibility is to simulate the internal behavior and external hardware interface of configurable microcontrollers.
 
-A MicroSim controller should behave as though the environment connected to it is the real world. The controller itself should not require knowledge of the simulation environment that provides its inputs or consumes its outputs.
-
-This allows the same simulated controller and firmware to operate in different host environments.
+A MicroSim controller should behave as though the environment connected to it is the real world. The controller itself should not require knowledge of the simulation environment that provides its inputs or consumes its outputs. This allows the same simulated controller and firmware to operate in different host environments.
 
 ## 2. Design Principles
 
@@ -30,9 +28,9 @@ Tests and external simulators may advance a controller explicitly by hardware cy
 
 Peripherals communicate through defined interfaces and should not depend directly on CPU implementation details.
 
-### Bus-based CPU/device communication
+### Multiple hardware communication paths
 
-The CPU communicates with RAM and memory-mapped peripherals through the system bus rather than directly accessing device implementations.
+Memory-mapped reads and writes are the normal CPU/device configuration and data path, but they are not the only hardware interaction. Interrupt requests travel independently through the interrupt controller. Future DMA, bus-master, and inter-controller mechanisms may likewise require paths that are not ordinary CPU reads and writes.
 
 ### Configurable hardware
 
@@ -45,36 +43,41 @@ Major components should be independently testable before integration into a comp
 ## 3. High-Level Architecture
 
 ```text
-                    External Environment
-                           │
-                   pin voltages / time
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │  Simulator   │
-                    │ public API   │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │     Pins     │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │ Peripherals  │
-                    │ GPIO / Timer │
-                    │    / etc.    │
-                    └──────┬───────┘
-                           │
-                    ┌──────▼───────┐
-                    │     Bus      │
-                    └───┬──────┬───┘
-                        │      │
-                  ┌─────▼─┐  ┌─▼──────┐
-                  │  CPU  │  │  RAM   │
-                  └───────┘  └────────┘
+                         External Environment
+                                |
+                        pin voltages / time
+                                |
+                                v
+                         +-------------+
+                         |  Simulator  |
+                         | public API  |
+                         +------+------+ 
+                                |
+                         +------v------+
+                         |    Pins     |
+                         +------+------+ 
+                                |
+                         +------v------+
+                         | Peripherals |
+                         | GPIO/Timer  |
+                         +--+-------+--+
+                            |       |
+              registers/data|       |IRQ
+                            v       v
+                         +-----+  +-------------------+
+                         | Bus |  |InterruptController|
+                         +-+-+-+  +---------+---------+
+                           | |              |
+                     +-----+ +-----+        |
+                     v             v        v
+                   +-----+       +-----+  +-----+
+                   | RAM |       | CPU |<-| IRQ |
+                   +-----+       +-----+  +-----+
 ```
 
-`Simulator` currently assembles these components into a functioning controller and provides the external pin/time boundary.
+The diagram intentionally distinguishes memory-mapped peripheral traffic from interrupt signaling. A Timer is configured through the Bus but can asynchronously request CPU attention through `InterruptController`.
+
+`Simulator` assembles these components into a functioning controller and provides the external pin/time boundary.
 
 ## 4. Board Configuration
 
@@ -83,33 +86,30 @@ Major components should be independently testable before integration into a comp
 - `clockHz`
 - `ramWords`
 - `gpioPins`
-- `timerCount`
 - `logicVoltage`
 - `digitalHighThreshold`
 - `ramBase`
 - `gpioBase`
 - `timerBase`
 
-Configuration describes hardware being constructed rather than requiring source changes for each board.
+Configuration describes hardware being constructed rather than requiring source changes for each board. For example, two generic boards may differ in clock rate, RAM, GPIO count, voltage, and address layout without representing exact commercial MCU part numbers.
 
-For example, two generic boards may differ in clock rate, RAM, GPIO count, voltage, and address layout without representing exact commercial MCU part numbers.
-
-Not every configuration field is necessarily fully generalized throughout the simulator yet. In particular, `timerCount` does not currently construct an arbitrary number of timer instances.
+Peripheral multiplicity is not yet generalized through `BoardConfig`; the current `Simulator` constructs one Timer.
 
 ## 5. CPU and Instruction Set
 
-The CPU executes machine instructions and interacts with the system bus. Assembly-language text is not interpreted by the CPU.
+The CPU executes machine instructions and interacts with memory and memory-mapped peripherals through the system bus. Assembly-language text is not interpreted by the CPU.
 
 ```text
 Assembler / Compiler
-        │
-        ▼
+        |
+        v
    Machine Code
-        │
-        ▼
+        |
+        v
       CPU
-        │
-        ▼
+        |
+        v
        Bus
 ```
 
@@ -117,30 +117,34 @@ The current development CPU uses SimpleISA. SimpleISA is a development ISA and d
 
 A future assembler may use different syntax while producing compatible machine code. Future CPUs may use different instruction sets without requiring unrelated peripherals to be rewritten.
 
+SimpleCPU also supports the current interrupt mechanism described below, including interrupt entry and `RETI`.
+
 ## 6. Bus and Memory Map
 
 The system bus routes memory-mapped reads and writes to attached devices implementing the common bus-device interface.
 
 ```text
 CPU
- │
- ▼
+ |
+ v
 Bus
- ├── RAM
- ├── GPIO
- ├── Timer
- └── future peripherals
+ +-- RAM
+ +-- GPIO
+ +-- Timer
+ +-- future peripherals
 ```
 
-`BoardConfig` currently supplies base addresses for RAM, GPIO, and Timer. The simulator uses these configured locations when attaching the devices.
+`BoardConfig` supplies base addresses for RAM, GPIO, and Timer. The simulator uses these configured locations when attaching the devices.
 
-Devices should not require direct references to the CPU.
+Devices should not require direct references to the CPU. A peripheral that needs to signal asynchronous work can instead request an IRQ through the interrupt controller.
 
 ## 7. Memory
 
 RAM is a bus device. Its size is determined by board configuration when the simulator is constructed, and the CPU accesses it through the system bus.
 
 The current RAM model stores 32-bit values indexed by bus address.
+
+RAM also holds ordinary firmware and, for SimpleCPU, the memory-based interrupt vector table and interrupt handlers.
 
 ## 8. GPIO and Pins
 
@@ -173,49 +177,22 @@ OUTPUT     = 1
 
 Internally this operates on `pins[73]`. There is no requirement for firmware to address a synthetic 32-pin bank merely because the CPU uses 32-bit values.
 
-This pin-selected interface is the current generic MicroSim GPIO design. A future CPU or board model may expose a different GPIO register layout when that is useful for approximating another hardware architecture, while retaining the same underlying pin concept.
-
 ### External pin access
 
-The external environment does not need to navigate through the GPIO peripheral directly. `Simulator` now exposes:
+`Simulator` exposes:
 
 ```cpp
 void setPinVoltage(std::size_t pin, double voltage);
 double getPinVoltage(std::size_t pin) const;
 ```
 
-These methods form the current physical-signal boundary between a MicroSim controller and its host environment.
+These methods form the current physical-signal boundary between a MicroSim controller and its host environment. The host does not need to know which memory-mapped registers firmware uses to interact with the same pins.
 
-The host therefore does not need to know which memory-mapped registers firmware uses to interact with the same pins.
-
-### Input behavior
+### Input and output behavior
 
 The external environment may provide a voltage to an input pin. GPIO compares the selected pin voltage against `digitalHighThreshold` when producing a digital input value.
 
-```text
-External environment
-        │ setPinVoltage()
-        ▼
-       Pin
-        │ voltage
-        ▼
-      GPIO
-        │ threshold
-        ▼
-       0/1
-        │
-        ▼
-       CPU
-```
-
-### Output behavior
-
-For a configured output pin, the current generic GPIO maps:
-
-```text
-Digital LOW  -> 0 V
-Digital HIGH -> configured logic voltage
-```
+For a configured output pin, the current generic GPIO maps digital LOW to 0 V and digital HIGH to the configured logic voltage.
 
 The external environment may observe that voltage through `getPinVoltage()` and determine what it means in the simulated world.
 
@@ -225,11 +202,101 @@ Pin voltage is modeled relative to the simulated board reference. MicroSim does 
 
 ## 9. Timer
 
-The timer is memory mapped and clock driven. It maintains internal state including a counter, period, enabled state, and expiration state.
+The Timer is memory mapped and clock driven. It maintains a counter, period, enabled state, expiration state, and interrupt-enable state.
 
-The timer continues to participate in MCU clock advancement independently of whether the CPU is executing useful instructions. Additional timer instances and more advanced timer behavior may be added later.
+Its current register interface is:
 
-## 10. Clock and Time
+| Offset | Register | Description |
+| --- | --- | --- |
+| 0 | `COUNTER` | Current counter value |
+| 1 | `PERIOD` | Expiration period |
+| 2 | `ENABLE` | Enables/disables the timer |
+| 3 | `EXPIRED` | Expiration flag; writing 1 clears it |
+| 4 | `INTERRUPT_ENABLE` | Enables/disables IRQ generation on expiration |
+
+When the Timer reaches its period, it resets its counter and sets `EXPIRED`. If interrupt generation is enabled, it also calls `InterruptController::request()` with the interrupt number assigned when the Timer was constructed.
+
+The Timer therefore knows its IRQ number but does not know what the CPU will do with it or what firmware handler it maps to.
+
+The timer continues to participate in MCU clock advancement independently of whether the CPU is executing useful instructions.
+
+## 10. Interrupt Architecture
+
+### Interrupt controller
+
+`InterruptController` stores pending interrupt state by interrupt number. Peripherals request or clear numbered IRQs without requiring direct access to the CPU.
+
+When more than one interrupt is pending, the current controller returns the lowest numbered pending IRQ first. This is the current simple selection rule, not a complete configurable priority system.
+
+### CPU interrupt entry
+
+At the beginning of an instruction tick, SimpleCPU checks for a pending interrupt when it is not already servicing one. If an IRQ is pending, the CPU:
+
+1. records the current program counter as its interrupt return address;
+2. calculates the vector-table entry from `InterruptVectorBase + interruptNumber`;
+3. reads the handler address through the Bus;
+4. clears the selected pending interrupt;
+5. marks itself as servicing an interrupt;
+6. fetches and executes the first handler instruction.
+
+Conceptually:
+
+```text
+Peripheral
+    |
+    | request IRQ N
+    v
+InterruptController
+    |
+    | pending IRQ N
+    v
+SimpleCPU
+    |
+    | read vector[N]
+    v
+Bus / RAM
+    |
+    | handler address
+    v
+Interrupt handler
+```
+
+The CPU does not know whether IRQ N came from a Timer, GPIO device, CAN controller, UART, or another future peripheral.
+
+### Vector table
+
+SimpleCPU currently uses a memory-based vector table beginning at `SimpleCPU::InterruptVectorBase` (`0x0100`). Each vector-table entry contains the firmware address of the corresponding handler.
+
+```text
+InterruptVectorBase + 0 -> IRQ 0 handler address
+InterruptVectorBase + 1 -> IRQ 1 handler address
+InterruptVectorBase + 2 -> IRQ 2 handler address
+...
+```
+
+The current Simulator assigns IRQ 0 to the Timer.
+
+### Returning from an interrupt
+
+SimpleISA provides `RETI`. When executed during an interrupt handler, `RETI` restores the saved return program counter and clears the CPU's servicing-interrupt state so normal firmware execution can resume.
+
+Executing `RETI` outside an interrupt handler is an error.
+
+### Current interrupt limitations
+
+The current interrupt implementation deliberately establishes the architecture without trying to model every MCU interrupt feature:
+
+- interrupts do not nest;
+- the lowest numbered pending IRQ is selected first rather than using configurable priorities;
+- only the return program counter is automatically preserved;
+- general registers and flags are not automatically saved/restored;
+- interrupt entry does not currently consume a separately modeled latency cycle;
+- SimpleCPU checks `halted` before checking pending interrupts, so `HALT` cannot currently be awakened by an IRQ;
+- global interrupt masking and per-source CPU masks are not implemented.
+
+These are SimpleCPU limitations, not requirements imposed on every future CPU model.
+
+## 11. Clock and Time
 
 ### Fundamental cycle definition
 
@@ -238,29 +305,18 @@ One MicroSim cycle represents one hardware clock cycle of the configured MCU.
 `BoardConfig::clockHz` determines the relationship between elapsed time and hardware cycles:
 
 ```text
-cycles = elapsed seconds × clockHz
+cycles = elapsed seconds x clockHz
 ```
 
-For example:
-
-```text
-16 MHz controller + 1 ms = 16,000 cycles
-32 MHz controller + 1 ms = 32,000 cycles
-```
+For example, a 16 MHz controller advances 16,000 cycles in 1 ms, while a 32 MHz controller advances 32,000 cycles in 1 ms.
 
 ### Advancing cycles
 
 `Simulator::advanceCycles(N)` executes `N` simulated hardware cycles. It is not a time skip. Clock-driven hardware receives those cycles and may change state during them.
 
-This is useful for deterministic tests and low-level control.
-
 ### Advancing time
 
-`Simulator::advanceTime(std::chrono::nanoseconds)` converts requested elapsed time into hardware cycles using the configured clock frequency and then executes those cycles.
-
-Fractional-cycle timing is accumulated between calls so repeated small time advances do not continually discard sub-cycle time.
-
-This interface is useful for external simulators that already have their own time-management system.
+`Simulator::advanceTime(std::chrono::nanoseconds)` converts requested elapsed time into hardware cycles using the configured clock frequency and then executes those cycles. Fractional-cycle timing is accumulated between calls.
 
 ### Real-time mode
 
@@ -273,35 +329,9 @@ stopRealTime();
 isRealTimeRunning();
 ```
 
-`startRealTime()` establishes a timing reference using `std::chrono::steady_clock`.
+`updateRealTime()` measures elapsed monotonic host time with `std::chrono::steady_clock` and feeds that duration into the same advancement mechanism. The caller does not calculate elapsed time itself.
 
-Each call to `updateRealTime()` measures the elapsed monotonic host time since the previous update and passes that duration to `advanceTime()`. The caller therefore does not calculate or supply a delta time.
-
-Conceptually:
-
-```text
-std::chrono::steady_clock
-          │
-          │ elapsed real time
-          ▼
-    updateRealTime()
-          │
-          ▼
-     advanceTime()
-          │
-          │ clockHz conversion
-          ▼
-    advanceCycles()
-          │
-          ▼
- CPU + clocked peripherals
-```
-
-`steady_clock` is used because the requirement is elapsed time, not calendar time. Changes to the host's wall-clock/calendar setting should not change the elapsed-time measurement.
-
-Real-time execution is not based on host processor cycles. A faster host CPU does not inherently make the configured MCU clock faster.
-
-The current real-time interface is cooperative rather than background-threaded: the host calls `updateRealTime()` from its own loop. This avoids introducing threading and synchronization requirements into pin access and simulator state at this stage.
+Real-time execution is not based on host processor cycles. The current interface is cooperative rather than background-threaded: the host calls `updateRealTime()` from its own loop.
 
 ### Firmware-visible time
 
@@ -309,153 +339,71 @@ Firmware does not directly read the host's `steady_clock`. The host clock determ
 
 ### Halted CPU versus MCU clock
 
-A halted CPU does not imply that the MCU clock ceases to exist. Clock-driven peripherals may continue advancing while the CPU performs no further instruction fetches. Future sleep or power-management features may introduce explicit clock-gating behavior separately.
+A halted CPU does not imply that the MCU clock ceases to exist. Clock-driven peripherals may continue advancing while the CPU performs no further instruction fetches. In the current SimpleCPU implementation, however, a pending interrupt does not wake a halted CPU.
 
-## 11. Simulator
+## 12. Simulator
 
 `Simulator` represents one complete simulated controller instance. It owns and connects the board's current major components:
 
 - Bus
 - RAM
 - GPIO
+- InterruptController
 - Timer
 - SimpleCPU
 - Clock
 
-It constructs these components according to `BoardConfig`, coordinates clock-driven execution, exposes explicit cycle/time advancement, provides cooperative real-time synchronization, and exposes external pin-voltage accessors.
+Construction order matters where components hold references to one another: the interrupt controller must exist before the Timer and CPU that reference it.
+
+`Simulator` constructs components according to `BoardConfig`, attaches bus devices to configured address ranges, coordinates clock-driven execution, exposes explicit cycle/time advancement, provides cooperative real-time synchronization, and exposes external pin-voltage accessors.
 
 `Simulator` should not contain environment-specific application logic.
 
-## 12. External Environment Boundary
+## 13. External Environment Boundary
 
 MicroSim stops at the controller boundary.
 
-Consider a simulated vehicle. A vehicle/sensor model outside MicroSim might determine:
-
-```text
-Wheel speed -> sensor model -> 2.5 V
-```
-
-MicroSim receives only the electrical input:
+A vehicle/sensor model outside MicroSim might determine that a wheel-speed sensor produces 2.5 V. MicroSim receives only that electrical input:
 
 ```cpp
 bot.setPinVoltage(sensorPin, 2.5);
 ```
 
-Firmware interprets that signal according to the program running on the controller.
-
-The reverse applies to outputs:
-
-```cpp
-double outputVoltage = bot.getPinVoltage(outputPin);
-```
-
-The external environment decides whether that output activates a relay, changes motor behavior, illuminates a lamp, or causes another world effect.
+Firmware interprets that signal according to the program running on the controller. The reverse applies to outputs through `getPinVoltage()`.
 
 The current host-facing boundary therefore consists primarily of pin signals plus a choice of execution/time control:
 
 ```text
 External Environment
-       │
-       ├── setPinVoltage()
-       ├── getPinVoltage()
-       │
-       └── execution control
-             ├── updateRealTime()
-             ├── advanceTime()
-             └── advanceCycles()
+       |
+       +-- setPinVoltage()
+       +-- getPinVoltage()
+       |
+       +-- execution control
+             +-- updateRealTime()
+             +-- advanceTime()
+             +-- advanceCycles()
 ```
 
-A normal real-time integration may conceptually operate as:
-
-```text
-start real-time mode
-        │
-        ▼
-set controller inputs
-        │
-        ▼
-updateRealTime()
-        │
-        ▼
-firmware and hardware execute
-        │
-        ▼
-observe controller outputs
-        │
-        ▼
-repeat
-```
-
-An external simulator with its own clock may use `advanceTime()` instead. Automated tests may use `advanceCycles()` for exact deterministic control.
+The external environment does not need to know the GPIO register map, CPU register layout, interrupt-vector layout, or instruction encoding merely to exchange physical signals with the controller.
 
 ### End-to-end switched-light test
 
-`SimulationTests` now contains an end-to-end integration case representing a switched light.
+`SimulationTests` contains an end-to-end integration case representing a switched light. The external side changes a switch voltage and observes a light voltage, while firmware configures GPIO, reads the switch, makes the decision, and drives the output.
 
-The external side only performs the conceptual operations:
+This verifies the intended external boundary in both directions.
 
-```cpp
-bot.setPinVoltage(switchPin, voltage);
-bot.advanceCycles(...);
-double lightVoltage = bot.getPinVoltage(lightPin);
-```
+## 14. Multiple Controllers
 
-Firmware inside the simulated controller configures GPIO, polls the switch input, makes the decision, and drives the light output.
+A future system may contain multiple independent MicroSim instances connected by simulated communication hardware such as CAN.
 
-The complete path exercised is:
-
-```text
-External switch
-      │
-      ▼
-setPinVoltage()
-      │
-      ▼
-Pin -> GPIO -> Bus -> CPU
-                    │
-                    ▼
-                 Firmware
-                    │
-                    ▼
-CPU -> Bus -> GPIO -> Pin
-                       │
-                       ▼
-               getPinVoltage()
-                       │
-                       ▼
-                 External light
-```
-
-This test verifies the intended separation: the external environment does not need to know the GPIO register map, CPU register layout, or instruction encoding in order to exchange physical signals with the bot.
-
-## 13. Multiple Controllers
-
-A future system may contain multiple independent MicroSim instances:
-
-```text
-        ┌───────────┐
-        │   Bot A   │
-        │ MicroSim  │
-        └─────┬─────┘
-              │
-              │ shared CAN
-              │
-        ┌─────┴───────────┐
-        │                 │
- ┌──────▼─────┐    ┌──────▼─────┐
- │   Bot B    │    │   Bot C    │
- │ MicroSim   │    │ MicroSim   │
- └────────────┘    └────────────┘
-```
-
-Each controller remains an independent embedded system with its own CPU, memory, peripherals, firmware, configuration, and clock state.
+Each controller remains an independent embedded system with its own CPU, memory, peripherals, firmware, configuration, clock state, and interrupt state.
 
 CAN or similar controller-to-controller communication belongs to the simulated embedded system and is distinct from the external world/environment interface.
 
 The existing multi-node `Simulation` infrastructure is an early step toward this capability; its final role and API are not yet settled.
 
-## 14. Testing
+## 15. Testing
 
 Current test targets include:
 
@@ -465,40 +413,53 @@ Current test targets include:
 - `TimerTests`
 - `CPUTests`
 - `SimulationTests`
+- `InterruptControllerTests`
 
-Tests should be added whenever new hardware behavior is introduced or a bug is discovered.
-
-Important integration paths include:
-
-```text
-Firmware -> CPU -> Bus -> GPIO -> Pin
-```
-
-and:
+Subsystem tests verify components independently. Integration tests verify important complete paths, including:
 
 ```text
-External Input -> Pin -> GPIO -> Bus -> CPU
+External Input -> Pin -> GPIO -> Bus -> CPU -> Firmware
+Firmware -> CPU -> Bus -> GPIO -> Pin -> External Output
 ```
 
-The switched-light integration test exercises both directions as one complete system.
+and the asynchronous interrupt path:
 
-Timing tests also cover explicit time advancement and real-time mode state. Real-time tests should avoid relying on exact host sleep/scheduling intervals where deterministic tests can verify the same underlying behavior more reliably.
+```text
+Timer
+  |
+  v
+InterruptController
+  |
+  v
+SimpleCPU
+  |
+  v
+Vector Table
+  |
+  v
+Firmware Handler
+  |
+  v
+RETI -> interrupted firmware
+```
 
-## 15. Current Limitations
+Timing tests cover explicit time advancement and real-time mode state. Real-time tests should avoid relying on exact host sleep/scheduling intervals where deterministic tests can verify the same underlying behavior more reliably.
+
+## 16. Current Limitations
 
 MicroSim is early in development. Current limitations include:
 
-- Only one Timer object is currently constructed even though `timerCount` exists in configuration.
+- Only one Timer object is currently constructed.
+- Interrupt behavior is intentionally basic as described in the interrupt section.
 - The GPIO electrical model is intentionally simplified.
 - The generic GPIO interface does not yet model alternate functions, analog conversion, pull-ups, output-driver characteristics, or pin multiplexing.
 - Real-time execution currently requires cooperative `updateRealTime()` calls from the host loop; there is no background execution thread.
 - CAN and other multi-controller communication are not yet implemented.
-- Interrupt handling is not yet implemented.
 - DMA and multiple bus masters are not yet implemented.
 
 These limitations should be addressed incrementally rather than by introducing assumptions that unnecessarily constrain future board models.
 
-## 16. Out of Scope
+## 17. Out of Scope
 
 The core MicroSim project is not intended to become:
 
@@ -511,20 +472,19 @@ The core MicroSim project is not intended to become:
 
 External systems may implement those capabilities and communicate with MicroSim through defined interfaces.
 
-## 17. Future Architecture
+## 18. Future Architecture
 
 Likely future areas include:
 
-- refinement of the external integration API as additional hardware interfaces are added
-- CAN communication
-- interrupts
-- ADC and analog-capable peripherals
-- PWM
-- additional timer instances
-- more configurable peripheral layouts
-- additional CPUs and instruction sets
-- assembler/compiler tooling
-- configurable board profiles
-- richer pin capabilities where required
+- refinement of the external integration API as additional hardware interfaces are added;
+- more configurable peripheral construction and layouts;
+- additional timers and peripherals;
+- analog input / ADC support;
+- PWM and alternate pin functions;
+- more advanced interrupt masking, priorities, context handling, or wake behavior where required;
+- CAN or similar controller-to-controller communication;
+- additional CPU architectures and instruction sets;
+- assembler/compiler tooling;
+- DMA and multiple bus masters where a concrete use case requires them.
 
-These are architectural directions rather than promises of currently implemented functionality.
+Future features should preserve the central separation between simulated controller hardware, firmware/toolchains, and the external simulation environment.
