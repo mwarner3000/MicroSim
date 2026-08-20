@@ -796,6 +796,48 @@ int main()
 		assert(cpu.getRegister(0) > 1);
 	}
 	
+	// Simulation should support independently
+	// configured controller nodes.
+	{
+		Simulation simulation;
+
+		BoardConfig configA;
+		configA.clockHz = 16'000'000;
+		configA.ramWords = 1024;
+		configA.gpioPins = 8;
+
+		BoardConfig configB;
+		configB.clockHz = 32'000'000;
+		configB.ramWords = 2048;
+		configB.gpioPins = 100;
+
+		Simulator& nodeA =
+			simulation.createNode(configA);
+
+		Simulator& nodeB =
+			simulation.createNode(configB);
+
+		assert(simulation.getNodeCount() == 2);
+
+		assert(
+			nodeA.getConfig().clockHz ==
+			16'000'000
+		);
+
+		assert(
+			nodeB.getConfig().clockHz ==
+			32'000'000
+		);
+
+		assert(
+			nodeA.getGPIO().getPinCount() == 8
+		);
+
+		assert(
+			nodeB.getGPIO().getPinCount() == 100
+		);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;

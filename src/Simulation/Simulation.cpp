@@ -11,6 +11,17 @@ Simulator& Simulation::createNode()
     return *nodes.back();
 }
 
+Simulator& Simulation::createNode(
+    const BoardConfig& config
+)
+{
+    nodes.push_back(
+        std::make_unique<Simulator>(config)
+    );
+
+    return *nodes.back();
+}
+
 Simulator& Simulation::getNode(std::size_t index)
 {
     if (index >= nodes.size())

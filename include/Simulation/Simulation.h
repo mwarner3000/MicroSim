@@ -5,11 +5,15 @@
 #include <vector>
 
 #include "Simulator/Simulator.h"
+#include "Board/BoardConfig.h"
 
 class Simulation
 {
 public:
-    Simulator& createNode();
+	Simulator& createNode();
+    Simulator& createNode(
+		const BoardConfig& config
+	);
 
     Simulator& getNode(std::size_t index);
     const Simulator& getNode(std::size_t index) const;
