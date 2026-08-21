@@ -2,8 +2,11 @@
 
 #include <cstddef>
 #include <queue>
+#include <vector>
 
 #include "Communication/CANFrame.h"
+
+class CANController;
 
 class CANBus
 {
@@ -15,7 +18,10 @@ public:
     CANFrame receive();
 
     std::size_t getPendingFrameCount() const;
+	
+	void attach(CANController& controller);
 
 private:
     std::queue<CANFrame> pendingFrames;
+	std::vector<CANController*> controllers;
 };

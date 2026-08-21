@@ -1,4 +1,5 @@
 #include "Communication/CANBus.h"
+#include "Communication/CANController.h"
 
 #include <stdexcept>
 
@@ -9,6 +10,12 @@ void CANBus::transmit(
     frame.validate();
 
     pendingFrames.push(frame);
+
+    for (CANController* controller :
+         controllers)
+    {
+        controller->receiveFromBus(frame);
+    }
 }
 
 bool CANBus::hasPendingFrame() const
@@ -36,4 +43,12 @@ CANFrame CANBus::receive()
 std::size_t CANBus::getPendingFrameCount() const
 {
     return pendingFrames.size();
+}
+
+void CANBus::attach(
+    CANController& controller
+)
+{
+    controllers.push_back(&controller);
+    controller.connect(*this);
 }
