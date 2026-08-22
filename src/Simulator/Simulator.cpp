@@ -17,6 +17,7 @@ Simulator::Simulator(const BoardConfig& config)
 		),
 		interruptController(),
 		timer(interruptController, 0),
+		canController(),
 		cpu(bus, interruptController)
 {
 	if (config.ramWords == 0)
@@ -43,6 +44,12 @@ Simulator::Simulator(const BoardConfig& config)
 		timer,
 		config.timerBase,
 		config.timerBase + 4
+	);
+	
+	bus.attach(
+		canController,
+		config.canBase,
+		config.canBase + 21
 	);
 
     clockables.push_back(&cpu);
@@ -92,6 +99,11 @@ Timer& Simulator::getTimer()
 SimpleCPU& Simulator::getCPU()
 {
     return cpu;
+}
+
+CANController& Simulator::getCANController()
+{
+    return canController;
 }
 
 RunResult Simulator::run(std::uint64_t maxCycles)

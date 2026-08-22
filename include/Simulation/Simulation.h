@@ -6,6 +6,7 @@
 
 #include "Simulator/Simulator.h"
 #include "Board/BoardConfig.h"
+#include "Communication/CANBus.h"
 
 class Simulation
 {
@@ -24,4 +25,5 @@ public:
 
 private:
     std::vector<std::unique_ptr<Simulator>> nodes;
+	CANBus canBus;
 };

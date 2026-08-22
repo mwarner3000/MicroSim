@@ -838,6 +838,68 @@ int main()
 		);
 	}
 	
+	// Two simulated controllers should communicate
+	// over the shared CAN bus through memory-mapped
+	// CAN registers.
+	{
+		Simulation simulation;
+
+		Simulator& nodeA =
+			simulation.createNode();
+
+		Simulator& nodeB =
+			simulation.createNode();
+
+		const std::uint32_t canA =
+			nodeA.getConfig().canBase;
+
+		const std::uint32_t canB =
+			nodeB.getConfig().canBase;
+
+		Bus& busA = nodeA.getBus();
+		Bus& busB = nodeB.getBus();
+
+		// Node A TX frame:
+		// ID = 0x123
+		// length = 2
+		// data = AA 55
+
+		busA.write(canA + 2, 0x123);
+		busA.write(canA + 3, 2);
+
+		busA.write(canA + 4, 0xAA);
+		busA.write(canA + 5, 0x55);
+
+		// CONTROL bit 0 = transmit.
+		busA.write(canA + 0, 1);
+
+		// Node B should now have an RX frame.
+		assert(
+			busB.read(canB + 1) == 1
+		);
+
+		assert(
+			busB.read(canB + 12) == 0x123
+		);
+
+		assert(
+			busB.read(canB + 13) == 2
+		);
+
+		assert(
+			busB.read(canB + 14) == 0xAA
+		);
+
+		assert(
+			busB.read(canB + 15) == 0x55
+		);
+
+		// Sender should not receive its own frame.
+		assert(
+			busA.read(canA + 1) == 0
+		);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;

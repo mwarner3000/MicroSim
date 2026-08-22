@@ -8,7 +8,13 @@ Simulator& Simulation::createNode()
         std::make_unique<Simulator>()
     );
 
-    return *nodes.back();
+    Simulator& node = *nodes.back();
+
+    canBus.attach(
+        node.getCANController()
+    );
+
+    return node;
 }
 
 Simulator& Simulation::createNode(
@@ -19,7 +25,13 @@ Simulator& Simulation::createNode(
         std::make_unique<Simulator>(config)
     );
 
-    return *nodes.back();
+    Simulator& node = *nodes.back();
+
+    canBus.attach(
+        node.getCANController()
+    );
+
+    return node;
 }
 
 Simulator& Simulation::getNode(std::size_t index)

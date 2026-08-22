@@ -19,4 +19,5 @@ struct BoardConfig
     std::uint32_t ramBase   = 0x00000000;
     std::uint32_t gpioBase  = 0x00001000;
     std::uint32_t timerBase = 0x00002000;
+	std::uint32_t canBase = 0x00005000;
 };

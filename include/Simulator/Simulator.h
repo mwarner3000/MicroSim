@@ -14,6 +14,7 @@
 #include "Simulator/Clock.h"
 #include "Simulator/IClockable.h"
 #include "Interrupts/InterruptController.h"
+#include "Communication/CANController.h"
 
 enum class RunResult
 {
@@ -34,6 +35,7 @@ public:
     SimpleCPU& getCPU();
     Clock& getClock();
 	InterruptController& getInterruptController();
+	CANController& getCANController();
 
     const BoardConfig& getConfig() const;
 
@@ -68,6 +70,7 @@ private:
 	InterruptController interruptController;
 
 	Timer timer;
+	CANController canController;
 	SimpleCPU cpu;
 
     Clock clock;

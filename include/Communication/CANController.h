@@ -7,6 +7,7 @@
 
 #include "Bus/IBusDevice.h"
 #include "Communication/CANFrame.h"
+#include "Communication/CANController.h"
 
 class CANBus;
 
@@ -26,6 +27,7 @@ public:
     bool hasReceivedFrame() const;
 
     CANFrame receive();
+	CANController& getCANController();
 
     std::size_t getReceivedFrameCount() const;
 	
