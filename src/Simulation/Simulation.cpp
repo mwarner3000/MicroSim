@@ -2,6 +2,11 @@
 
 #include <stdexcept>
 
+Simulation::Simulation ()
+	: elapsedTime(0)
+{
+}
+
 Simulator& Simulation::createNode()
 {
     nodes.push_back(
@@ -63,10 +68,19 @@ std::size_t Simulation::getNodeCount() const
     return nodes.size();
 }
 
-void Simulation::tick()
+std::chrono::nanoseconds Simulation::getCurrentTime() const
 {
+	return elapsedTime;
+}
+
+void Simulation::advanceTime(
+    std::chrono::nanoseconds duration
+)
+{
+    elapsedTime += duration;
+
     for (auto& node : nodes)
     {
-        node->tick();
+        node->advanceTime(duration);
     }
 }

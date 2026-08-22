@@ -60,7 +60,9 @@ int main()
             )
         );
 
-        simulation.tick();
+        simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
 
         assert(nodeA.getCPU().getRegister(1) == 10);
         assert(nodeB.getCPU().getRegister(1) == 20);
@@ -73,9 +75,15 @@ int main()
         Simulator& nodeA = simulation.createNode();
         Simulator& nodeB = simulation.createNode();
 
-        simulation.tick();
-        simulation.tick();
-        simulation.tick();
+        simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
+        simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
+        simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
 
         assert(nodeA.getClock().getCycle() == 3);
         assert(nodeB.getClock().getCycle() == 3);
@@ -1197,7 +1205,9 @@ int main()
 		// - B to execute the complete handler
 		for (int i = 0; i < 25; ++i)
 		{
-			simulation.tick();
+			simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
 		}
 
 		// Node B firmware should have received the
@@ -1230,6 +1240,76 @@ int main()
 			!nodeB
 				.getInterruptController()
 				.isPending(1)
+		);
+	}
+	
+	{
+		Simulation simulation;
+
+		assert(
+			simulation.getCurrentTime() ==
+			std::chrono::nanoseconds(0)
+		);
+
+		simulation.advanceTime(
+			std::chrono::milliseconds(5)
+		);
+
+		assert(
+			simulation.getCurrentTime() ==
+			std::chrono::milliseconds(5)
+		);
+	}
+	
+	{
+		Simulation simulation;
+
+		BoardConfig configA;
+		configA.clockHz = 16'000'000;
+
+		BoardConfig configB;
+		configB.clockHz = 32'000'000;
+
+		Simulator& nodeA =
+			simulation.createNode(configA);
+
+		Simulator& nodeB =
+			simulation.createNode(configB);
+		
+		nodeA.getBus().write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+
+		nodeB.getBus().write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+
+		nodeA.getCPU().reset();
+		nodeB.getCPU().reset();
+
+		simulation.advanceTime(
+			std::chrono::milliseconds(1)
+		);
+
+		assert(
+			simulation.getCurrentTime() ==
+			std::chrono::milliseconds(1)
+		);
+
+		assert(
+			nodeA.getClock().getCycle() ==
+			16'000
+		);
+
+		assert(
+			nodeB.getClock().getCycle() ==
+			32'000
 		);
 	}
 	
