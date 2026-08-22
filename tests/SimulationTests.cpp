@@ -900,6 +900,339 @@ int main()
 		);
 	}
 	
+	// End-to-end CAN firmware interrupt test:
+	//
+	// Node A firmware sends a CAN frame.
+	// Node B CAN hardware receives it.
+	// CAN raises IRQ 1.
+	// Node B CPU enters its interrupt handler.
+	// Handler reads the frame, acknowledges it,
+	// then returns with RETI.
+	{
+		Simulation simulation;
+
+		Simulator& nodeA =
+			simulation.createNode();
+
+		Simulator& nodeB =
+			simulation.createNode();
+
+		Bus& busA = nodeA.getBus();
+		Bus& busB = nodeB.getBus();
+
+		SimpleCPU& cpuB = nodeB.getCPU();
+
+		const std::uint32_t canA =
+			nodeA.getConfig().canBase;
+
+		const std::uint32_t canB =
+			nodeB.getConfig().canBase;
+
+		// --------------------------------------------
+		// Node A firmware
+		//
+		// Send:
+		// ID     = 0x123
+		// Length = 2
+		// Data   = AA 55
+		// --------------------------------------------
+
+		// 0: R0 = 0x123
+		busA.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				0x123
+			)
+		);
+
+		// 1: TX_ID = R0
+		busA.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canA + 2
+			)
+		);
+
+		// 2: R0 = 2
+		busA.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				2
+			)
+		);
+
+		// 3: TX_LENGTH = 2
+		busA.write(
+			3,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canA + 3
+			)
+		);
+
+		// 4: R0 = 0xAA
+		busA.write(
+			4,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				0xAA
+			)
+		);
+
+		// 5: TX_DATA_0 = 0xAA
+		busA.write(
+			5,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canA + 4
+			)
+		);
+
+		// 6: R0 = 0x55
+		busA.write(
+			6,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				0x55
+			)
+		);
+
+		// 7: TX_DATA_1 = 0x55
+		busA.write(
+			7,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canA + 5
+			)
+		);
+
+		// 8: R0 = 1
+		busA.write(
+			8,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 9: CONTROL bit 0 = transmit
+		busA.write(
+			9,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canA
+			)
+		);
+
+		// 10: remain here after transmission
+		busA.write(
+			10,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JMP,
+				0,
+				0,
+				10
+			)
+		);
+
+		// --------------------------------------------
+		// Node B normal firmware
+		//
+		// Enable CAN receive interrupt, then idle
+		// in a firmware loop.
+		// --------------------------------------------
+
+		// 0: R0 = 1
+		busB.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				1
+			)
+		);
+
+		// 1: RX_INTERRUPT_ENABLE = 1
+		busB.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				canB + 22
+			)
+		);
+
+		// 2: idle loop
+		busB.write(
+			2,
+			SimpleISA::encode(
+				SimpleISA::Opcode::JMP,
+				0,
+				0,
+				2
+			)
+		);
+
+		// --------------------------------------------
+		// Node B IRQ 1 vector
+		// --------------------------------------------
+
+		busB.write(
+			SimpleCPU::InterruptVectorBase + 1,
+			100
+		);
+
+		// --------------------------------------------
+		// Node B CAN interrupt handler
+		// --------------------------------------------
+
+		// 100: R1 = RX_ID
+		busB.write(
+			100,
+			SimpleISA::encode(
+				SimpleISA::Opcode::LOAD,
+				1,
+				0,
+				canB + 12
+			)
+		);
+
+		// 101: R2 = RX_LENGTH
+		busB.write(
+			101,
+			SimpleISA::encode(
+				SimpleISA::Opcode::LOAD,
+				2,
+				0,
+				canB + 13
+			)
+		);
+
+		// 102: R3 = RX_DATA_0
+		busB.write(
+			102,
+			SimpleISA::encode(
+				SimpleISA::Opcode::LOAD,
+				3,
+				0,
+				canB + 14
+			)
+		);
+
+		// 103: R4 = RX_DATA_1
+		busB.write(
+			103,
+			SimpleISA::encode(
+				SimpleISA::Opcode::LOAD,
+				4,
+				0,
+				canB + 15
+			)
+		);
+
+		// 104: R5 = 2
+		//
+		// CONTROL bit 1 acknowledges/pops
+		// the current RX frame.
+		busB.write(
+			104,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				5,
+				0,
+				2
+			)
+		);
+
+		// 105: acknowledge RX frame
+		busB.write(
+			105,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				5,
+				0,
+				canB
+			)
+		);
+
+		// 106: return from interrupt
+		busB.write(
+			106,
+			SimpleISA::encode(
+				SimpleISA::Opcode::RETI
+			)
+		);
+
+		nodeA.getCPU().reset();
+		nodeB.getCPU().reset();
+
+		// Enough global cycles for:
+		// - B to enable its CAN IRQ
+		// - A to construct/transmit the frame
+		// - B to execute the complete handler
+		for (int i = 0; i < 25; ++i)
+		{
+			simulation.tick();
+		}
+
+		// Node B firmware should have received the
+		// actual contents of Node A's frame.
+		assert(
+			cpuB.getRegister(1) == 0x123
+		);
+
+		assert(
+			cpuB.getRegister(2) == 2
+		);
+
+		assert(
+			cpuB.getRegister(3) == 0xAA
+		);
+
+		assert(
+			cpuB.getRegister(4) == 0x55
+		);
+
+		// Handler acknowledged the frame, so the
+		// RX queue should now be empty.
+		assert(
+			busB.read(canB + 1) == 0
+		);
+
+		// IRQ should have been accepted and cleared
+		// by the CPU.
+		assert(
+			!nodeB
+				.getInterruptController()
+				.isPending(1)
+		);
+	}
+	
     std::cout << "Simulation tests passed.\n";
 
     return 0;
