@@ -4,45 +4,20 @@
 #include <stdexcept>
 
 void CANBus::transmit(
+    CANController& sender,
     const CANFrame& frame
 )
 {
     frame.validate();
 
-    pendingFrames.push(frame);
-
     for (CANController* controller :
          controllers)
     {
-        controller->receiveFromBus(frame);
+        if (controller != &sender)
+        {
+            controller->receiveFromBus(frame);
+        }
     }
-}
-
-bool CANBus::hasPendingFrame() const
-{
-    return !pendingFrames.empty();
-}
-
-CANFrame CANBus::receive()
-{
-    if (pendingFrames.empty())
-    {
-        throw std::runtime_error(
-            "CAN bus has no pending frame"
-        );
-    }
-
-    CANFrame frame =
-        pendingFrames.front();
-
-    pendingFrames.pop();
-
-    return frame;
-}
-
-std::size_t CANBus::getPendingFrameCount() const
-{
-    return pendingFrames.size();
 }
 
 void CANBus::attach(

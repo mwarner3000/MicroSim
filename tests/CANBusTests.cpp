@@ -1,15 +1,23 @@
 #include <cassert>
 #include <iostream>
-#include <stdexcept>
 
 #include "Communication/CANBus.h"
+#include "Communication/CANController.h"
 
 int main()
 {
-    // A transmitted frame should be placed
-    // onto the CAN bus.
+    // A frame transmitted by one controller should
+    // be delivered to every other attached controller.
     {
         CANBus bus;
+
+        CANController controllerA;
+        CANController controllerB;
+        CANController controllerC;
+
+        bus.attach(controllerA);
+        bus.attach(controllerB);
+        bus.attach(controllerC);
 
         CANFrame frame;
         frame.id = 0x120;
@@ -17,69 +25,77 @@ int main()
         frame.data[0] = 0x12;
         frame.data[1] = 0x34;
 
-        assert(!bus.hasPendingFrame());
-
-        bus.transmit(frame);
-
-        assert(bus.hasPendingFrame());
-        assert(
-            bus.getPendingFrameCount() == 1
-        );
-
-        CANFrame received =
-            bus.receive();
-
-        assert(received.id == 0x120);
-        assert(received.length == 2);
-        assert(received.data[0] == 0x12);
-        assert(received.data[1] == 0x34);
-
-        assert(!bus.hasPendingFrame());
-    }
-
-    // Multiple frames should retain
-    // transmission order for now.
-    {
-        CANBus bus;
-
-        CANFrame first;
-        first.id = 0x100;
-
-        CANFrame second;
-        second.id = 0x200;
-
-        bus.transmit(first);
-        bus.transmit(second);
+        controllerA.transmit(frame);
 
         assert(
-            bus.getPendingFrameCount() == 2
+            !controllerA.hasReceivedFrame()
         );
 
-        assert(bus.receive().id == 0x100);
-        assert(bus.receive().id == 0x200);
+        assert(
+            controllerB.hasReceivedFrame()
+        );
+
+        assert(
+            controllerC.hasReceivedFrame()
+        );
+
+        CANFrame frameB =
+            controllerB.receive();
+
+        CANFrame frameC =
+            controllerC.receive();
+
+        assert(frameB.id == 0x120);
+        assert(frameC.id == 0x120);
+
+        assert(frameB.length == 2);
+        assert(frameC.length == 2);
+
+        assert(frameB.data[0] == 0x12);
+        assert(frameB.data[1] == 0x34);
+
+        assert(frameC.data[0] == 0x12);
+        assert(frameC.data[1] == 0x34);
     }
 
-    // Receiving from an empty bus should fail.
+    // Receiving a frame on one controller must
+    // not consume another controller's copy.
     {
         CANBus bus;
 
-        bool exceptionThrown = false;
+        CANController sender;
+        CANController receiverA;
+        CANController receiverB;
 
-        try
-        {
-            bus.receive();
-        }
-        catch (const std::runtime_error&)
-        {
-            exceptionThrown = true;
-        }
+        bus.attach(sender);
+        bus.attach(receiverA);
+        bus.attach(receiverB);
 
-        assert(exceptionThrown);
+        CANFrame frame;
+        frame.id = 0x200;
+
+        sender.transmit(frame);
+
+        receiverA.receive();
+
+        assert(
+            !receiverA.hasReceivedFrame()
+        );
+
+        assert(
+            receiverB.hasReceivedFrame()
+        );
     }
 
-    // Invalid frames must not enter the bus.
+    // Invalid frames must not be delivered.
     {
         CANBus bus;
+
+        CANController sender;
+        CANController receiver;
+
+        bus.attach(sender);
+        bus.attach(receiver);
 
         CANFrame frame;
         frame.length = 9;
@@ -88,7 +104,7 @@ int main()
 
         try
         {
-            bus.transmit(frame);
+            sender.transmit(frame);
         }
         catch (const std::out_of_range&)
         {
@@ -96,7 +112,10 @@ int main()
         }
 
         assert(exceptionThrown);
-        assert(!bus.hasPendingFrame());
+
+        assert(
+            !receiver.hasReceivedFrame()
+        );
     }
 
     std::cout << "CANBusTests passed\n";

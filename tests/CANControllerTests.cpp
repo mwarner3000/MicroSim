@@ -46,7 +46,7 @@ int main()
         controllerA.transmit(frame);
 
         assert(
-            controllerA.getReceivedFrameCount() == 1
+            controllerA.getReceivedFrameCount() == 0
         );
 
         assert(

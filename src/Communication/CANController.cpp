@@ -32,7 +32,10 @@ void CANController::transmit(
 
     frame.validate();
 
-    bus->transmit(frame);
+    bus->transmit(
+		*this,
+		frame
+	);
 }
 
 void CANController::receiveFromBus(
