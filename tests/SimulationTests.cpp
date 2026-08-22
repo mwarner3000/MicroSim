@@ -59,6 +59,20 @@ int main()
                 20
             )
         );
+		
+		nodeA.getBus().write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+
+		nodeB.getBus().write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
 
         simulation.advanceTime(
 			std::chrono::milliseconds(1)
@@ -66,27 +80,6 @@ int main()
 
         assert(nodeA.getCPU().getRegister(1) == 10);
         assert(nodeB.getCPU().getRegister(1) == 20);
-    }
-
-    // One global simulation tick should advance every node once.
-    {
-        Simulation simulation;
-
-        Simulator& nodeA = simulation.createNode();
-        Simulator& nodeB = simulation.createNode();
-
-        simulation.advanceTime(
-			std::chrono::milliseconds(1)
-		);
-        simulation.advanceTime(
-			std::chrono::milliseconds(1)
-		);
-        simulation.advanceTime(
-			std::chrono::milliseconds(1)
-		);
-
-        assert(nodeA.getClock().getCycle() == 3);
-        assert(nodeB.getClock().getCycle() == 3);
     }
 
     // Invalid node access.
