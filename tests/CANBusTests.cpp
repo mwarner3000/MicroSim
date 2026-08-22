@@ -11,9 +11,23 @@ int main()
     {
         CANBus bus;
 
-        CANController controllerA;
-        CANController controllerB;
-        CANController controllerC;
+        InterruptController interruptsA;
+        InterruptController interruptsB;
+		InterruptController interruptsC;
+		
+		CANController controllerA(
+			interruptsA,
+			1
+		);
+
+		CANController controllerB(
+			interruptsB,
+			1
+		);
+		CANController controllerC(
+			interruptsC,
+			1
+		);
 
         bus.attach(controllerA);
         bus.attach(controllerB);
@@ -63,9 +77,24 @@ int main()
     {
         CANBus bus;
 
-        CANController sender;
-        CANController receiverA;
-        CANController receiverB;
+        InterruptController senderInterrupts;
+		InterruptController receiverAInterrupts;
+		InterruptController receiverBInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiverA(
+			receiverAInterrupts,
+			1
+		);
+		
+		CANController receiverB(
+			receiverBInterrupts,
+			1
+		);
 
         bus.attach(sender);
         bus.attach(receiverA);
@@ -91,8 +120,18 @@ int main()
     {
         CANBus bus;
 
-        CANController sender;
-        CANController receiver;
+        InterruptController senderInterrupts;
+		InterruptController receiverInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiver(
+			receiverInterrupts,
+			1
+		);
 
         bus.attach(sender);
         bus.attach(receiver);

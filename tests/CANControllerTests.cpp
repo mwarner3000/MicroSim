@@ -9,7 +9,11 @@ int main()
 {
     // Controller should begin disconnected.
     {
-        CANController controller;
+		InterruptController interrupts;
+		CANController controller(
+			interrupts,
+			1
+		);
 
         assert(!controller.isConnected());
     }
@@ -17,7 +21,11 @@ int main()
     // Attaching should connect the controller.
     {
         CANBus bus;
-        CANController controller;
+        InterruptController interrupts;
+		CANController controller(
+			interrupts,
+			1
+		);
 
         bus.attach(controller);
 
@@ -29,9 +37,23 @@ int main()
     {
         CANBus bus;
 
-        CANController controllerA;
-        CANController controllerB;
-        CANController controllerC;
+        InterruptController interruptsA;
+        InterruptController interruptsB;
+		InterruptController interruptsC;
+		
+		CANController controllerA(
+			interruptsA,
+			1
+		);
+
+		CANController controllerB(
+			interruptsB,
+			1
+		);
+		CANController controllerC(
+			interruptsC,
+			1
+		);
 
         bus.attach(controllerA);
         bus.attach(controllerB);
@@ -77,7 +99,11 @@ int main()
 
     // A disconnected controller cannot transmit.
     {
-        CANController controller;
+        InterruptController interrupts;
+		CANController controller(
+			interrupts,
+			1
+		);
 
         CANFrame frame;
 
@@ -100,8 +126,18 @@ int main()
 	{
 		CANBus bus;
 
-		CANController sender;
-		CANController receiver;
+		InterruptController senderInterrupts;
+		InterruptController receiverInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiver(
+			receiverInterrupts,
+			1
+		);
 
 		bus.attach(sender);
 		bus.attach(receiver);
@@ -129,7 +165,11 @@ int main()
 	
 	//boundary test
 	{
-		CANController controller;
+		InterruptController interrupts;
+		CANController controller(
+			interrupts,
+			1
+		);
 
 		bool exceptionThrown = false;
 
@@ -150,8 +190,18 @@ int main()
 	{
 		CANBus bus;
 
-		CANController sender;
-		CANController receiver;
+		InterruptController senderInterrupts;
+		InterruptController receiverInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiver(
+			receiverInterrupts,
+			1
+		);
 
 		bus.attach(sender);
 		bus.attach(receiver);
@@ -176,7 +226,108 @@ int main()
 
 		assert(receiver.read(1) == 0);
 	}
+	
+	// Receiving a frame should raise the configured IRQ
+	// when receive interrupts are enabled.
+	{
+		CANBus bus;
 
+		InterruptController senderInterrupts;
+		InterruptController receiverInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiver(
+			receiverInterrupts,
+			1
+		);
+
+		bus.attach(sender);
+		bus.attach(receiver);
+
+		receiver.write(22, 1);
+
+		CANFrame frame;
+		frame.id = 0x123;
+
+		sender.transmit(frame);
+
+		assert(
+			receiverInterrupts.isPending(1)
+		);
+	}
+
+	// Disabled RX interrupts should not raise an IRQ.
+	{
+		CANBus bus;
+
+		InterruptController senderInterrupts;
+		InterruptController receiverInterrupts;
+
+		CANController sender(
+			senderInterrupts,
+			1
+		);
+
+		CANController receiver(
+			receiverInterrupts,
+			1
+		);
+
+		bus.attach(sender);
+		bus.attach(receiver);
+
+		CANFrame frame;
+		sender.transmit(frame);
+
+		assert(
+			!receiverInterrupts.isPending(1)
+		);
+	}
+	
+	{
+		InterruptController interrupts;
+
+		CANController controller(
+			interrupts,
+			1
+		);
+
+		// Configure exact-ID filter for 0x120.
+		controller.write(24, 0x120);
+		controller.write(23, 1);
+		
+
+		CANFrame acceptedFrame;
+		acceptedFrame.id = 0x120;
+
+		CANFrame rejectedFrame;
+		rejectedFrame.id = 0x121;
+
+		controller.receiveFromBus(
+			acceptedFrame
+		);
+		
+		assert(controller.read(23) == 1);
+		assert(controller.read(24) == 0x120);
+
+		assert(
+			controller.getReceivedFrameCount() == 1
+		);
+
+		controller.receiveFromBus(
+			rejectedFrame
+		);
+
+		// Rejected frame should not have been queued.
+		assert(
+			controller.getReceivedFrameCount() == 1
+		);
+	}
+	
     std::cout
         << "CANControllerTests passed\n";
 

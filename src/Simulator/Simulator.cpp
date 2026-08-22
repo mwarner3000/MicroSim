@@ -12,13 +12,13 @@ Simulator::Simulator(const BoardConfig& config)
       ram(config.ramWords),
       gpio(
 			config.gpioPins,
-			config.logicVoltage,
+			config.logicVoltage, 
 			config.digitalHighThreshold
-		),
-		interruptController(),
-		timer(interruptController, 0),
-		canController(),
-		cpu(bus, interruptController)
+			),
+	  interruptController(),
+	  timer(interruptController, 0),
+	  canController(interruptController, 1),
+	  cpu(bus, interruptController)
 {
 	if (config.ramWords == 0)
 	{
@@ -49,7 +49,7 @@ Simulator::Simulator(const BoardConfig& config)
 	bus.attach(
 		canController,
 		config.canBase,
-		config.canBase + 21
+		config.canBase + 24
 	);
 
     clockables.push_back(&cpu);

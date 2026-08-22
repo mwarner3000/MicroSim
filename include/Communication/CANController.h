@@ -8,13 +8,17 @@
 #include "Bus/IBusDevice.h"
 #include "Communication/CANFrame.h"
 #include "Communication/CANController.h"
+#include "Interrupts/InterruptController.h"
 
 class CANBus;
 
 class CANController : public IBusDevice
 {
 public:
-    CANController();
+    CANController(
+		InterruptController& interruptController,
+		std::size_t interruptNumber
+	);
 
     void connect(CANBus& bus);
 
@@ -27,7 +31,6 @@ public:
     bool hasReceivedFrame() const;
 
     CANFrame receive();
-	CANController& getCANController();
 
     std::size_t getReceivedFrameCount() const;
 	
@@ -44,4 +47,9 @@ private:
     CANBus* bus;
     std::queue<CANFrame> receiveQueue;
 	CANFrame transmitFrame;
+	InterruptController& interruptController;
+	std::size_t interruptNumber;
+	bool receiveInterruptEnabled;
+	bool filterEnabled;
+	std::uint32_t filterID;
 };

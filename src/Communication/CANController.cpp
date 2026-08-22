@@ -4,8 +4,16 @@
 
 #include "Communication/CANBus.h"
 
-CANController::CANController()
-    : bus(nullptr)
+CANController::CANController(
+    InterruptController& interruptController,
+    std::size_t interruptNumber
+)
+    : bus(nullptr),
+      interruptController(interruptController),
+      interruptNumber(interruptNumber),
+      receiveInterruptEnabled(false),
+	  filterEnabled(false),
+	  filterID(0)
 {
 }
 
@@ -43,8 +51,21 @@ void CANController::receiveFromBus(
 )
 {
     frame.validate();
+	
+	if (filterEnabled && frame.id != filterID)
+	{
+		return;
+	}
+			
 
     receiveQueue.push(frame);
+
+    if (receiveInterruptEnabled)
+    {
+        interruptController.request(
+            interruptNumber
+        );
+    }
 }
 
 bool CANController::hasReceivedFrame() const
@@ -118,6 +139,20 @@ void CANController::write(
             transmitFrame.length =
                 static_cast<std::size_t>(value);
             break;
+			
+		case 22:
+			receiveInterruptEnabled =
+				(value & 1u) != 0;
+			break;
+			
+		case 23:
+			filterEnabled =
+				(value & 1u) != 0;
+			break;
+
+		case 24:
+			filterID = value;
+			break;
 
         default:
             if (address >= 4 &&
@@ -213,6 +248,21 @@ std::uint32_t CANController::read(
                 address - 14
             ];
         }
+		
+		if (address == 22)
+		{
+			return receiveInterruptEnabled ? 1u : 0u;
+		}
+		
+		if (address == 23)
+		{
+			return filterEnabled ? 1u : 0u;
+		}
+
+		if (address == 24)
+		{
+			return filterID;
+		}
     }
 
     throw std::out_of_range(
