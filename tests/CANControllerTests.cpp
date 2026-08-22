@@ -94,6 +94,88 @@ int main()
 
         assert(exceptionThrown);
     }
+	
+	// Controller registers should construct and
+	// transmit a CAN frame.
+	{
+		CANBus bus;
+
+		CANController sender;
+		CANController receiver;
+
+		bus.attach(sender);
+		bus.attach(receiver);
+
+		// TX ID
+		sender.write(2, 0x321);
+
+		// TX length
+		sender.write(3, 2);
+
+		// TX payload
+		sender.write(4, 0xAA);
+		sender.write(5, 0x55);
+
+		// Transmit command.
+		sender.write(0, 1);
+
+		assert(receiver.read(1) == 1);
+
+		assert(receiver.read(12) == 0x321);
+		assert(receiver.read(13) == 2);
+		assert(receiver.read(14) == 0xAA);
+		assert(receiver.read(15) == 0x55);
+	}
+	
+	//boundary test
+	{
+		CANController controller;
+
+		bool exceptionThrown = false;
+
+		try
+		{
+			controller.write(3, 9);
+		}
+		catch (const std::out_of_range&)
+		{
+			exceptionThrown = true;
+		}
+
+		assert(exceptionThrown);
+	}
+	
+	// Firmware should be able to acknowledge one
+	// received frame and expose the next queued frame.
+	{
+		CANBus bus;
+
+		CANController sender;
+		CANController receiver;
+
+		bus.attach(sender);
+		bus.attach(receiver);
+
+		CANFrame first;
+		first.id = 0x100;
+
+		CANFrame second;
+		second.id = 0x200;
+
+		sender.transmit(first);
+		sender.transmit(second);
+
+		assert(receiver.read(12) == 0x100);
+
+		// CONTROL bit 1 = acknowledge/pop RX frame.
+		receiver.write(0, 2);
+
+		assert(receiver.read(12) == 0x200);
+
+		receiver.write(0, 2);
+
+		assert(receiver.read(1) == 0);
+	}
 
     std::cout
         << "CANControllerTests passed\n";

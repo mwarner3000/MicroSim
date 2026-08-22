@@ -2,12 +2,15 @@
 
 #include <cstddef>
 #include <queue>
+#include <array>
+#include <cstdint>
 
+#include "Bus/IBusDevice.h"
 #include "Communication/CANFrame.h"
 
 class CANBus;
 
-class CANController
+class CANController : public IBusDevice
 {
 public:
     CANController();
@@ -25,8 +28,18 @@ public:
     CANFrame receive();
 
     std::size_t getReceivedFrameCount() const;
+	
+	std::uint32_t read(
+		std::uint32_t address
+	) override;
+
+	void write(
+		std::uint32_t address,
+		std::uint32_t value
+	) override;
 
 private:
     CANBus* bus;
     std::queue<CANFrame> receiveQueue;
+	CANFrame transmitFrame;
 };
