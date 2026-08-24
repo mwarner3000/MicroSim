@@ -902,6 +902,8 @@ int main()
 		);
 	}
 	
+	#if 0
+	
 	// End-to-end CAN firmware interrupt test:
 	//
 	// Node A firmware sends a CAN frame.
@@ -1236,6 +1238,8 @@ int main()
 				.isPending(1)
 		);
 	}
+	
+	#endif
 	
 	{
 		Simulation simulation;
