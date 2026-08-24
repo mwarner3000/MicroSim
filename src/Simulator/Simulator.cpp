@@ -228,3 +228,24 @@ Simulator::getInterruptController()
 {
     return interruptController;
 }
+
+std::chrono::nanoseconds Simulator::getTimeCredit() const
+{
+	return timeCredit;
+}
+
+std::chrono::nanoseconds Simulator::getNextCycleDuration()
+{
+	if (config.clockHz == 0)
+	{
+		throw std::runtime_error(
+			"Clock frequency cannot be zero"
+		);
+	}
+
+	std::int64_t numerator = 1000000000 + clockTimeRemainder;
+	std::int64_t wholeNanoseconds = numerator / config.clockHz;
+	clockTimeRemainder = numerator % config.clockHz;
+	
+	return std::chrono::nanoseconds(wholeNanoseconds);
+}	

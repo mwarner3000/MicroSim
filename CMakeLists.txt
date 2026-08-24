@@ -25,6 +25,7 @@ add_library(
 	src/Interrupts/InterruptController.cpp
 	src/Communication/CANBus.cpp
 	src/Communication/CANController.cpp
+	src/Simulation/SimulationScheduler.cpp
 )
 
 target_include_directories(

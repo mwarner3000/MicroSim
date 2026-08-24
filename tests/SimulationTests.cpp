@@ -4,6 +4,7 @@
 
 #include "Simulation/Simulation.h"
 #include "CPU/SimpleCPU/SimpleISA.h"
+#include "Simulation/SimulationScheduler.h"
 
 int main()
 {
@@ -1303,6 +1304,145 @@ int main()
 		assert(
 			nodeB.getClock().getCycle() ==
 			32'000
+		);
+	}
+	
+	// Scheduled event should store its time and ID.
+	{
+		ScheduledEvent event{
+			std::chrono::nanoseconds(100),
+			42
+		};
+
+		assert(
+			event.time ==
+			std::chrono::nanoseconds(100)
+		);
+
+		assert(event.id == 42);
+	}
+	
+	// Scheduler finds the next event.
+	{
+		SimulationScheduler scheduler;
+		
+		assert(
+			!scheduler.hasPendingEvents()
+		);
+
+		scheduler.schedule(
+			ScheduledEvent{
+				std::chrono::nanoseconds(300),
+				1,
+				ScheduledEventType::MCUClock
+			}
+		);
+
+		scheduler.schedule(
+			ScheduledEvent{
+				std::chrono::nanoseconds(100),
+				2,
+				ScheduledEventType::MCUClock
+			}
+		);
+
+		scheduler.schedule(
+			ScheduledEvent{
+				std::chrono::nanoseconds(200),
+				3,
+				ScheduledEventType::MCUClock
+			}
+		);
+		
+		assert(
+			scheduler.hasPendingEvents()
+		);
+		
+		assert(
+			scheduler.getCurrentTime() ==
+			std::chrono::nanoseconds(0)
+		);
+
+		assert(
+			scheduler.popNextEvent().time ==
+			std::chrono::nanoseconds(100)
+		);
+		
+		assert(
+			scheduler.getCurrentTime() ==
+			std::chrono::nanoseconds(100)
+		);
+
+		assert(
+			scheduler.popNextEvent().time ==
+			std::chrono::nanoseconds(200)
+		);
+
+		assert(
+			scheduler.popNextEvent().time ==
+			std::chrono::nanoseconds(300)
+		);
+		
+		assert(
+			scheduler.getCurrentTime() ==
+			std::chrono::nanoseconds(300)
+		);
+		
+		assert(
+			!scheduler.hasPendingEvents()
+		);
+	}
+	
+	// 16 MHz clock should preserve fractional nanoseconds.
+	{
+		BoardConfig config;
+		config.clockHz = 16'000'000;
+
+		Simulator simulator(config);
+
+		assert(
+			simulator.getNextCycleDuration() ==
+			std::chrono::nanoseconds(62)
+		);
+
+		assert(
+			simulator.getNextCycleDuration() ==
+			std::chrono::nanoseconds(63)
+		);
+
+		assert(
+			simulator.getNextCycleDuration() ==
+			std::chrono::nanoseconds(62)
+		);
+
+		assert(
+			simulator.getNextCycleDuration() ==
+			std::chrono::nanoseconds(63)
+		);
+	}
+	
+	//test scheduleMCUClock
+	{
+		SimulationScheduler scheduler;
+
+		scheduler.scheduleMCUClock(
+			7,
+			std::chrono::nanoseconds(125)
+		);
+
+		ScheduledEvent event =
+			scheduler.popNextEvent();
+
+		assert(
+			event.time ==
+			std::chrono::nanoseconds(125)
+		);
+
+		assert(event.id == 7);
+
+		assert(
+			event.type ==
+			ScheduledEventType::MCUClock
 		);
 	}
 	

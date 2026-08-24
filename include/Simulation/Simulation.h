@@ -29,6 +29,11 @@ public:
 	void advanceTime(
 		std::chrono::nanoseconds duration
 	);
+	
+	void scheduleMCUClock(
+		std::size_t nodeId,
+		std::chrono::nanoseconds time
+	);
 
 private:
     std::vector<std::unique_ptr<Simulator>> nodes;

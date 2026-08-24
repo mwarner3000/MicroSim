@@ -58,7 +58,8 @@ public:
 	
 	void setPinVoltage(std::size_t pin, double voltage);
 	double getPinVoltage(std::size_t pin) const;	
-	
+	std::chrono::nanoseconds getTimeCredit() const;
+	std::chrono::nanoseconds getNextCycleDuration();
 
 private:
     BoardConfig config;
@@ -82,4 +83,6 @@ private:
 
     std::chrono::steady_clock::time_point
         lastRealTimeUpdate;
+	std::chrono::nanoseconds timeCredit{0};
+	std::uint64_t clockTimeRemainder{0};
 };
