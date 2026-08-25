@@ -30,11 +30,6 @@ void SimpleCPU::reset()
 
 void SimpleCPU::tick(std::uint64_t /*cycle*/)
 {
-    if (halted)
-    {
-        return;
-    }
-	
 	if (!servicingInterrupt &&
 		interruptController.hasPending())
 	{
@@ -57,7 +52,14 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
 		);
 
 		servicingInterrupt = true;
+		halted = false;
 	}
+	
+    if (halted)
+    {
+        return;
+    }
+	
 
     std::uint32_t rawInstruction =
         bus.read(programCounter);

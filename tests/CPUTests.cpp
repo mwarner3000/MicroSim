@@ -778,6 +778,62 @@ int main()
 		assert(cpu.isHalted());
 	}
 	
+	//proves a halted CPU wakes for an interrupt
+	{
+		Bus bus;
+		RAM ram(512);
+		InterruptController interruptController;
+
+		bus.attach(ram, 0, 511);
+
+		SimpleCPU cpu(
+			bus,
+			interruptController
+		);
+		
+		bus.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+		
+		bus.write(
+			SimpleCPU::InterruptVectorBase + 0,
+			100
+		);
+		
+		bus.write(
+			100,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				1,
+				0,
+				42
+			)
+		);
+		
+		bus.write(
+			101,
+			SimpleISA::encode(
+				SimpleISA::Opcode::RETI
+			)
+		);
+		
+		cpu.reset();
+		cpu.tick(1);
+		
+		assert(cpu.isHalted());
+		
+		interruptController.request(0);
+		
+		cpu.tick(2);
+		
+		assert(!cpu.isHalted());
+		assert(cpu.getRegister(1) == 42);
+		
+	}
+	
     std::cout << "CPU tests passed.\n";
 
     return 0;
