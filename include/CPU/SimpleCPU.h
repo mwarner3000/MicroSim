@@ -25,9 +25,6 @@ public:
 
     std::uint32_t getRegister(std::size_t index) const;
 
-    // Keep this temporarily so our existing tests still work.
-    std::uint32_t getRegister0() const;
-
     bool isHalted() const;
 	bool getZeroFlag() const;
 	

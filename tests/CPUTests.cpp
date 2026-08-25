@@ -26,7 +26,7 @@ int main()
         cpu.reset();
 
         assert(cpu.getProgramCounter() == 0);
-        assert(cpu.getRegister0() == 0);
+        assert(cpu.getRegister(0) == 0);
         assert(!cpu.isHalted());
     }
 
@@ -46,7 +46,7 @@ int main()
         cpu.tick(1);
 
         assert(cpu.getProgramCounter() == 1);
-        assert(cpu.getRegister0() == 0);
+        assert(cpu.getRegister(0) == 0);
         assert(!cpu.isHalted());
     }
 
@@ -65,7 +65,7 @@ int main()
         cpu.reset();
         cpu.tick(1);
 
-        assert(cpu.getRegister0() == 5);
+        assert(cpu.getRegister(0) == 5);
         assert(cpu.getProgramCounter() == 1);
     }
 
@@ -85,7 +85,7 @@ int main()
         cpu.reset();
         cpu.tick(1);
 
-        assert(cpu.getRegister0() == 123);
+        assert(cpu.getRegister(0) == 123);
     }
 
     // STORE to memory.
@@ -233,7 +233,7 @@ int main()
         RunResult result = simulator.run(100);
 
         assert(result == RunResult::Halted);
-        assert(cpu.getRegister0() == 25);
+        assert(cpu.getRegister(0) == 25);
         assert(bus.read(11) == 25);
         assert(simulator.getClock().getCycle() == 4);
     }

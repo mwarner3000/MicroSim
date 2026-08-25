@@ -32,7 +32,6 @@ int main()
     std::cout
         << "R0: 0x"
         << std::hex
-        << cpu.getRegister0()
         << std::endl;
 
     std::cout

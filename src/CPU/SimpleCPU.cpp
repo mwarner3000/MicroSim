@@ -255,11 +255,6 @@ std::uint32_t SimpleCPU::getProgramCounter() const
     return programCounter;
 }
 
-std::uint32_t SimpleCPU::getRegister0() const
-{
-    return registers[0];
-}
-
 bool SimpleCPU::isHalted() const
 {
     return halted;
