@@ -49,26 +49,45 @@ int main()
         assert(cpu.getRegister(0) == 0);
         assert(!cpu.isHalted());
     }
-
+	
     // ADD immediate.
     {
         Bus bus;
         RAM ram(256);
 
         bus.attach(ram, 0x0000, 0x00FF);
-
-        ram.write(0, 0x03000005);
+		
+		ram.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				1,
+				0,
+				5
+			)
+		);
+		
+		ram.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::ADD,
+				0,
+				1,
+				0
+			)
+		);
 
         InterruptController interruptController;
 		SimpleCPU cpu(bus, interruptController);
 
         cpu.reset();
         cpu.tick(1);
+        cpu.tick(2);
 
         assert(cpu.getRegister(0) == 5);
-        assert(cpu.getProgramCounter() == 1);
+        assert(cpu.getProgramCounter() == 2);
     }
-
+	
     // LOAD from memory.
     {
         Bus bus;
@@ -76,7 +95,7 @@ int main()
 
         bus.attach(ram, 0x0000, 0x00FF);
 
-        ram.write(0, 0x0100000A);
+        ram.write(0, 0x1100000A);
         ram.write(10, 123);
 
         InterruptController interruptController;
@@ -87,7 +106,7 @@ int main()
 
         assert(cpu.getRegister(0) == 123);
     }
-
+	
     // STORE to memory.
     {
         Bus bus;
@@ -95,11 +114,25 @@ int main()
 
         bus.attach(ram, 0x0000, 0x00FF);
 
-        // ADD R0, 42
-        ram.write(0, 0x0300002A);
+        ram.write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				0,
+				0,
+				42
+			)
+		);
 
-        // STORE R0, [10]
-        ram.write(1, 0x0200000A);
+		ram.write(
+			1,
+			SimpleISA::encode(
+				SimpleISA::Opcode::STORE,
+				0,
+				0,
+				10
+			)
+		);
 
         InterruptController interruptController;
 		SimpleCPU cpu(bus, interruptController);
@@ -220,10 +253,11 @@ int main()
         Bus& bus = simulator.getBus();
         SimpleCPU& cpu = simulator.getCPU();
 
-        bus.write(0, 0x0100000A);
-        bus.write(1, 0x03000005);
-        bus.write(2, 0x0200000B);
-        bus.write(3, 0xFF000000);
+        bus.write(0, 0x1100000A);
+		bus.write(1, 0x10100005);
+        bus.write(2, 0x14010000);
+        bus.write(3, 0x1200000B);
+        bus.write(4, 0xFF000000);
 
         bus.write(10, 20);
         bus.write(11, 0);
@@ -235,7 +269,7 @@ int main()
         assert(result == RunResult::Halted);
         assert(cpu.getRegister(0) == 25);
         assert(bus.read(11) == 25);
-        assert(simulator.getClock().getCycle() == 4);
+        assert(simulator.getClock().getCycle() == 5);
     }
 
     // Firmware-driven GPIO.

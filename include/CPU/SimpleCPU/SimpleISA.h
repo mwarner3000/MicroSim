@@ -7,9 +7,6 @@ namespace SimpleISA
     enum class Opcode : std::uint8_t
     {
         NOP         = 0x00,
-        LegacyLOAD  = 0x01,
-        LegacySTORE = 0x02,
-        LegacyADD   = 0x03,
 
         MOVI  = 0x10,
         LOAD  = 0x11,

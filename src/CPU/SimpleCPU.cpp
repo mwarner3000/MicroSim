@@ -67,9 +67,6 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
     SimpleISA::Instruction instruction =
         SimpleISA::decode(rawInstruction);
 
-    std::uint32_t legacyOperand =
-        rawInstruction & 0x00FFFFFF;
-
     const std::uint8_t rd = instruction.rd;
     const std::uint8_t rs = instruction.rs;
     const std::uint16_t operand = instruction.operand;
@@ -79,18 +76,6 @@ void SimpleCPU::tick(std::uint64_t /*cycle*/)
     switch (instruction.opcode)
 	{
         case SimpleISA::Opcode::NOP:
-			break;
-
-		case SimpleISA::Opcode::LegacyLOAD:
-			registers[0] = bus.read(legacyOperand);
-			break;
-
-		case SimpleISA::Opcode::LegacySTORE:
-			bus.write(legacyOperand, registers[0]);
-			break;
-
-		case SimpleISA::Opcode::LegacyADD:
-			registers[0] += legacyOperand;
 			break;
 			
 		case SimpleISA::Opcode::MOVI:
