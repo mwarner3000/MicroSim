@@ -32,7 +32,9 @@ int main()
         );
 
         assert(
-            gpio.getPin(5).getVoltage() == 5.0
+            gpio.getPin(5)
+				.getEffectiveVoltage(5.0)
+				.value() == 5.0
         );
 
         assert(gpio.read(1) == 1);
@@ -53,7 +55,9 @@ int main()
         );
 
         assert(
-            gpio.getPin(6).getVoltage() == 0.0
+				gpio.getPin(6)
+					.getEffectiveVoltage(5.0)
+					.value() == 0.0
         );
 
         assert(gpio.read(2) == 0);
@@ -63,7 +67,7 @@ int main()
     {
         GPIO gpio;
 
-        gpio.getPin(3).setVoltage(5.0);
+        gpio.getPin(3).setExternalVoltage(5.0);
 
         gpio.write(0, 3);
 
@@ -79,7 +83,7 @@ int main()
     {
         GPIO gpio;
 
-        gpio.getPin(3).setVoltage(2.0);
+        gpio.getPin(3).setExternalVoltage(2.0);
 
         gpio.write(0, 3);
 
@@ -90,7 +94,7 @@ int main()
     {
         GPIO gpio;
 
-        gpio.getPin(3).setVoltage(3.0);
+        gpio.getPin(3).setExternalVoltage(3.0);
 
         gpio.write(0, 3);
 
@@ -115,25 +119,28 @@ int main()
         assert(exceptionThrown);
     }
 
-    // Cannot drive a pin configured as input.
-    {
-        GPIO gpio;
+    // Writing OUTPUT while pin is configured as input
+	// should update the output latch without driving the pin.
+	{
+		GPIO gpio;
 
-        gpio.write(0, 2);
+		gpio.write(0, 2); // select pin 2
 
-        bool exceptionThrown = false;
+		gpio.write(2, 1); // write HIGH to output latch
 
-        try
-        {
-            gpio.write(2, 1);
-        }
-        catch (const std::invalid_argument&)
-        {
-            exceptionThrown = true;
-        }
+		assert(
+			gpio.getPin(2).getDirection() ==
+			PinDirection::Input
+		);
 
-        assert(exceptionThrown);
-    }
+		assert(
+			gpio.getPin(2).getOutputLatch() == true
+		);
+
+		assert(
+			gpio.read(2) == 1
+		);
+	}
 
     // Invalid register reads should fail.
     {
@@ -224,7 +231,9 @@ int main()
         );
 
         assert(
-            gpio.getPin(7).getVoltage() == 5.0
+            gpio.getPin(7)
+				.getEffectiveVoltage(5.0)
+				.value() == 5.0
         );
     }
 
@@ -235,7 +244,7 @@ int main()
 
         bus.attach(gpio, 0x1000, 0x1003);
 
-        gpio.getPin(2).setVoltage(5.0);
+        gpio.getPin(2).setExternalVoltage(5.0);
 
         bus.write(0x1000, 2); // select pin 2
 
@@ -260,7 +269,9 @@ int main()
         );
 
         assert(
-            gpio.getPin(73).getVoltage() == 5.0
+            gpio.getPin(73)
+				.getEffectiveVoltage(5.0)
+				.value() == 5.0
         );
     }
 
@@ -301,15 +312,93 @@ int main()
         gpio.write(2, 1);
 
         assert(
-            gpio.getPin(0).getVoltage() == 3.3
+            gpio.getPin(0)
+				.getEffectiveVoltage(3.3)
+				.value() == 3.3
         );
 
-        gpio.getPin(1).setVoltage(2.0);
+        gpio.getPin(1).setExternalVoltage(2.0);
 
         gpio.write(0, 1);
 
         assert(gpio.read(3) == 1);
     }
+	
+	// Output latch should be preserved while the pin is an input
+	// and drive the pin when switched to output.
+	{
+		GPIO gpio;
+
+		gpio.write(0, 2); // select pin 2
+
+		// Pin starts as input.
+		assert(
+			gpio.getPin(2).getDirection() ==
+			PinDirection::Input
+		);
+
+		// Preload the output latch HIGH while still an input.
+		gpio.write(2, 1);
+
+		assert(
+			gpio.getPin(2).getOutputLatch() == true
+		);
+
+		// Switch the pin to output.
+		gpio.write(1, 1);
+
+		assert(
+			gpio.getPin(2).getDirection() ==
+			PinDirection::Output
+		);
+
+		// The previously stored HIGH should now drive the pin.
+		auto voltage =
+			gpio.getPin(2).getEffectiveVoltage(5.0);
+
+		assert(voltage.has_value());
+		assert(voltage.value() == 5.0);
+
+		// Switch back to input.
+		gpio.write(1, 0);
+
+		// The latch should still remember HIGH.
+		assert(
+			gpio.getPin(2).getOutputLatch() == true
+		);
+	}
+	
+	// Floating digital input should read LOW.
+	{
+		GPIO gpio;
+
+		gpio.write(0, 2); // select pin 2
+
+		assert(
+			gpio.getPin(2).getDirection() ==
+			PinDirection::Input
+		);
+
+		assert(
+			!gpio.getPin(2).hasExternalVoltage()
+		);
+
+		assert(gpio.read(3) == 0);
+	}
+	
+	// INPUT register should reflect the level driven by an output pin.
+	{
+		GPIO gpio;
+
+		gpio.write(0, 2); // select pin 2
+		gpio.write(1, 1); // configure as output
+
+		gpio.write(2, 1); // drive HIGH
+		assert(gpio.read(3) == 1);
+
+		gpio.write(2, 0); // drive LOW
+		assert(gpio.read(3) == 0);
+	}
 
     std::cout << "GPIO tests passed.\n";
 

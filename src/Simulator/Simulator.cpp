@@ -213,14 +213,25 @@ void Simulator::setPinVoltage(
     double voltage
 )
 {
-    gpio.getPin(pin).setVoltage(voltage);
+    gpio.getPin(pin).setExternalVoltage(voltage);
 }
 
 double Simulator::getPinVoltage(
     std::size_t pin
 ) const
 {
-    return gpio.getPin(pin).getVoltage();
+	auto voltage =
+		gpio.getPin(pin).getEffectiveVoltage(
+			config.logicVoltage
+		);
+
+	if (!voltage.has_value())
+	{
+		// TODO: define public API behavior for floating pins.
+		return 0.0;
+	}
+
+	return voltage.value();
 }
 
 InterruptController&

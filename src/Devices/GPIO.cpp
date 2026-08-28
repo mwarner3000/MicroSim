@@ -41,19 +41,29 @@ std::uint32_t GPIO::read(std::uint32_t address)
         case 2:
             // OUTPUT
             return
-                pins[selectedPin].getVoltage() >=
-                digitalHighThreshold
+                pins[selectedPin].getOutputLatch()
                     ? 1u
                     : 0u;
 
         case 3:
+		{
             // INPUT
-            return
-                pins[selectedPin].getVoltage() >=
-                digitalHighThreshold
-                    ? 1u
-                    : 0u;
+            auto voltage =
+				pins[selectedPin].getEffectiveVoltage(
+					logicVoltage
+				);
 
+			if (!voltage.has_value())
+			{
+				// TODO: define floating digital-input behavior.
+				return 0;
+			}
+
+			return voltage.value() >= digitalHighThreshold
+				? 1u
+				: 0u;
+		}
+				
         default:
             throw std::out_of_range(
                 "Invalid GPIO register address"
@@ -102,22 +112,9 @@ void GPIO::write(
         case 2:
         {
             // OUTPUT
-
-            if (
-                pins[selectedPin].getDirection() !=
-                PinDirection::Output
-            )
-            {
-                throw std::invalid_argument(
-                    "Cannot drive an input pin"
-                );
-            }
-
-            pins[selectedPin].setVoltage(
-                (value & 1u)
-                    ? logicVoltage
-                    : 0.0
-            );
+            pins[selectedPin].setOutputLatch(
+				(value & 1u) != 0
+			);
 
             break;
         }

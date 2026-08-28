@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 enum class PinDirection
 {
     Input,
@@ -11,13 +13,22 @@ class Pin
 public:
     Pin();
 
-    double getVoltage() const;
-    void setVoltage(double volts);
-
     PinDirection getDirection() const;
     void setDirection(PinDirection direction);
+	
+	bool getOutputLatch() const;
+	void setOutputLatch(bool value);
+
+	bool hasExternalVoltage() const;
+	double getExternalVoltage() const;
+	void setExternalVoltage(double voltage);
+	void clearExternalVoltage();
+	std::optional<double> getEffectiveVoltage(
+		double logicVoltage
+	) const;
 
 private:
-    double voltage;
     PinDirection direction;
+	bool outputLatch;
+	std::optional<double> externalVoltage;
 };

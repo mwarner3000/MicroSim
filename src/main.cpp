@@ -46,7 +46,6 @@ int main()
 
 	std::cout
 		<< "Pin 7 voltage: "
-		<< gpio.getPin(7).getVoltage()
 		<< " V"
 		<< std::endl;
 

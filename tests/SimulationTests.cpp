@@ -336,7 +336,8 @@ int main()
 		assert(
 			simulator.getGPIO()
 				.getPin(3)
-				.getVoltage() == 2.5
+				.getEffectiveVoltage(2.5)
+				.value() == 2.5
 		);
 	}
 	
@@ -346,7 +347,7 @@ int main()
 
 		simulator.getGPIO()
 			.getPin(5)
-			.setVoltage(5.0);
+			.setExternalVoltage(5.0);
 
 		assert(
 			simulator.getPinVoltage(5) == 5.0

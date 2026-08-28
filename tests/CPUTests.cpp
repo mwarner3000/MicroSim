@@ -360,7 +360,9 @@ int main()
 		);
 
 		assert(
-			gpio.getPin(7).getVoltage() == 5.0
+			gpio.getPin(7)
+				.getEffectiveVoltage(5.0)
+				.value() == 5.0
 		);
 	}
 
