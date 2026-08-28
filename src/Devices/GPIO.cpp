@@ -55,7 +55,7 @@ std::uint32_t GPIO::read(std::uint32_t address)
 
 			if (!voltage.has_value())
 			{
-				// TODO: define floating digital-input behavior.
+				//Floating digital inputs read LOW deterministically
 				return 0;
 			}
 
