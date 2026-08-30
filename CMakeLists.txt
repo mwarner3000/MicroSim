@@ -26,6 +26,7 @@ add_library(
 	src/Communication/CANBus.cpp
 	src/Communication/CANController.cpp
 	src/Simulation/SimulationScheduler.cpp
+	src/Devices/ADC.cpp
 )
 
 target_include_directories(
