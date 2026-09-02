@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 struct ADCConfig
 {
@@ -10,4 +11,7 @@ struct ADCConfig
 	double referenceVoltage = 5.0;
 	std::uint32_t conversionCycles = 20;
 	
+	std::vector<std::size_t> channelToPin{
+		0, 1, 2, 3, 4, 5, 6, 7
+	};
 };

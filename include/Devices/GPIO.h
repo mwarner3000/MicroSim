@@ -27,6 +27,8 @@ public:
     const Pin& getPin(std::size_t index) const;
 
     std::size_t getPinCount() const;
+	
+	double getLogicVoltage() const;
 
 private:
     std::size_t selectedPin;

@@ -6,11 +6,12 @@
 #include "Bus/IBusDevice.h"
 #include "Simulator/IClockable.h"
 #include "Devices/ADCConfig.h"
+#include "Devices/GPIO.h"
 
 class ADC : public IBusDevice, public IClockable
 {
 public:
-	ADC(const ADCConfig& config);
+	ADC(const ADCConfig& config, GPIO& gpio);
 	std::uint32_t read(std::uint32_t address) override;
 	void write(std::uint32_t address, 
 			   std::uint32_t value) override;
@@ -18,9 +19,11 @@ public:
 	
 private:
 	ADCConfig config;
+	GPIO& gpio;
 	
 	std::size_t selectedChannel = 0;
 	std::size_t activeChannel = 0;
+	std::size_t resultChannel = 0;
 	double sampledVoltage = 0.0;
 	std::uint16_t result = 0;
 	bool busy = false;
@@ -32,4 +35,7 @@ private:
 
 	std::uint32_t cyclesRemaining = 0;
 	
+	double sampleSelectedChannel();
+	
+	std::uint16_t convertSampleToCode() const;
 };

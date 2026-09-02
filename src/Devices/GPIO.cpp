@@ -159,3 +159,8 @@ std::size_t GPIO::getPinCount() const
 {
     return pins.size();
 }
+
+double GPIO::getLogicVoltage() const
+{
+	return logicVoltage;
+}
