@@ -213,3 +213,19 @@ add_test(
     NAME CANControllerTests
     COMMAND CANControllerTests
 )
+
+add_executable(
+    ADCTests
+    tests/ADCTests.cpp
+)
+
+target_link_libraries(
+    ADCTests
+    PRIVATE
+        MicroSimCore
+)
+
+add_test(
+    NAME ADCTests
+    COMMAND ADCTests
+)

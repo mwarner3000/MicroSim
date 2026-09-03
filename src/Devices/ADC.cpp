@@ -3,8 +3,14 @@
 #include <stdexcept>
 #include <cmath>
 
-ADC::ADC(const ADCConfig& config, GPIO& gpio)
-    : config(config), gpio(gpio)
+ADC::ADC(
+    const ADCConfig& config,
+    GPIO& gpio,
+    InterruptController& interruptController
+)
+    : config(config),
+      gpio(gpio),
+      interruptController(interruptController)
 {
 	if (config.channelCount == 0)
 	{
@@ -189,7 +195,22 @@ void ADC::tick(std::uint64_t cycle)
     if (cyclesRemaining > 0)
         return;
 
-    // Conversion completion will go here next.
+    if (resultUnread)
+		overrun = true;
+
+	result = convertSampleToCode();
+	resultChannel = activeChannel;
+	resultUnread = true;
+
+	complete = true;
+	busy = false;
+	
+	if (interruptEnable)
+	{
+		interruptController.request(
+			config.interruptNumber
+		);
+	}
 }
 
 std::uint16_t ADC::convertSampleToCode() const

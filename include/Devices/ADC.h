@@ -7,11 +7,16 @@
 #include "Simulator/IClockable.h"
 #include "Devices/ADCConfig.h"
 #include "Devices/GPIO.h"
+#include "Interrupts/InterruptController.h"
 
 class ADC : public IBusDevice, public IClockable
 {
 public:
-	ADC(const ADCConfig& config, GPIO& gpio);
+	ADC(
+		const ADCConfig& config,
+		GPIO& gpio,
+		InterruptController& interruptController
+	);
 	std::uint32_t read(std::uint32_t address) override;
 	void write(std::uint32_t address, 
 			   std::uint32_t value) override;
@@ -20,6 +25,7 @@ public:
 private:
 	ADCConfig config;
 	GPIO& gpio;
+	InterruptController& interruptController;
 	
 	std::size_t selectedChannel = 0;
 	std::size_t activeChannel = 0;
