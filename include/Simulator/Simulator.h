@@ -15,6 +15,7 @@
 #include "Simulator/IClockable.h"
 #include "Interrupts/InterruptController.h"
 #include "Communication/CANController.h"
+#include "Devices/ADC.h"
 
 enum class RunResult
 {
@@ -60,6 +61,9 @@ public:
 	double getPinVoltage(std::size_t pin) const;	
 	std::chrono::nanoseconds getTimeCredit() const;
 	std::chrono::nanoseconds getNextCycleDuration();
+	
+	ADC& getADC();
+	const ADC& getADC() const;
 
 private:
     BoardConfig config;
@@ -67,8 +71,8 @@ private:
     Bus bus;
     RAM ram;
     GPIO gpio;
-
 	InterruptController interruptController;
+	ADC adc;
 
 	Timer timer;
 	CANController canController;

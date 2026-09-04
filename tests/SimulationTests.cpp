@@ -377,6 +377,10 @@ int main()
 	{
 		BoardConfig config;
 		config.gpioPins = 2;
+		config.adc.channelCount = 2;
+		config.adc.channelToPin = {
+			0, 1
+		};
 
 		Simulator bot(config);
 		Bus& bus = bot.getBus();
@@ -1448,6 +1452,153 @@ int main()
 		assert(
 			event.type ==
 			ScheduledEventType::MCUClock
+		);
+	}
+	
+	//simulator level ADC test
+	{
+		BoardConfig config;
+		Simulator simulator(config);
+		
+		simulator.setPinVoltage(0, 2.5);
+		
+		simulator.getBus().write(config.adcBase + 0, 0);
+		simulator.getBus().write(config.adcBase + 1, 1);
+		
+		simulator.advanceCycles(
+			config.adc.conversionCycles
+		);
+		
+		std::uint32_t status =
+			simulator.getBus().read(config.adcBase + 2);
+			
+		assert((status & (1u << 0)) == 0); // BUSY cleared
+		assert((status & (1u << 1)) != 0); // COMPLETE set
+		//read the conversion result through the bus
+		assert(
+			simulator.getBus().read(config.adcBase + 3) == 512
+		);
+		//verify which channel produced the result
+		assert(
+			simulator.getBus().read(config.adcBase + 4) == 0
+		);
+		
+		//second simulator level ADC
+		BoardConfig config2;
+		Simulator simulator2(config2);
+		
+		simulator2.setPinVoltage(0, 2.5);
+		
+		//Enable ADC interrupts through the memory-mapped register
+		simulator2.getBus().write(
+			config2.adcBase + 5,
+			1
+		);
+		
+		//select channel 0 and start
+		simulator2.getBus().write(
+			config2.adcBase + 0,
+			0
+		);
+
+		simulator2.getBus().write(
+			config2.adcBase + 1,
+			1
+		);
+		
+		//advance the conversion
+		simulator2.advanceCycles(
+			config2.adc.conversionCycles
+		);
+		
+		//verify the shared interrupt controller sees the ADC IRQ
+		assert(
+			simulator2.getInterruptController().getNextPending() ==
+			config2.adc.interruptNumber
+		);
+	}
+	
+	//test the entire ADC integration
+	{
+		BoardConfig config;
+		Simulator simulator(config);
+		
+		simulator.getBus().write(
+			SimpleCPU::InterruptVectorBase +
+				config.adc.interruptNumber,
+			100
+		);
+		
+		simulator.getBus().write(
+			100,
+			SimpleISA::encode(
+				SimpleISA::Opcode::MOVI,
+				2,
+				0,
+				99
+			)
+		);
+
+		simulator.getBus().write(
+			101,
+			SimpleISA::encode(
+				SimpleISA::Opcode::RETI
+			)
+		);
+		
+		simulator.getBus().write(
+			0,
+			SimpleISA::encode(
+				SimpleISA::Opcode::HALT
+			)
+		);
+		
+		simulator.getCPU().reset();
+		
+		simulator.setPinVoltage(0, 2.5);
+		
+		simulator.getBus().write(
+			config.adcBase + 5,
+			1
+		);
+		
+		simulator.getBus().write(
+			config.adcBase + 0,
+			0
+		);
+		
+		simulator.getBus().write(
+			config.adcBase + 1,
+			1
+		);
+		
+		simulator.tick();
+		assert(simulator.getCPU().isHalted());
+		
+		simulator.advanceCycles(
+			config.adc.conversionCycles - 1
+		);
+		
+		std::uint32_t status =
+			simulator.getBus().read(config.adcBase + 2);
+
+		assert((status & (1u << 0)) == 0); // BUSY clear
+		assert((status & (1u << 1)) != 0); // COMPLETE set
+		
+		assert(
+			simulator.getInterruptController().getNextPending() ==
+			config.adc.interruptNumber
+		);
+		
+		simulator.tick();
+		assert(!simulator.getCPU().isHalted());
+
+		assert(
+			simulator.getCPU().getRegister(2) == 99
+		);
+
+		assert(
+			simulator.getCPU().getProgramCounter() == 101
 		);
 	}
 	

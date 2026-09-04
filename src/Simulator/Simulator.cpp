@@ -14,8 +14,13 @@ Simulator::Simulator(const BoardConfig& config)
 			config.gpioPins,
 			config.logicVoltage, 
 			config.digitalHighThreshold
-			),
+		),
 	  interruptController(),
+	  adc(
+			config.adc,
+			gpio,
+			interruptController
+		),
 	  timer(interruptController, 0),
 	  canController(interruptController, 1),
 	  cpu(bus, interruptController)
@@ -51,8 +56,15 @@ Simulator::Simulator(const BoardConfig& config)
 		config.canBase,
 		config.canBase + 24
 	);
+	
+	bus.attach(
+		adc,
+		config.adcBase,
+		config.adcBase + 5
+	);
 
     clockables.push_back(&cpu);
+	clockables.push_back(&adc);
     clockables.push_back(&timer);
 }
 
@@ -260,3 +272,13 @@ std::chrono::nanoseconds Simulator::getNextCycleDuration()
 	
 	return std::chrono::nanoseconds(wholeNanoseconds);
 }	
+
+ADC& Simulator::getADC()
+{
+    return adc;
+}
+
+const ADC& Simulator::getADC() const
+{
+    return adc;
+}

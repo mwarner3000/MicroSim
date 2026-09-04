@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "Devices/ADCConfig.h"
+
 struct BoardConfig
 {
     // Core hardware
@@ -20,4 +22,8 @@ struct BoardConfig
     std::uint32_t gpioBase  = 0x00001000;
     std::uint32_t timerBase = 0x00002000;
 	std::uint32_t canBase = 0x00005000;
+	std::uint32_t adcBase = 0x00003000;
+	
+	//ADC configuration
+	ADCConfig adc;
 };
